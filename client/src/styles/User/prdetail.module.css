@@ -1,0 +1,812 @@
+
+.container{
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.oo{
+    display: flex;  
+    height:auto;
+    padding-top:10px;
+
+}
+.ochung{
+    display:flex;    
+}
+
+.ochung h3{
+    margin: 0;
+    margin-bottom: 20px;
+}
+
+.o1{
+    width:50%;
+  
+}
+.o2{
+    width:50%;
+    margin-left:20px;
+   
+}
+.odau{
+    width:60%;
+}
+.odau img{
+    margin-bottom:20px;
+
+}
+.odau .abc img{
+    border-radius:20px;
+    margin-right:10px;
+}
+.ocuoi{
+    margin-left:20px;
+    width:60%;
+    font-size:20px;
+    line-height:30px;
+}
+
+.ocuoi p{
+    margin: 10px 0;
+}
+.cay{
+    font-size:30px;
+    line-height: 35px;
+    color: #224229;
+}
+.masp{
+    font-size:18px;
+    margin: 10px 0;
+}
+
+
+.rate{
+    font-size:18px;
+    
+}
+.trangthai{
+    font-size:18px;
+    
+}
+.mota{
+    font-size:18px;
+    
+}
+.dongmota{
+    font-size:18px;
+    margin-bottom:20px;
+    line-height:40px;
+}
+.chieucao{
+    font-size:18px;
+    
+}
+.duongkinh{
+    font-size:18px;
+    
+}
+.loaichau{
+    font-size:18px;
+    
+}
+.doam{
+    font-size:18px;
+    
+}
+.anhsang{
+    font-size:18px;
+    
+}
+.loiich{
+    font-size:18px;
+    
+    line-height:24px;
+}
+.background{
+    background-color: white;
+}
+
+
+
+
+.button-container {
+    display: flex;
+    gap: 20px;
+    padding-top:10px;
+    padding-bottom:30px;
+}
+
+
+
+.btn-cart {
+    background-color: #224229;
+    font-size:20px;
+    width: 200px;
+    margin: 0;
+    height: auto;
+    border-radius: 5px;
+    color: white;
+    border-style: none;
+    cursor: pointer;
+}
+
+.btn-cart:hover{
+    background-color: #00791C;
+}
+
+.submit-btn {
+    background: green;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size:18px;
+    margin-bottom:40px;
+}
+.dgsp{
+    
+    font-size:25px;
+}
+.danhgia{
+    font-size:25px;
+}
+
+.title{
+    display: flex;
+    position: relative;
+}
+
+        .counter {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: #f8f6f2;
+            height:44px;
+        }
+       
+        .counter #quantity { 
+            width:30px;
+            height:44px;
+            border-right:1px solid #ddd;
+            border-left:1px solid #ddd
+        }
+        .counter button {
+            border: none;
+            background: none;
+            font-size: 20px;
+            padding: 8px 10px;
+            cursor: pointer;
+            color: #2f402f;
+            width:31.35px;
+            height:44px;
+        }
+
+        .counter input {
+            width: 40px;
+            text-align: center;
+            border: none;
+            font-size: 18px;
+            background: transparent;
+            color: #2f402f;
+        }
+
+        .product-info {
+            max-width: 600px;
+        }
+        .categories {
+            font-size: 18px;
+            color: #224229;
+            line-height: 1.6;
+            margin-bottom:15px;
+            
+        }
+      
+        .categories a:hover{
+            color: #00791C;
+            text-decoration: none;
+
+        }
+        .social-icons {
+            margin: 20px 0;
+          
+        
+        }
+        .social-icons a {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            margin-right: 5px;
+            text-align: center;
+            line-height: 30px;
+            border-radius: 50%;
+            background: #eee;
+            text-decoration: none;
+            color: #666;
+            font-size: 16px;
+            margin-right:30px;
+        }
+        .social-icons img{
+            width:50px;
+            
+           
+        }
+        .return-policy {
+            display: flex;
+            align-items: center;
+         
+           
+        }
+        .return-policy img {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+        }
+        .return-policy p{
+            margin: 0;
+        }
+        .return-policy-text {
+            font-size: 18px;
+            color: black;
+        }
+        .return-policy-text strong {
+            font-size: 18px;
+            color: #00791C;
+        }
+        .yeucau{
+            font-size:18px;
+        }
+
+        .yeucau p{
+            margin: 0;
+        }
+        .yeucau a{
+            text-decoration: none;
+            color:#00791C;
+        }
+        .yeucau a:hover{
+            color:#ffa200;
+        }
+
+
+        .dg{
+            height:97px;
+        }
+        .abc img:hover {
+            transform: scale(1.1);
+        }
+
+
+        .container_comment{
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px 0;
+        }
+        
+        .bgwhite{
+            background-color: #FCF9F3;
+        }
+
+        .comment {
+            width: 100%;
+            overflow-wrap: break-word; /* Tự động xuống dòng khi cần */
+        }
+
+
+        
+.review-container {
+    
+    line-height:30px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.review-container p{
+    margin: 0;
+    margin-bottom: 10px;
+}
+.product-title {
+    font-weight: bold;
+    font-size: 35px;
+    margin-bottom:20px;
+    text-align: center;
+    
+}
+.product-title span {
+    color: green;
+}
+
+
+.user-review {
+    border-bottom: 1px solid #ddd;
+    font-size:18px;
+    line-height:35px;
+
+}
+
+.date{
+    font-size: 14px;
+    opacity: 60%;
+}
+
+.comment-box {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size:18px;
+    padding: 0;
+    height: 150px;
+}
+
+.user img{
+    width: 40px;
+    height: 40px;
+}
+
+.user{
+    display: flex;
+}
+
+.user strong{
+    height: 40px;
+    line-height: 40px;
+    margin-left: 10px;
+}
+
+
+
+        /* Sanr pham lien quan */
+
+        
+.bgmain{
+    background-color: white;
+    min-height: auto;
+   }
+   
+   .title{
+    display: flex;
+    position: relative;
+}
+
+.title_name{
+    position: relative; 
+   width: 1200px;
+   padding-top: 20px;
+}
+.title_name p {
+    font-size: 20px;
+    font-weight: bold;
+    border: 1px solid #00791C;
+    background-color: #00791C;
+    color: white;
+    display: inline-block; 
+    height: 50px;
+    line-height: 50px;
+    padding: 0 10px;
+    margin: 0;
+
+}
+
+.title_name::after {
+    content: '';
+    display: inline-block; 
+    width: 100%; 
+    height: 3px;
+    background-color: #00791C;
+    position: absolute;
+    left: 0%;
+    transform: translateY(-50%); 
+    bottom: 0%;
+    margin-bottom: -4px;
+}
+
+.products{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, max-content));
+    gap: 20px;
+    justify-content: center; 
+    padding: 20px 0;
+}
+
+.product{
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    background-color: white;
+    position: relative;
+    border-radius: 5px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out; 
+
+}
+
+.product:hover{
+    transform: scale(1.05);
+}
+
+
+.product_img{
+    overflow: hidden;
+    width: 100%;
+    height: 285px;
+    position: relative;
+    border-radius: 5px 5px 0 0;
+}
+
+.product_img img{
+    width: 100%;
+    height: 285px;
+    transition: transform 0.5s ease-in-out;
+
+}
+
+.product_img img:hover{
+    transform: scale(1.3);
+}
+
+
+
+.product_info{
+    padding: 0 15px;
+}
+
+.product_info p{
+    font-size: 16px;
+}
+.product_info>p{
+    margin: 0;
+    padding: 5px 0;
+
+}
+
+.product_info>p:last-child{
+    margin-bottom: 5px;
+}
+
+
+.product_price{
+    color: #00791C;
+}
+
+
+.product_btn{
+    position: absolute;
+    top: 35%;
+    left: 50%;  
+    transform: translate(-50%, -35%);
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.product_btn a{
+    text-decoration: none;
+     color: white;
+}
+
+.product_btn p{
+    margin: 0px;
+
+}
+
+.pr_xemchitiet button{
+    color: white;
+    height: 50px;
+    width: 150px;
+    border-radius: 50px;
+    opacity: 0;
+    font-size: 16px;
+    font-weight: bolder;
+    background-color: #224229;
+    border-style: none;
+    margin-bottom: 5px;
+    cursor: pointer;
+    }
+    
+    .pr_themvaogio button{
+        color: white;
+        height: 50px;
+        width: 150px;
+        border-radius: 50px;
+        background-color: #D97904;
+    border-style: none;
+        opacity: 0;
+        font-size: 16px;
+    font-weight: bolder;
+    cursor: pointer;
+        }
+
+.product:hover .pr_xemchitiet button, .product:hover .pr_themvaogio button{
+    opacity: 1;
+}
+
+.pr_xemchitiet button:hover{
+    background-color: #00791C;
+}
+
+.pr_themvaogio button:hover{
+    color: white;
+    background-color: #f29320;
+    
+}
+
+
+
+
+.pr_tim{
+right: 8px;
+font-size: 25px;
+color: white;
+-webkit-text-stroke: 1px #224229;
+position: absolute;
+top: 4px;
+}
+
+.pr_tim:hover{
+    color: red;
+-webkit-text-stroke: 1px red;
+
+}
+
+.pr_view{
+    position: absolute;
+    margin-top: -22px;
+    margin-left: 5px;
+    font-size: 12px;
+   
+
+}
+
+.pr_view p{
+    display: inline;
+    font-size: 12px;
+}
+
+.pr_thongbao{
+    position: absolute;
+    top: 0px;
+    width: 50px;
+    background-color: #53BD51;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    font-weight: bold;
+    color: white;
+    border-radius: 5px 0 0 0;
+}
+
+.pr_thongbao p{
+    margin: 0px;
+}
+
+/* Review */
+.reviewContainer h3{
+    font-size: 30px;
+}
+
+.ratingSection{
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.reviewTextarea{
+    width: 100%;
+    height: 150px;
+}
+
+.reviewNotice{
+    font-size: 18px;
+}
+.reviewNotice a{
+    text-decoration: none;
+    color: #224229;
+    font-weight: bolder;
+}
+.reviewNotice a:hover{
+    color: #00791C;
+}
+.submitButton{
+    width: 150px;
+    height: 40px;
+    border-radius: 5px;
+    background-color: #f29320;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 10px;
+    padding: 0;
+    border-style: none;
+}
+
+.submitButton:hover{
+    background-color: #D97904;
+
+}
+
+
+
+@media (max-width: 480px) {
+    .odau img{
+        width: 150px;
+        height:150px;
+    }
+        .odau .abc img{
+            width: 60px;
+            height: 60px;        
+            margin-left:4px;
+        }
+        .odau{
+            width:150px;
+        }
+        .abc{
+           gap:10px;
+        }
+        .cay b{
+            font-size:16px;
+        }
+        .masp{
+            font-size:16px;
+        }
+        .gia p{
+            font-size:16px;
+        }
+        .mota p{
+            font-size:16px;
+        }
+        .trangthai p{
+            font-size:16px;
+        }
+        .ocuoi{
+        width:200px;
+        }
+        .dongmota p{
+            display: none;
+        }
+        .rate, .trangthai, .mota, .dongmota, .loiich, .sku, .categories, .returnpolicytext{
+            font-size:16px;
+            line-height:18px;
+            }
+            .categories a{
+                line-height: 25px;
+              font-size:16px;
+            }
+            .returnpolicytext strong{
+                font-size:16px;
+            }
+            
+        
+       
+            .dgsp h3{
+                font-size:20px;
+            }
+            .danhgia h3{
+                font-size:20px;
+            }
+            .product-title{
+                font-size:20px;
+            }
+            .starss, .user, .date, .comment p, .yeucau{
+                font-size:14px;
+                line-height:25px;
+            }
+            .o1{
+                width:50%;
+            }
+            .dg{
+                height:110px;
+            }
+            textarea.commentbox{
+                height: 70px;
+            }
+            .container {
+            padding: 0px 10px;
+
+        }
+        .reviewContainer h3{
+            font-size:20px;
+
+        }  
+        .products{
+            grid-template-columns: 1fr 1fr;
+            
+        }
+        .products img{
+            height:175.2px;
+        }
+        .product_img{
+            height:175.2px;
+        }
+        .reviewContainer{
+            margin-top:3px
+        }
+    
+.ochung{
+    padding:10px;
+}
+
+    .products {
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 10px 5px;
+      
+    }
+  
+    .product {
+      max-width: 100%;
+    }
+  
+    .product_img img {
+      height: auto;
+    }
+  
+    .product_btn {
+        flex-direction: column;
+        top: 30%;
+        transform: translate(-50%, -30%);
+  
+        width: 90%;
+  
+        justify-content: center;
+        align-items: center;
+        
+      }
+      .btnxct {
+          font-size: 12px;
+          line-height:16px;
+         
+      }
+      .pr_xemchitiet button,
+      .pr_themvaogio button {
+        width:80px;
+      height:30px;
+        font-size: 12px;
+        border-radius: 40px;
+      }
+     .pr_themvaogio button{
+      font-size:12px;
+      line-height:16px;
+     }
+      .product_info p {
+        font-size: 13px;
+      }
+  
+    .product_price {
+      font-size: 14px;
+    }
+  
+
+  
+    .pr_tim {
+      font-size: 20px;
+      top: 6px;
+      right: 6px;
+    }
+  
+    .pr_thongbao {
+      width: 40px;
+      height: 25px;
+      font-size: 12px;
+      line-height: 25px;
+    }
+  
+   
+    .title_name p::after{
+       position: relative;
+        right:270px;
+        bottom:2px;
+
+    }
+    .btn-cart{
+        font-size:12px;
+        
+    }
+    .reviewNotice a{
+        color:black;
+        font-size:18px;
+        
+    }
+    .reviewNotice a:hover{
+        color:gray;
+    }
+}

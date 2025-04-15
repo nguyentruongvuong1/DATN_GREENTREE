@@ -1,0 +1,150 @@
+
+.not-found-container {
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    max-width: 600px;
+    padding: 2rem;
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+    margin: auto;
+    margin-top: 20px;
+}
+
+.leaf-decoration {
+    font-size: 3rem;
+    position: absolute;
+    top: -15px;
+    right: 20px;
+    opacity: 0.3;
+    transform: rotate(30deg);
+}
+
+.info h1{
+    font-size: 8rem;
+    color: #4CAF50;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.info h2{
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: #2E7D32;
+}
+
+p {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.btn-home, .btn-shop {
+    padding: 12px 25px;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    width: 120px;
+}
+
+.btn-home {
+    background-color: #4CAF50;
+    color: white;
+    border: 2px solid #4CAF50;
+}
+
+.btn-home:hover {
+    background-color: #3E8E41;
+    transform: translateY(-2px);
+}
+
+.btn-shop {
+    background-color: transparent;
+    color: #4CAF50;
+    border: 2px solid #4CAF50;
+}
+
+.btn-shop:hover {
+    background-color: #4CAF50;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.plant-image {
+    margin-top: 1rem;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .not-found-container {
+        width: 90%;
+    }
+    
+    h1 {
+        font-size: 5rem;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+
+
+@media (max-width: 480px) {
+  .not-found-container {
+    width: 90%;
+    padding: 1.5rem;
+  }
+
+  .info h1 {
+    font-size: 4rem;
+  }
+
+  .info h2 {
+    font-size: 1.4rem;
+  }
+
+  p {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .btn-home, .btn-shop {
+    width: 100%;
+    padding: 10px 20px;
+    font-size: 0.95rem;
+  }
+
+  .leaf-decoration {
+    font-size: 2.5rem;
+    top: -10px;
+    right: 10px;
+  }
+
+  .plant-image {
+    max-width: 100%;
+    height: auto;
+  }
+}
