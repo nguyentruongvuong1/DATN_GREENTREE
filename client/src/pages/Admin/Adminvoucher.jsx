@@ -8,6 +8,7 @@ import { Menu, Search } from "lucide-react";
 
 const AdminVoucher = () => {
   const [vouchers, setVouchers] = useState([]);
+  const [allVc, setallVc] = useState([]); // Tất cả voucher để tìm kiếm
   const [formData, setFormData] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -15,6 +16,9 @@ const AdminVoucher = () => {
   const [itemsPerPage] = useState(8); // Số voucher mỗi trang
   const [totalVouchers, setTotalVouchers] = useState(0);
   const [sortOrder, setSortOrder] = useState("asc"); // Trạng thái sắp xếp (tăng dần hoặc giảm dần)
+  const [search, setsearch] = useState(''); // Trạng thái tìm kiếm
+  const [vcfilter, ganvcfilter] = useState([]) // Trạng thái tìm kiếm
+  
 
 
   useEffect(() => {
@@ -25,6 +29,7 @@ const AdminVoucher = () => {
         );
         setVouchers(response.data.vouchers || response.data);
         setTotalVouchers(response.data.total || response.data.length);
+        setallVc(response.data.vouchers || response.data); // gán allVc với dữ liệu voucher
       } catch (error) {
         console.error("Lỗi khi tải voucher:", error);
       }
@@ -32,6 +37,19 @@ const AdminVoucher = () => {
     fetchVouchers();
   }, [currentPage, itemsPerPage]);
 
+  const onchangeSearch = (e) => {
+    setsearch(e.target.value)
+  }
+
+  useEffect(() => {
+    if (search === '') {
+      ganvcfilter(vouchers)
+    } else {
+      const FilterVc = allVc.filter(vc => vc.code.toLowerCase().includes(search.toLowerCase()))
+      ganvcfilter(FilterVc)
+    }
+
+  }, [search, allVc, vouchers])
 
   const fetchVouchers = async () => {
     try {
@@ -58,11 +76,31 @@ const AdminVoucher = () => {
 
   const handleSave = async (e) => {
     e.preventDefault();
+
+    if (!formData.code || !formData.discount_type || isNaN(formData.discount_value) || isNaN(formData.quantity) || !formData.end_date || isNaN(formData.status)) {
+      alert("Vui lòng điền đầy đủ và đúng định dạng thông tin!");
+      return;
+    }
+
+    const preparedData = {
+      ...formData,
+      discount_value: Math.max(0, Number(formData.discount_value)),
+      quantity: Number(formData.quantity),
+      status: Number(formData.status),
+      start_date: formData.start_date?.trim()
+        ? `${formData.start_date} 00:00:00`
+        : moment().format("YYYY-MM-DD HH:mm:ss"),
+        end_date: formData.start_date?.trim()
+        ? `${formData.start_date} 00:00:00`
+        : moment().format("YYYY-MM-DD HH:mm:ss"),    };
+
+
+
     try {
       if (isEdit) {
-        await axios.put(`${import.meta.env.VITE_API_URL}/admin/voucher/${formData.id}`, formData);
+        await axios.put(`${import.meta.env.VITE_API_URL}/admin/voucher/${formData.id}`, preparedData);
       } else {
-        await axios.post("${import.meta.env.VITE_API_URL}/admin/voucher", formData);
+        await axios.post(`${import.meta.env.VITE_API_URL}/admin/voucher`, preparedData);
       }
       fetchVouchers();
       setShowForm(false);
@@ -70,6 +108,7 @@ const AdminVoucher = () => {
       console.error("Lỗi khi lưu voucher:", error);
     }
   };
+
 
   // const handlePageChange = (page) => {
   //   setCurrentPage(Math.max(1, page)); // Đảm bảo trang không nhỏ hơn 1
@@ -98,7 +137,12 @@ const AdminVoucher = () => {
         </div>
         <div className="search">
           <label>
-            <input type="text" placeholder="Tìm kiếm" />
+            <input
+              type="text"
+              value={search}
+              onChange={onchangeSearch} placeholder="Tìm kiếm..."
+
+            />
             <Search size={24} />
           </label>
         </div>
@@ -110,7 +154,7 @@ const AdminVoucher = () => {
         <div className="recentOrders">
           <div className="cardHeader">
             <h2>Quản Lý Mã Giảm Giá</h2>
-            <button className="buttonAdd" onClick={() => { setShowForm(true); setIsEdit(false); setFormData({ code: '', discount_type: 'fixed', discount_value: 0, quantity: 1, end_date: '', status: 1 }); }}>Thêm Voucher</button>
+            <button className="buttonAdd" onClick={() => { setShowForm(true); setIsEdit(false); setFormData({ code: '', discount_type: 'fixed', discount_value: '', quantity: '', start_date: '', end_date: '', status: 1 }); }}>Thêm Voucher</button>
           </div>
           <table>
             <thead>
@@ -123,14 +167,15 @@ const AdminVoucher = () => {
                 <th>Kiểu giảm</th>
                 <th>Giá trị</th>
                 <th>Đã sử dụng</th>
-                <th>Ngày tạo</th>
+                <th>Ngày bắt đầu</th>
                 <th>Ngày hết hạn</th>
                 <th>Trạng thái</th>
+                <th>Ngày tạo</th>
                 <th>Thao tác</th>
               </tr>
             </thead>
             <tbody>
-              {vouchers.map((voucher) => (
+              {vcfilter.map((voucher) => (
                 <tr key={voucher.id}>
                   <td>{voucher.id}</td>
                   <td>{voucher.code}</td>
@@ -141,6 +186,7 @@ const AdminVoucher = () => {
                   <td>{moment(voucher.start_date).format('DD-MM-YYYY')}</td>
                   <td>{moment(voucher.end_date).format('DD-MM-YYYY')}</td>
                   <td>{voucher.status === 1 ? "Hoạt động" : "Hết hạn"}</td>
+                  <td>{moment(voucher.created_at).format('DD-MM-YYYY')}</td>
                   <td>
                     <button onClick={() => { setShowForm(true); setIsEdit(true); setFormData(voucher); }}>Sửa</button>
                     <button onClick={() => handleDelete(voucher.id)}>Xóa</button>
@@ -190,9 +236,29 @@ const AdminVoucher = () => {
                     <option value="percent">Giảm phần trăm</option>
                   </select>
                   <label>Giá trị giảm:</label>
-                  <input type="number" value={formData.discount_value} onChange={(e) => setFormData({ ...formData, discount_value: Math.max(0, e.target.value) })} />
+                  <input
+                    type="number"
+                    value={formData.discount_value}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        discount_value: Math.max(0, Number(e.target.value)),
+                      })
+                    }
+                  />
                   <label>Số lượng:</label>
-                  <input type="number" value={formData.quantity} onChange={(e) => setFormData({ ...formData, quantity: Math.max(0, e.target.value) })} />
+                  <input
+                    type="number"
+                    value={formData.quantity}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        quantity: Math.max(0, Number(e.target.value)),
+                      })
+                    }
+                  />
+                  <label>Ngày bắt đầu:</label>
+                  <input type="date" value={formData.start_date} onChange={(e) => setFormData({ ...formData, start_date: e.target.value })} />
                   <label>Ngày hết hạn:</label>
                   <input type="date" value={formData.end_date} onChange={(e) => setFormData({ ...formData, end_date: e.target.value })} />
                   <label>Trạng thái:</label>

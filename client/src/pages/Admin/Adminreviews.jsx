@@ -13,6 +13,11 @@ const AdminReviews = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(8);
     const [totalReviews, setTotalReviews] = useState(0);
+
+    const [allRv, setallRv] = useState([]); // Tất cả để tìm kiếm
+    const [search, setsearch] = useState(''); // Trạng thái tìm kiếm
+    const [rvfilter, ganrvfilter] = useState([]) // Trạng thái tìm kiếm
+
     
     // const navigate = useNavigate();
     // const handleViewReview = (productId) => {
@@ -29,6 +34,7 @@ const AdminReviews = () => {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin/reviews?page=${currentPage}&limit=${itemsPerPage}`);
             setReviews(response.data.comments || response.data);
             setTotalReviews(response.data.total || response.data.length);
+            setallRv(response.data.comments || response.data); // gán allRv với dữ liệu reviews
             console.log(response.data);
 
         } catch (error) {
@@ -36,7 +42,19 @@ const AdminReviews = () => {
         }
     };
 
-    
+    const onchangeSearch = (e) => {
+        setsearch(e.target.value)
+    }
+
+    useEffect(() => {
+        if (search === '') {
+            ganrvfilter(reviews)
+        } else {
+            const FilterRv = allRv.filter(rv => rv.user_name.toLowerCase().includes(search.toLowerCase()))
+            ganrvfilter(FilterRv)
+        }
+
+    }, [search, allRv, reviews])
 
     const handlePageChange = (selectedItem) => {
         setCurrentPage(selectedItem.selected + 1);
@@ -50,8 +68,12 @@ const AdminReviews = () => {
                 </div>
                 <div className="search">
                     <label>
-                        <input type="text" placeholder="Tìm kiếm" />
-                        <Search size={24} />
+                    <input
+                            type="text"
+                            value={search}
+                            onChange={onchangeSearch} placeholder="Tìm kiếm..."
+
+                        />                        <Search size={24} />
                     </label>
                 </div>
                 <div className="user">
@@ -76,7 +98,7 @@ const AdminReviews = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {reviews.map((review) => (
+                            {rvfilter.map((review) => (
                                 <tr key={review.id}>
                                     <td>{review.id}</td>
                                     <td>{review.user_name}</td>

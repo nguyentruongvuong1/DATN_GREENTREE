@@ -33,6 +33,10 @@ export default function AdminOrder() {
 
   const [order_detail, setorder_detail] = useState([]);
 
+  const [allOdr, setallOdr] = useState([]); // Tất cả đơn hàng để tìm kiếm
+  const [search, setsearch] = useState(''); // Trạng thái tìm kiếm
+  const [odrfilter, ganodrfilter] = useState([]) // Trạng thái tìm kiếm
+
   const fecth_Ordetail = async (order_id) => {
     try {
       const res = await fetch(
@@ -55,6 +59,7 @@ export default function AdminOrder() {
       );
       setOrder(response.data.order || response.data);
       setTotalOrder(response.data.total || response.data.length);
+      setallOdr(response.data.order || response.data); // gán allOrder với dữ liệu đơn hàng
       console.log(response.data);
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu bình luận:", error);
@@ -64,6 +69,21 @@ export default function AdminOrder() {
   useEffect(() =>{
     fetchOrder()
   },[])
+
+  useEffect(() => {
+    if (search === '') {
+      ganodrfilter(order)
+    } else {
+      const FilterOdr = allOdr.filter(odr => odr.transaction_code.toLowerCase().includes(search.toLowerCase()))
+      ganodrfilter(FilterOdr)
+    }
+
+  }, [search, allOdr, order])
+
+  const onchangeSearch = (e) => {
+    setsearch(e.target.value)
+  }
+
 
   const handleStatusChange = async (orderId, currentStatus, newStatus) => {
     try {
@@ -97,8 +117,12 @@ export default function AdminOrder() {
         </div>
         <div className="search">
           <label>
-            <input type="text" placeholder="Tìm kiếm" />
-            <Search size={24} />
+          <input
+              type="text"
+              value={search}
+              onChange={onchangeSearch} placeholder="Tìm kiếm..."
+
+            />            <Search size={24} />
           </label>
         </div>
         <div className="user">
@@ -125,7 +149,7 @@ export default function AdminOrder() {
               </tr>
             </thead>
             <tbody>
-              {order.map((or, index) => (
+              {odrfilter.map((or, index) => (
                 <tr key={index}>
                   <td>{or.id}</td>
                   <td>{or.user_id}</td>

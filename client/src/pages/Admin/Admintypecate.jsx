@@ -19,6 +19,11 @@ const AdminTypecate = () => {
         content: "",
     });
 
+    const [search, setsearch] = useState(''); // Trạng thái tìm kiếm
+    const [tlfilter, gantlfilter] = useState([]) // Trạng thái tìm kiếm
+    const [allTl, setallTl] = useState([]); // Tất cả loại cây để tìm kiếm
+
+
     useEffect(() => {
         fetchTypecate();
     }, [currentPage]); // Không có setState trong cùng useEffect này
@@ -44,10 +49,25 @@ const AdminTypecate = () => {
             const response = await axios.get(`http://localhost:3000/adminc/typecate?page=${currentPage + 1}&limit=${itemsPerPage}`);
             setTypecate(response.data.typecates);
             setTotalItems(response.data.total);
+            setallTl(response.data.typecates); // gán allTl với dữ liệu loại cây
         } catch (error) {
             console.error("Lỗi khi lấy dữ liệu:", error);
         }
     };
+
+    const onchangeSearch = (e) => {
+        setsearch(e.target.value)
+    }
+
+    useEffect(() => {
+        if (search === '') {
+            gantlfilter(typecate)
+        } else {
+            const FilterTl = allTl.filter(tl => tl.name.toLowerCase().includes(search.toLowerCase()))
+            gantlfilter(FilterTl)
+        }
+
+    }, [search, allTl, typecate])
 
     const handleDelete = async (id) => {
         if (!window.confirm("Bạn có chắc muốn xóa không?")) return;
@@ -159,8 +179,12 @@ const AdminTypecate = () => {
                 </div>
                 <div className="search">
                     <label>
-                        <input type="text" placeholder="Tìm kiếm" />
-                        <Search size={24} />
+                    <input
+                            type="text"
+                            value={search}
+                            onChange={onchangeSearch} placeholder="Tìm kiếm..."
+
+                        />                        <Search size={24} />
                     </label>
                 </div>
                 <div className="user">
@@ -185,7 +209,7 @@ const AdminTypecate = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {typecate?.map((item, index) => (
+                            {tlfilter?.map((item, index) => (
                                 <tr key={item.id || index}>
                                     <td>{item.id}</td>
                                     <td>{item.name}</td>

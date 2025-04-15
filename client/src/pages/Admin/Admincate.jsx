@@ -10,7 +10,6 @@ const Admincate = () => {
   const [cate, setcates] = useState([]);
   const [editcate, setEditcate] = useState(null); // Lưu cate đang chỉnh sửa
   const [showAddForm, setShowAddForm] = useState(false); // Ẩn/hiện form
-  const [searchTerm, setSearchTerm] = useState('');
 
   const [newcate, setNewcate] = useState({
     name: "",
@@ -20,15 +19,35 @@ const Admincate = () => {
     image_content: null
   });
 
+  const [search, setsearch] = useState(''); // Trạng thái tìm kiếm
+  const [allCt, setallCt] = useState([]); // Tất cả cate để tìm kiếm
+  const [ctfilter, ganctfilter] = useState([]) // Trạng thái tìm kiếm
+
+
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_API_URL}/adminc/cate`)
       .then((response) => {
         setcates(response.data);
+        setallCt(response.data); // gán allCt với dữ liệu cate
       })
       .catch((error) => {
         console.error("Lỗi khi lấy dữ liệu:", error);
       });
   }, []);
+
+  const onchangeSearch = (e) => {
+    setsearch(e.target.value)
+  }
+
+  useEffect(() => {
+    if (search === '') {
+      ganctfilter(cate)
+    } else {
+      const FilterCt = allCt.filter(ct => ct.name.toLowerCase().includes(search.toLowerCase()))
+      ganctfilter(FilterCt)
+    }
+
+  }, [search, allCt, cate])
 
   const fetchcates = async () => {
     try {
@@ -39,16 +58,8 @@ const Admincate = () => {
     }
   };
 
-  useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      axios
-        .get(`${import.meta.env.VITE_API_URL}/adminc/cate?search=${encodeURIComponent(searchTerm)}`)
-        .then((res) => setcates(res.data))
-        .catch((err) => console.error("Lỗi tìm kiếm:", err));
-    }, 300); // debounce 300ms
-  
-    return () => clearTimeout(delayDebounce);
-  }, [searchTerm]);
+ 
+
   const handleDelete = async (id) => {
     if (!window.confirm("Bạn có chắc muốn xóa cate này không?")) return;
 
@@ -179,12 +190,12 @@ const Admincate = () => {
         </div>
         <div className="search">
   <label>
-    <input
-      type="text"
-      placeholder="Tìm kiếm"
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-    />
+  <input
+              type="text"
+              value={search}
+              onChange={onchangeSearch} placeholder="Tìm kiếm..."
+
+            />
     <Search size={24} />
   </label>
 </div>
@@ -213,7 +224,7 @@ const Admincate = () => {
               </tr>
             </thead>
             <tbody>
-              {cate.map((cate) => (
+              {ctfilter.map((cate) => (
                 <tr key={cate.id}>
                   <td>{cate.id}</td>
                   <td><img style={{ width: '50px', height: '50px' }} src={

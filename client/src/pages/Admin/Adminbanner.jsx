@@ -12,6 +12,11 @@ const AdminBanner = () => {
   const [itemsPerPage] = useState(8);
   const [totalBanners, setTotalBanners] = useState(0);
 
+  const [bnfilter, ganbnfilter] = useState([]) // Trạng thái tìm kiếm
+  const [allBn, setallBn] = useState([]); // Tất cả banner để tìm kiếm
+  const [search, setsearch] = useState(''); // Trạng thái tìm kiếm
+
+
   useEffect(() => {
     fetchBanners();
   }, [currentPage]);
@@ -23,10 +28,25 @@ const AdminBanner = () => {
       );
       setBanners(response.data.banners);
       setTotalBanners(response.data.total);
+      setallBn(response.data.banners); // gán allBn với dữ liệu banner
     } catch (error) {
       console.error("Lỗi khi tải banner:", error);
     }
   };
+
+  useEffect(() => {
+    if (search === '') {
+      ganbnfilter(banners)
+    } else {
+      const FilterBn = allBn.filter(bn => String(bn.id).toLowerCase().includes(search.toLowerCase()))
+      ganbnfilter(FilterBn)
+    }
+
+  }, [search, allBn, banners])
+
+  const onchangeSearch = (e) => {
+    setsearch(e.target.value)
+  }
 
   const handleDelete = async (id) => {
     if (!window.confirm("Bạn có chắc muốn xóa banner này không?")) return;
@@ -80,8 +100,12 @@ const AdminBanner = () => {
         </div>
         <div className="search">
           <label>
-            <input type="text" placeholder="Tìm kiếm" />
-            <ion-icon name="search-outline"></ion-icon>
+            <input
+              type="text"
+              value={search}
+              onChange={onchangeSearch} placeholder="Tìm kiếm..."
+
+            />            <ion-icon name="search-outline"></ion-icon>
           </label>
         </div>
         <div className="user">
@@ -116,13 +140,13 @@ const AdminBanner = () => {
               </tr>
             </thead>
             <tbody>
-              {banners.map((banner) => (
+              {bnfilter.map((banner) => (
                 <tr key={banner.id}>
                   <td>{banner.id}</td>
                   <td>
                     <img
                       src={
-                        banner.image 
+                        banner.image
                       }
                       alt="Banner"
                       style={{ width: "120px" }}
@@ -208,15 +232,15 @@ const AdminBanner = () => {
 
                   {formData.image && (
                     <img
-                    src={
-                      formData.image instanceof File
-                        ? URL.createObjectURL(formData.image)
-                        : `${import.meta.env.VITE_API_URL}/${formData.image}`
-                    }
-                    alt="Preview"
-                    style={{ width: "150px", marginTop: "10px" }}
-                  />
-                )}
+                      src={
+                        formData.image instanceof File
+                          ? URL.createObjectURL(formData.image)
+                          : `${import.meta.env.VITE_API_URL}/${formData.image}`
+                      }
+                      alt="Preview"
+                      style={{ width: "150px", marginTop: "10px" }}
+                    />
+                  )}
 
                   <button type="submit">Lưu</button>
                   <button

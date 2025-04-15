@@ -9,6 +9,11 @@ const AdminUser = () => {
     const [itemsPerPage] = useState(8);
     const [totalUsers, setTotalUsers] = useState(0);
 
+    const [usfilter, ganusfilter] = useState([]) // Trạng thái tìm kiếm
+    const [allUs, setallUs] = useState([]); // Tất cả để tìm kiếm
+    const [search, setsearch] = useState(''); // Trạng thái tìm kiếm
+
+
     useEffect(() => {
         fetchUsers();
     }, [currentPage, itemsPerPage]);
@@ -20,13 +25,26 @@ const AdminUser = () => {
             );
             setUsers(data.users || []);
             setTotalUsers(data.total || 0);
+            setallUs(data.users || []); // gán allUs với dữ liệu users
+
         } catch (error) {
             console.error("Lỗi khi lấy dữ liệu:", error);
         }
     };
 
+    const onchangeSearch = (e) => {
+        setsearch(e.target.value)
+    }
 
+    useEffect(() => {
+        if (search === '') {
+            ganusfilter(users)
+        } else {
+            const FilterUs = allUs.filter(us => us.username.toLowerCase().includes(search.toLowerCase()))
+            ganusfilter(FilterUs)
+        }
 
+    }, [search, allUs, users])
 
 
     const handlePageChange = (selectedItem) => {
@@ -52,8 +70,12 @@ const AdminUser = () => {
                 </div>
                 <div className="search">
                     <label>
-                        <input type="text" placeholder="Tìm kiếm" />
-                        <ion-icon name="search-outline"></ion-icon>
+                    <input
+                        type="text"
+                        value={search}
+                        onChange={onchangeSearch} placeholder="Tìm kiếm..."
+
+                    />                        <ion-icon name="search-outline"></ion-icon>
                     </label>
                 </div>
                 <div className="user">
@@ -85,7 +107,7 @@ const AdminUser = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {users.map((user) => (
+                            {usfilter.map((user) => (
                                 <tr key={user.id}>
                                     <td>{user.id}</td>
                                     <td>{user.username}</td>

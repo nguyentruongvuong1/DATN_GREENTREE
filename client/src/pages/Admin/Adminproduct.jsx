@@ -12,22 +12,41 @@ const AdminProduct = () => {
     const [itemsPerPage] = useState(8); // Số sản phẩm mỗi trang
     const [totalProducts, setTotalProducts] = useState(0);
 
+    const [allPr, setallPr] = useState([]); // Tất cả sản phẩm để tìm kiếm
+    const [search, setsearch] = useState(''); // Trạng thái tìm kiếm
+    const [prfilter, ganprfilter] = useState([]) // Trạng thái tìm kiếm
+    const [sortPr, SetsortPr] = useState("create_date");
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const products = await fetch(
-                    `${import.meta.env.VITE_API_URL}/adminpr/products?page=${currentPage}&limit=${itemsPerPage}`
+                    `${import.meta.env.VITE_API_URL}/adminpr/products?sort=${sortPr}&page=${currentPage}&limit=${itemsPerPage}`
                 );
                 const response = await products.json();
                 setProducts(response.products || response);
                 setTotalProducts(response.total || response.length);
+                setallPr(response.products || response); // gán allPr với dữ liệu sản phẩm
             } catch (error) {
                 console.error("Lỗi khi tải sản phẩm:", error);
             }
         };
         fetchData();
-    }, [currentPage, itemsPerPage]);
+    }, [currentPage, itemsPerPage, sortPr]);
+
+    useEffect(() => {
+        if (search === '') {
+            ganprfilter(products)
+        } else {
+            const FilterPr = allPr.filter(pr => pr.name.toLowerCase().includes(search.toLowerCase()))
+            ganprfilter(FilterPr)
+        }
+
+    }, [search, allPr, products])
+
+    const onchangeSearch = (e) => {
+        setsearch(e.target.value)
+    }
 
 
     const handlePageChange = (page) => {
@@ -36,16 +55,16 @@ const AdminProduct = () => {
 
     const handleDelete = async (id) => {
         if (!window.confirm("Bạn có chắc chắn muốn xóa sản phẩm này?")) return;
-            { 
-            try{
-                   await axios.delete(`${import.meta.env.VITE_API_URL}/adminpr/product/${id}`);
-                   alert("Xóa sản phẩm thành công!");
-                     setProducts(products.filter(product => product.id !== id));
-            }catch (error) {
+        {
+            try {
+                await axios.delete(`${import.meta.env.VITE_API_URL}/adminpr/product/${id}`);
+                alert("Xóa sản phẩm thành công!");
+                setProducts(products.filter(product => product.id !== id));
+            } catch (error) {
                 console.error("Lỗi khi xóa sản phẩm:", error);
             }
-           }
         }
+    }
 
 
 
@@ -59,8 +78,12 @@ const AdminProduct = () => {
                 </div>
                 <div className="search">
                     <label>
-                        <input type="text" placeholder="Tìm kiếm" />
-                        <Search size={24} />
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={onchangeSearch} placeholder="Tìm kiếm..."
+
+                        />                        <Search size={24} />
                     </label>
                 </div>
                 <div className="user">
@@ -71,8 +94,16 @@ const AdminProduct = () => {
                 <div className="recentOrders">
                     <div className="cardHeader">
                         <h2>Danh sách sản phẩm</h2>
-                        <button className="buttonAdd" onClick={() => navigate('/admin/addsp') }>Thêm Sản Phẩm</button>
+                        <button className="buttonAdd" onClick={() => navigate('/admin/addsp')}>Thêm Sản Phẩm</button>
                     </div>
+                    <div className="sxpr">
+                            <select onChange={(e) => SetsortPr(e.target.value)}>
+                                <option value="create_date">Sắp xếp theo sản phẩm mới nhất</option>
+                                <option value="price_asc">Sắp xếp theo giá tăng dần</option>
+                                <option value="price_desc">Sắp xếp theo giá giảm dần</option>
+                                <option value="view">Sắp xếp theo mức độ phổ biến</option>
+                            </select>
+                        </div>
                     <table>
                         <thead>
                             <tr>
@@ -94,7 +125,7 @@ const AdminProduct = () => {
                         </thead>
                         <tbody>
                             {products && products.length > 0 ? (
-                                products.map((product, index) => (
+                                prfilter.map((product, index) => (
                                     <tr key={`${product.id}-${index}`}>
                                         <td>{product.id}</td>
                                         <td>
@@ -108,13 +139,13 @@ const AdminProduct = () => {
                                         <td>{product.price}</td>
                                         <td>{product.sale}</td>
                                         <td>{product.price_sale}</td>
-                                   
+
                                         <td>{product.discription?.length > 30 ? product.discription.slice(0, 30) + '...' : product.discription}</td>
                                         <td>{product.inventory_quantity}</td>
                                         <td>{product.view}</td>
                                         <td>{moment(product.create_date).format('DD-MM-YYYY')}</td>
                                         <td>
-                                            <button onClick={() => {}}>Sửa</button>
+                                            <button onClick={() => { }}>Sửa</button>
                                             <button onClick={() => handleDelete(product.id)}>Xóa</button>
                                         </td>
                                     </tr>
@@ -150,7 +181,7 @@ const AdminProduct = () => {
                         </div>
                     )}
 
-                   
+
                 </div>
             </div>
         </div>

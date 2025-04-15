@@ -54,28 +54,39 @@ router.get("/vouchers", async (req, res) => {
 
 // API cập nhật voucher
 router.put('/voucher/:id', async (req, res) => {
-    const { id } = req.params;
-    const { code, discount_type, discount_value, quantity, end_date, status } = req.body;
+  const { id } = req.params;
+  const {
+    code,
+    discount_type,
+    discount_value,
+    quantity,
+    end_date,
+    start_date,
+    status
+  } = req.body;
 
-    try {
-        // Kiểm tra voucher có tồn tại không
-        const [rows] = await pool.query("SELECT * FROM voucher WHERE id = ?", [id]);
-        if (rows.length === 0) {
-            return res.status(404).json({ message: "Voucher không tồn tại" });
-        }
-
-        // Cập nhật voucher
-        const [updateResult] = await pool.query(
-            "UPDATE voucher SET code=?, discount_type=?, discount_value=?, quantity=?, end_date=?, status=? WHERE id=?",
-            [code, discount_type, discount_value, quantity, end_date, status, id]
-        );
-
-        res.json({ message: "Cập nhật voucher thành công!", affectedRows: updateResult.affectedRows });
-    } catch (err) {
-        console.error("Lỗi cập nhật voucher:", err);
-        res.status(500).json({ message: "Lỗi server", error: err });
+  try {
+    // Kiểm tra voucher có tồn tại không
+    const [rows] = await pool.query("SELECT * FROM voucher WHERE id = ?", [id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Voucher không tồn tại" });
     }
+
+    // Cập nhật voucher
+    const [updateResult] = await pool.query(
+      `UPDATE voucher
+       SET code=?, discount_type=?, discount_value=?, quantity=?, start_date=?, end_date=?, status=?
+       WHERE id=?`,
+      [code, discount_type, discount_value, quantity, start_date, end_date, status, id]
+    );
+
+    res.json({ message: "Cập nhật voucher thành công!", affectedRows: updateResult.affectedRows });
+  } catch (err) {
+    console.error("Lỗi cập nhật voucher:", err);
+    res.status(500).json({ message: "Lỗi server", error: err });
+  }
 });
+
 
 
 // API xóa voucher
@@ -101,17 +112,17 @@ router.delete('/voucher/:id', async (req, res) => {
 
 // API thêm voucher
 router.post('/voucher', async (req, res) => {
-    const { code, discount_type, discount_value, quantity, end_date, status } = req.body;
+  const { code, discount_type, discount_value, quantity, start_date, end_date, status } = req.body;
 
     // Kiểm tra dữ liệu đầu vào
-    if (!code || !discount_type || discount_value == null || quantity == null || !end_date || status == null) {
-        return res.status(400).json({ message: "Thiếu dữ liệu đầu vào!" });
+    if (!code || !discount_type || discount_value == null || quantity == null || start_date == null || !end_date || status == null) {
+      return res.status(400).json({ message: "Thiếu dữ liệu đầu vào!" });
     }
 
     const sql = "INSERT INTO voucher (code, discount_type, discount_value, quantity, end_date, status) VALUES (?, ?, ?, ?, ?, ?)";
 
     try {
-        const [result] = await pool.query(sql, [code, discount_type, discount_value, quantity, end_date, status]);
+      const [result] = await pool.query(sql, [code, discount_type, discount_value, quantity, start_date, end_date, status]);
 
         // Kiểm tra xem có thực sự thêm được dữ liệu không
         if (result.affectedRows === 0) {
@@ -402,6 +413,81 @@ router.put('/order_status/:id', async (req, res) => {
   }
 });
 
+// API DASHBOARD ------------------------------------------------------------------------------------------------------------------------------------------
+// API tổng số đơn hàng
+router.get('/dashboard/orders', async (req, res) => {
+  try {
+    const [[{ total }]] = await pool.query(`SELECT COUNT(*) AS total FROM \`order\``);
+    res.json({ total });
+  } catch (error) {
+    console.error("Lỗi khi lấy tổng số đơn hàng:", error);
+    res.status(500).json({ message: "Lỗi server", error: error.message });
+  }
+});
 
+// API tổng số người dùng
+router.get('/dashboard/users', async (req, res) => {
+  try {
+    const [[{ total }]] = await pool.query(`SELECT COUNT(*) AS total FROM \`user\``);
+    res.json({ total });
+  } catch (error) {
+    console.error("Lỗi khi lấy tổng số người dùng:", error);
+    res.status(500).json({ message: "Lỗi server", error: error.message });
+  }
+});
+
+// api người dùng mới
+router.get('/dashboard/users/new', async (req, res) => {
+  try {
+    const [[{ newUsers }]] = await pool.query(`
+      SELECT COUNT(*) AS newUsers
+      FROM user
+      WHERE DATE(create_date) = CURDATE()
+    `);
+    res.json({ newUsers });
+  } catch (error) {
+    console.error("Lỗi khi lấy người dùng mới:", error);
+    res.status(500).json({ message: "Lỗi server", error: error.message });
+  }
+});
+
+
+// API tổng doanh thu theo ngày, tuần, tháng và tổng doanh thu
+router.get('/dashboard/revenue/all', async (req, res) => {
+
+  try {
+    const [[{ revenueDay }]] = await pool.query(`
+      SELECT SUM(total) AS revenueDay
+      FROM order_detail
+      WHERE DATE(create_at) = CURDATE()
+    `);
+
+    const [[{ revenueWeek }]] = await pool.query(`
+      SELECT SUM(total) AS revenueWeek
+      FROM order_detail
+      WHERE YEARWEEK(create_at, 1) = YEARWEEK(CURDATE(), 1)
+    `);
+
+    const [[{ revenueMonth }]] = await pool.query(`
+      SELECT SUM(total) AS revenueMonth
+      FROM order_detail
+      WHERE MONTH(create_at) = MONTH(CURDATE()) AND YEAR(create_at) = YEAR(CURDATE())
+    `);
+
+    const [[{ totalRevenue }]] = await pool.query(`
+      SELECT SUM(total) AS totalRevenue FROM order_detail
+    `);
+
+    res.json({
+      revenueDay: revenueDay || 0,
+      revenueWeek: revenueWeek || 0,
+      revenueMonth: revenueMonth || 0,
+      totalRevenue: totalRevenue || 0,
+    });
+  } catch (error) {
+    console.error("Lỗi khi lấy doanh thu tổng hợp:", error);
+    res.status(500).json({ message: "Lỗi server", error: error.message });
+  }
+});
 
 module.exports = router;
