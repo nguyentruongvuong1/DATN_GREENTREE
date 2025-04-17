@@ -18,11 +18,11 @@ function Checkpayment(){
                 const res = await axios.get(`http://localhost:3000/payment/check_payment?${searchParams.toString()}`);
                 if(res.data.success){
                     setstatus('success')
-                  message.success(`Chúc mừng bạn đã thanh toán thành công đơn hàng ${res.data.orderId}`)
+                     message.success("Đặt hàng thành công, vui lòng kiểm tra email để biết thêm thông tin");
                     dispatch(XoaGH())
                     setTimeout(() =>{
                         navigate('/')
-                    }, 2000)
+                    }, 1000)
 
                   }  else{
                     setstatus('fail');

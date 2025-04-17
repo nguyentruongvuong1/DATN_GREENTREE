@@ -195,14 +195,14 @@ router.post("/checkout", async (req, res) => {
 
       res.status(200).json({
         success: true,
-        order_id: orderId,
+        order_id: id,
         message: "Đơn hàng đã được tạo thành công",
       });
     }
 
     if (payment_method === 2) {
       try {
-        await connection.beginTransaction(); // 💥 Bắt đầu transaction
+        // await connection.beginTransaction(); // 💥 Bắt đầu transaction
 
         // 1. Tạo đơn hàng chính
         const [orderResult] = await connection.query(
@@ -456,6 +456,81 @@ router.get("/check_payment", async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Lỗi hệ thống khi xử lý thanh toán",
+      error: error.message,
+    });
+  } finally {
+    connection.release();
+  }
+});
+
+
+// Hủy đơn hàng
+router.post("/cancel_order", async (req, res) => {
+  const { order_id, user_id } = req.body;
+  const connection = await pool.getConnection();
+
+  try {
+    await connection.beginTransaction();
+
+    // 1. Lấy toàn bộ sản phẩm trong đơn hàng
+    const [items] = await connection.query(
+      `SELECT pr_id, quantity, price, total FROM order_detail WHERE order_id = ?`,
+      [order_id]
+    );
+
+    // 2. Khôi phục kho và tính tổng
+    let totalOrderValue = 0;
+    let totalItemsCount = 0;
+
+    for (const item of items) {
+      // Khôi phục số lượng tồn kho
+      await connection.query(
+        `UPDATE product SET inventory_quantity = inventory_quantity + ? WHERE id = ?`,
+        [item.quantity, item.pr_id]
+      );
+
+      // Tính tổng giá trị đơn hàng (sử dụng total từ DB để đảm bảo chính xác)
+      totalOrderValue += item.total;
+      totalItemsCount += item.quantity;
+    }
+
+    // 3. Cập nhật thông tin user
+    await connection.query(
+      `UPDATE user SET 
+        quantity_pr_buy = quantity_pr_buy - ?,
+        total_buy = total_buy - ?
+       WHERE id = ?`,
+      [totalItemsCount, totalOrderValue, user_id]
+    );
+
+    // 4. Xóa chi tiết đơn hàng
+    await connection.query(
+      `DELETE FROM order_detail WHERE order_id = ?`,
+      [order_id]
+    );
+
+    // 5. Xóa đơn hàng chính
+    await connection.query(
+      `DELETE FROM \`order\` WHERE id = ?`,
+      [order_id]
+    );
+
+    await connection.commit();
+
+    res.json({
+      success: true,
+      message: "Đơn hàng đã được hủy thành công",
+      order_id: order_id,
+      total_refund: totalOrderValue,
+      items_refunded: totalItemsCount
+    });
+
+  } catch (error) {
+    await connection.rollback();
+    console.error("Lỗi khi hủy đơn hàng:", error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi hệ thống khi xử lý hủy đơn hàng",
       error: error.message,
     });
   } finally {

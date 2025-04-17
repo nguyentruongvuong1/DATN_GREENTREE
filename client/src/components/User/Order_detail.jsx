@@ -10,6 +10,7 @@ export default function Orderdetail() {
   const navigate = useNavigate();
   const [orderInfo, setOrderInfo] = useState(null);
   const [orderItems, setOrderItems] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
 
   const statusMap = {
     1: "Chờ xác nhận",
@@ -31,7 +32,9 @@ export default function Orderdetail() {
         const data = await res.json();
         setOrderInfo(data.order);
         setOrderItems(data.items);
-        console.log(data);
+
+        const total = data.items.reduce((sum, item) => sum + item.total, 0)
+        setTotalPrice(total);
       } catch (error) {
         console.error("Lỗi khi tải thông tin đơn hàng:", error);
       }
@@ -124,14 +127,14 @@ export default function Orderdetail() {
                 <tr key={index}>
                     <td>{index + 1}</td>
                     <td>{item.product_name}</td>
-                    <td>{item.price}</td>
+                    <td>{Number(item.price).toLocaleString('vi')}</td>
                     <td>{item.quantity}</td>
-                    <td>{item.total}</td>
+                    <td>{Number(item.total).toLocaleString('vi')}</td>
                 </tr>
             ))}
           </tbody>
           <tfoot>
-            <tr>
+            {/* <tr>
               <td colSpan="4" className={styles.textRight}>
                 Tạm tính:
               </td>
@@ -148,12 +151,12 @@ export default function Orderdetail() {
                 Giảm giá:
               </td>
               <td>-</td>
-            </tr>
+            </tr> */}
             <tr className={styles.totalRow}>
               <td colSpan="4" className={styles.textRight}>
                 Tổng cộng:
               </td>
-              <td></td>
+              <td>{Number(totalPrice).toLocaleString('vi')} VNĐ</td>
             </tr>
           </tfoot>
         </table>
@@ -162,11 +165,13 @@ export default function Orderdetail() {
       <div className={styles.invoiceFooter}>
         <div className={styles.thankYou}>
           <p>
-            Cảm ơn quý khách đã mua hàng tại <strong>Cây cảnh XYZ</strong>!
+            Cảm ơn quý khách đã mua hàng tại <strong>GREEN TREE SHOP</strong>!
           </p>
           <p>
-            Mọi thắc mắc xin liên hệ hotline: <strong>1900 1234</strong> hoặc
-            email: <strong>support@caycanhxyz.com</strong>
+            Mọi thắc mắc xin liên hệ hotline: <strong>0364185395</strong> 
+          </p>
+          <p>
+            Email: <strong>greentreshop@gmail.com</strong>
           </p>
         </div>
         <div className={styles.actions}>
