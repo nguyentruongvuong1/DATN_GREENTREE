@@ -259,7 +259,9 @@
   .forgot-container button:hover {
     background: #45a049;
   }
-
+  .menu-item a {
+    text-decoration: none;
+  }
 
   
 
@@ -272,5 +274,8 @@
     
     .sidebar {
         width: 100%;
+    }
+    .menu-item{
+        font-size:30px;
     }
 }
