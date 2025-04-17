@@ -77,7 +77,7 @@ position: relative;
 }
 
 .Prdanhmuc_select div select{
-    height: 40px;
+    height: 40px;   
     font-size: 14px;
     padding: 0 10px;
 }
@@ -701,10 +701,21 @@ input[type="range"] {
         display: none; /* Ẩn gạch chân ngang nếu không phù hợp với thiết kế nhỏ */
     }
 
+    
+
     .Prdanhmuc_select {
         flex-direction: column;
+        align-items: center; /* Canh giữa theo chiều ngang */
         gap: 10px;
+    
+        }
+
+    .Prdanhmuc_select div select {
+        width: 100%; /* Hoặc giá trị cố định như 250px */
+        border:solid 1px black;
+        border-radius:2px;
     }
+
 
     .containernav {
         flex-direction: column;
@@ -736,25 +747,28 @@ input[type="range"] {
         
       }
         .pr_xemchitiet button a {
-          font-size: 12px;
+          font-size: 10px;
           line-height:16px;
          
       }
-      .pr_xemchitiet button,
-      .pr_themvaogio button {
-        width:80px;
-      height:30px;
-        font-size: 12px;
-        border-radius: 40px;
-      }
-     .pr_themvaogio button{
-      font-size:12px;
-      line-height:16px;
-     }
-      .product_info p {
-        font-size: 13px;
-      }
-    
+      .btnxct {
+        font-size: 10px;
+        line-height:16px;
+         ;
+    }
+    .pr_xemchitiet button,
+    .pr_themvaogio button {
+      width:85px;
+       
+    height:30px;
+      font-size: 10px;
+      border-radius: 40px;
+    }
+   .pr_themvaogio button{
+    font-size:10px;
+    line-height:16px;
+    width:85px;
+   }
 
     .product_img{
         height:auto;

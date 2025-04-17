@@ -1,0 +1,220 @@
+/* Reset và font chữ */
+.invoiceContainer {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 30px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+/* Header hóa đơn */
+.invoiceHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo h1 {
+    color: #2e7d32;
+    font-size: 24px;
+}
+
+.invoiceInfo h2 {
+    color: #2e7d32;
+    font-size: 24px;
+    margin-bottom: 10px;
+    text-align: right;
+}
+
+.invoiceInfo p {
+    text-align: right;
+    color: #666;
+    margin: 0;
+}
+
+/* Thông tin khách hàng */
+.customerInfo {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 5px;
+}
+
+.shippingInfo, .paymentInfo {
+    flex: 1;
+    padding: 0 15px;
+}
+
+.shippingInfo h3, .paymentInfo h3 {
+    color: #2e7d32;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.shippingInfo p, .paymentInfo p {
+    margin-bottom: 8px;
+}
+
+/* Trạng thái thanh toán */
+.status {
+    font-weight: bold;
+}
+
+.statusPending {
+    color: #ff9800;
+}
+
+.statusCompleted {
+    color: #4caf50;
+}
+
+.statusCancelled {
+    color: #f44336;
+}
+
+/* Chi tiết đơn hàng */
+.orderDetails {
+    margin-bottom: 30px;
+}
+
+.orderDetails table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.orderDetails th, .orderDetails td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.orderDetails th {
+    background-color: #2e7d32;
+    color: white;
+}
+
+.orderDetails tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.orderDetails tr:hover {
+    background-color: #f1f1f1;
+}
+
+.textRight {
+    text-align: right !important;
+}
+
+.totalRow {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.totalRow td {
+    border-top: 2px solid #2e7d32;
+}
+
+/* Footer hóa đơn */
+.invoiceFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.thankYou {
+    flex: 2;
+    color: #666;
+}
+
+.thankYou p {
+    margin-bottom: 5px;
+}
+
+.actions {
+    flex: 1;
+    text-align: right;
+}
+
+.btn {
+    padding: 10px 15px;
+    margin-left: 10px;
+    background: #2e7d32;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background: #1b5e20;
+}
+
+.loading {
+    text-align: center;
+    padding: 50px;
+    font-size: 18px;
+    color: #2e7d32;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .invoiceHeader, .customerInfo, .invoiceFooter {
+        flex-direction: column;
+    }
+    
+    .logo, .invoiceInfo {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    .invoiceInfo h2, .invoiceInfo p {
+        text-align: center;
+    }
+    
+    .shippingInfo, .paymentInfo {
+        padding: 0;
+        margin-bottom: 20px;
+    }
+    
+    .actions {
+        margin-top: 20px;
+        text-align: center;
+    }
+    
+    .btn {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+    }
+}
+
+@media print {
+    body {
+        background: none;
+        padding: 0;
+    }
+    
+    .invoiceContainer {
+        box-shadow: none;
+        padding: 0;
+    }
+    
+    .actions {
+        display: none;
+    }
+}

@@ -30,6 +30,7 @@
 }
 .odau{
     width:60%;
+  
 }
 .odau img{
     margin-bottom:20px;
@@ -40,7 +41,7 @@
     margin-right:10px;
 }
 .ocuoi{
-    margin-left:20px;
+    margin-left:10px;
     width:60%;
     font-size:20px;
     line-height:30px;
@@ -628,40 +629,45 @@ top: 4px;
 
 @media (max-width: 480px) {
     .odau img{
-        width: 150px;
-        height:150px;
+      width:370px;
+      height:370px;
     }
         .odau .abc img{
-            width: 60px;
-            height: 60px;        
+            width: 80px;
+            height: 80px;        
             margin-left:4px;
         }
         .odau{
             width:150px;
+            
         }
         .abc{
            gap:10px;
+           display: flex;;
         }
         .cay b{
-            font-size:16px;
+            font-size:24px;
         }
         .masp{
-            font-size:16px;
+            font-size:20px;
         }
         .gia p{
-            font-size:16px;
+            font-size:20px;
         }
         .mota p{
-            font-size:16px;
+            font-size:20px;
         }
         .trangthai p{
-            font-size:16px;
+            font-size:20px;
         }
         .ocuoi{
-        width:200px;
+        width:350px;
+        }
+        P strong{
+            font-size:20px;
         }
         .dongmota p{
-            display: none;
+            font-size:18px;
         }
         .rate, .trangthai, .mota, .dongmota, .loiich, .sku, .categories, .returnpolicytext{
             font-size:16px;
@@ -670,11 +676,15 @@ top: 4px;
             .categories a{
                 line-height: 25px;
               font-size:16px;
+              color:grey;
             }
+           
             .returnpolicytext strong{
                 font-size:16px;
             }
-            
+            .return-policy-text p{
+                font-size:18px
+            }
         
        
             .dgsp h3{
@@ -752,20 +762,22 @@ top: 4px;
         
       }
       .btnxct {
-          font-size: 12px;
+          font-size: 10px;
           line-height:16px;
-         
+           
       }
       .pr_xemchitiet button,
       .pr_themvaogio button {
-        width:80px;
+        width:85px;
+         
       height:30px;
-        font-size: 12px;
+        font-size: 10px;
         border-radius: 40px;
       }
      .pr_themvaogio button{
-      font-size:12px;
+      font-size:10px;
       line-height:16px;
+      width:85px;
      }
       .product_info p {
         font-size: 13px;
@@ -798,7 +810,7 @@ top: 4px;
 
     }
     .btn-cart{
-        font-size:12px;
+        font-size:20px;
         
     }
     .reviewNotice a{
@@ -808,5 +820,8 @@ top: 4px;
     }
     .reviewNotice a:hover{
         color:gray;
+    }
+    .oo{
+        display: block;
     }
 }

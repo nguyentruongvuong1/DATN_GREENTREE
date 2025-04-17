@@ -13,6 +13,15 @@ export default function Payment() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
+  useEffect(() => {
+     if (cartItems.length === 0) {
+      message.error("Giỏ hàng trống, vui lòng thêm sản phẩm trước khi thanh toán");
+      navigate('/');
+    }else if (!user?.id) {
+      message.error("Vui lòng đăng nhập trước khi thanh toán");
+      navigate('/dangnhap');
+    } 
+  }, [user, cartItems, navigate]);
 
   const [paymentMethod, setPaymentMethod] = useState("cash_on_delivery");
   const [formData, setFormData] = useState({
@@ -118,34 +127,30 @@ export default function Payment() {
           },
           body: JSON.stringify(orderPayload),
         });
+
         const result = await response.json();
 
         if (response.ok) {
+          
           if(paymentMethod === "online_payment") {
             if(result?.paymentUrl){
               window.location.href = result.paymentUrl;
-            }else if(result.succsess){
-              alert("Đặt hàng thành công!");
-              dispatch(XoaGH());
-              return <Navigate to={`/payment/success?orderId=${result.orderId}`} />;
             }
             else{
               throw new Error("Không nhận được link thanh toán từ VNPAY");
             }
-          }else
-          return
+          }else if(paymentMethod === "cash_on_delivery"){
+            message.success("Đặt hàng thành công, vui lòng kiểm tra email để biết thêm thông tin");
+            setTimeout(() => {
+            navigate("/");
+            dispatch(XoaGH());
+            }, 2000);
+          }
+          else {
+            throw new Error("Không nhận được phản hồi từ máy chủ");
+          }
         
         } 
-
-        if (paymentMethod === "cash_on_delivery") {
-          dispatch(XoaGH());
-          alert("Đặt hàng thành công! Cảm ơn bạn đã mua hàng.");
-        }
-      
-      
-
-      
-
     } catch (error) {
       console.error("Checkout error:", error);
       alert(error.message);
@@ -160,8 +165,7 @@ export default function Payment() {
  
 
   return (
-    <>
-    { user?.id && cartItems.length > 0 ?(
+   
         <div className={styles.container}>
         <div className={styles.title}>
       <h2>THANH TOÁN</h2>
@@ -288,16 +292,6 @@ export default function Payment() {
         </div>
       </div>
     </div>
-    ) :  cartItems.length === 0 ?(
-        message.error("Giỏ hàng trống vui lòng thêm sản phẩm trước khi thanh toán") ,
-        navigate('/')
-     
-    ) :(
-        message.error("Vui lòng đăng nhập trước khi thanh toán") ,
-        navigate('/dangnhap')
-
-    )
-    }
-    </>
+    
   );
 }

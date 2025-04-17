@@ -177,8 +177,8 @@ export default function Register() {
             </button>
           </form>
           
-          <p className={styles.login_link}>
-            Bạn đã có tài khoản? <Link to="/dangnhap">Đăng nhập</Link>
+          <p className={styles.linkdk}>
+            Bạn đã có tài khoản? <Link to="/dangnhap">Đăng nhập.</Link>
           </p>
         </div>
       </div>

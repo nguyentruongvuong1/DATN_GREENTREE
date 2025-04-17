@@ -77,8 +77,11 @@ export default function FormLogin(){
                 </div>
                 <button type="button" onClick={() => Login()} className={styles.btn}>Đăng Nhập</button>
             </form>
-            <Link to={'/reset_pass'}>Quên mật khẩu</Link>
-            <p>Chưa có tài khoản? <a href="/dangky" >Đăng ký ngay</a></p>
+            <div className={styles.resetpass}>
+            <Link to={'/reset_pass'}  >Quên mật khẩu?</Link> 
+            </div>
+            <p className={styles.linkdk}>Chưa có tài khoản? <Link to={"/dangky"} >Đăng ký ngay.</Link></p>
+
         </div>
     </div>
     </section>
