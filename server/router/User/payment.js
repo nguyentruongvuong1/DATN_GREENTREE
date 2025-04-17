@@ -95,7 +95,7 @@ router.post("/checkout", async (req, res) => {
     const {
       id,
       user_id,
-      order_status = 1, // Mặc định là chờ xử lý
+      order_status, 
       transaction_status,
       payment_method,
       customer_info,
@@ -108,8 +108,8 @@ router.post("/checkout", async (req, res) => {
       // 1. Tạo đơn hàng chính
       const [orderResult] = await connection.query(
         `INSERT INTO \`order\` 
-    (id, user_id, name, phone,address, note, voucher_id, order_status, transaction_status, payment_method) 
-    VALUES (?, ?, ?, ?, ?, ?, NULL, ?, ?, ?)`,
+    (id, user_id, name, phone,address, note, voucher_id, order_status, transaction_status, payment_method, total_amount) 
+    VALUES (?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)`,
         [
           id,
           user_id,
@@ -117,9 +117,10 @@ router.post("/checkout", async (req, res) => {
           customer_info.phone,
           customer_info.address,
           customer_info.note,
-          order_status,
+          1,
           transaction_status,
           payment_method,
+          total_amount
         ]
       );
 
@@ -157,12 +158,13 @@ router.post("/checkout", async (req, res) => {
       // 3. Cập nhật thông tin người dùng nếu có user_id
       if (user_id) {
         console.log("Cập nhật thông tin người dùng:", user_id);
+        const totalQuantity = items.reduce((sum, item) => sum + item.quantity, 0);
         await connection.query(
           `UPDATE user 
             SET quantity_pr_buy = quantity_pr_buy + ?, 
                 total_buy = total_buy + ?
             WHERE id = ?`,
-          [items.length, total_amount, user_id]
+          [totalQuantity, total_amount, user_id]
         );
       }
 
@@ -207,8 +209,8 @@ router.post("/checkout", async (req, res) => {
         // 1. Tạo đơn hàng chính
         const [orderResult] = await connection.query(
           `INSERT INTO \`order\` 
-            (id, user_id, name, phone, address, note, voucher_id, order_status, transaction_status, transaction_code, payment_method) 
-            VALUES (?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)`,
+            (id, user_id, name, phone, address, note, voucher_id, order_status, transaction_status, transaction_code, payment_method, total_amount) 
+            VALUES (?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)`,
           [
             id,
             user_id,
@@ -216,10 +218,11 @@ router.post("/checkout", async (req, res) => {
             customer_info.phone,
             customer_info.address,
             customer_info.note,
-            0, // chờ thanh toán
-            0, // chưa thanh toán
+            order_status, 
+            0, 
             transaction_code,
             payment_method,
+            total_amount
           ]
         );
 
@@ -228,7 +231,7 @@ router.post("/checkout", async (req, res) => {
           item.pr_id,
           item.quantity,
           item.price,
-          item.total,
+          item.total
         ]);
 
         await connection.query(
@@ -375,9 +378,8 @@ router.get("/check_payment", async (req, res) => {
       // 3. CẬP NHẬT THỐNG KÊ NGƯỜI DÙNG (PHẦN BỔ SUNG)
       // Lấy thông tin user_id và tổng tiền từ đơn hàng
       const [orderInfo] = await connection.query(
-        `SELECT user_id, (SELECT SUM(total) FROM order_detail WHERE order_id = ?) as total_amount 
-           FROM \`order\` WHERE id = ?`,
-        [orderId, orderId]
+        `SELECT user_id, total_amount FROM \`order\` WHERE id = ?`,
+        [orderId]
       );
 
       if (orderInfo[0].user_id) {
@@ -478,8 +480,14 @@ router.post("/cancel_order", async (req, res) => {
       [order_id]
     );
 
+    // Lấy total_amount với cú pháp đúng
+    const [orderData] = await connection.query(
+      `SELECT total_amount FROM \`order\` WHERE id = ? LIMIT 1`,
+      [order_id]
+    );
+    const total_amount = orderData[0]?.total_amount || 0;
+
     // 2. Khôi phục kho và tính tổng
-    let totalOrderValue = 0;
     let totalItemsCount = 0;
 
     for (const item of items) {
@@ -489,18 +497,17 @@ router.post("/cancel_order", async (req, res) => {
         [item.quantity, item.pr_id]
       );
 
-      // Tính tổng giá trị đơn hàng (sử dụng total từ DB để đảm bảo chính xác)
-      totalOrderValue += item.total;
+      // Tính tổng số lượng sản phẩm
       totalItemsCount += item.quantity;
     }
 
-    // 3. Cập nhật thông tin user
+    // 3. Cập nhật thông tin user - SỬA LỖI Ở ĐÂY
     await connection.query(
       `UPDATE user SET 
         quantity_pr_buy = quantity_pr_buy - ?,
         total_buy = total_buy - ?
        WHERE id = ?`,
-      [totalItemsCount, totalOrderValue, user_id]
+      [totalItemsCount, total_amount, user_id]
     );
 
     // 4. Xóa chi tiết đơn hàng
@@ -521,7 +528,7 @@ router.post("/cancel_order", async (req, res) => {
       success: true,
       message: "Đơn hàng đã được hủy thành công",
       order_id: order_id,
-      total_refund: totalOrderValue,
+      total_refund: total_amount,
       items_refunded: totalItemsCount
     });
 

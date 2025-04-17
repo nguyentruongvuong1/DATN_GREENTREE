@@ -94,24 +94,44 @@
   
   .payment input[type="radio"] {
     appearance: none;
-    width: 16px;
-    height: 16px;
-    border: 2px solid #666;
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid #666;
     border-radius: 50%;
-    margin-right: 10px;
+    margin-right: 8px;
     position: relative;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.15s ease;
+    vertical-align: middle;
   }
   
-  .payment input[type="radio"]:checked::before {
+  .payment input[type="radio"]:checked {
+    border-color: #224229;
+  }
+  
+  .payment input[type="radio"]:checked::after {
     content: "";
     position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 8px;
-    height: 8px;
-    background-color: #666;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 7px;
+    height: 7px;
+    background-color: #224229;
     border-radius: 50%;
   }
+  
+  .payment input[type="radio"]:hover {
+    border-color: #224229;
+  }
+  
+  .payment-method p{
+    margin: 0;
+    font-size: 16px;
+  }
+ 
   
 .payment .note {
     font-size: 12px;

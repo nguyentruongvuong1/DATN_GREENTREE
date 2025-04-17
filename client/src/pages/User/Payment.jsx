@@ -102,21 +102,21 @@ export default function Payment() {
       const orderPayload = {
         id: OrderId(),
         user_id: user?.id || null,
-        order_status: 1,
+        order_status: 0,
         transaction_status: paymentMethod === "cash_on_delivery" ? 1 : 2,
         payment_method: paymentMethod === "cash_on_delivery" ? 1 : 2,
         transaction_code:
           paymentMethod === "online_payment" ? generateTransactionCode() : null,
         customer_info: formData,
+        total_amount: grandTotal,
         items: cartItems.map((item) => ({
           pr_id: item.id,
           quantity: item.so_luong,
           price: item.price_sale > 0 ? item.price_sale : item.price,
           total:
             (item.price_sale > 0 ? item.price_sale : item.price) *
-            item.so_luong,
+            item.so_luong,   
         })),
-        total_amount: grandTotal,
       };
 
       
@@ -144,7 +144,7 @@ export default function Payment() {
             setTimeout(() => {
             navigate("/");
             dispatch(XoaGH());
-            }, 2000);
+            }, 3000);
           }
           else {
             throw new Error("Không nhận được phản hồi từ máy chủ");
@@ -252,7 +252,7 @@ export default function Payment() {
                 checked={paymentMethod === "cash_on_delivery"}
                 onChange={handlePaymentMethodChange}
               />
-                <strong>Thanh toán khi nhận hàng (COD)</strong>
+                <p>Thanh toán khi nhận hàng (COD)</p>
             </label>
 
             <label className={styles["payment-method"]}>
@@ -263,7 +263,7 @@ export default function Payment() {
                 checked={paymentMethod === "online_payment"}
                 onChange={handlePaymentMethodChange}
               />
-                <strong>Thanh toán online</strong>
+                <p>Thanh toán bằng VNPAYS</p>
             </label>
           </div>
 
