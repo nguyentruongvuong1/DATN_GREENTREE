@@ -215,7 +215,7 @@ h1{
 
 .giohang p{
     position: absolute;
-    top: -20px; 
+    top: 0px; 
     right: -10px; 
     background-color: #00791C;
     color: white;
@@ -339,7 +339,7 @@ font-size: 14px;
     display: flex;
   }
   .searchicon_icon{
-    color: #ccc;
+    color: white;
     font-size: 18px;
     position: absolute;
     right: 0%;
@@ -366,13 +366,13 @@ font-size: 14px;
     padding: 8px;
     border-radius: 50px;
     outline: none;
-    color: #ccc;
+    color: white;
     border-style: none;
     font-size: 20px;
   }
 
   .searchInput::placeholder {
-    color: #ccc;
+    color: white;
 
     font-size: 20px;
   }
@@ -582,20 +582,16 @@ a img{
       }
       .giohang{
           margin-left:20px;
-          margin-bottom:20px;
+          margin-bottom: 30px;
       }
+     
+
       .giohang p{
-        top:-10px;
-        right: -15px;
+          top: 15px;
       }
 
 
 
-
-
-      .user{
-
-      }
   }
 
 

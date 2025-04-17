@@ -13,7 +13,7 @@
     justify-content: center;
     align-items: center;
     background-color: #f5f5f5;
-    padding: 50px 0;
+    padding: 30px 0;
 }
 
 .container_form_login {
@@ -48,11 +48,11 @@ border-bottom: 2px solid #224229;
 
 
 
-h2 {
-color: #224229;
-margin-bottom: 15px;
-font-size: 30px;
 
+.container_form_login h2{
+    color: #224229;
+    margin-bottom: 15px;
+    font-size: 30px;
 }
 
 .input-group {
@@ -77,20 +77,7 @@ height: 20px;
 }
 
 
-p {
-font-size: 14px;
-margin-top: 20px;
-margin-bottom: 0;
-}
 
-p a {
-color: #224229;
-text-decoration: none;
-}
-
-p a:hover {
-text-decoration: underline;
-}
 
 .btn{
     background-color: #224229;
@@ -105,5 +92,77 @@ border-radius: 5px;
 
 .btn:hover{
     background-color: #00791C;
+
+}
+
+
+.resetpass {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+}
+
+.resetpass a{
+    text-decoration: none;
+    font-style: italic;
+    color: #224229;
+
+
+}
+
+.resetpass p{
+    font-size: 16px;
+    margin: 0;
+}
+
+.resetpass a:hover{
+    color: #00791C;
+
+}
+
+.linkdk{
+    margin: 0;
+}
+
+.linkdk a{
+    text-decoration: none;
+    font-style: italic;
+    color: #224229;
+}
+
+.linkdk a:hover{
+    color: #00791C;
+
+}
+
+@media only screen and (max-width: 480px) {
+
+    .Form_login{
+        padding: 20px 10px;
+    }
+
+    .tabs a {
+        cursor: pointer;
+        padding: 5px;
+        color: gray;
+        font-size: 18px;
+        text-decoration: none;
+        height: 50px;
+        line-height: 50px;
+        }
+
+    .linkdk a{
+        font-size: 16px;
+        height: 30px;
+        line-height: 30px;
+    }
+
+  
+
+    .resetpass a{
+        font-size: 16px;
+        height: 30px;
+        line-height: 30px;
+    }
 
 }

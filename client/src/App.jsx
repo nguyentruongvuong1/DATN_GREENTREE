@@ -20,6 +20,7 @@ import Checkpayment from "./pages/User/checkpayment";
 import OrderUser from "./pages/User/OrderUser";
 import ChangePass from "./pages/User/ChangePass";
 import ChangePassnologin from "./components/User/ChangePassnologin";
+import Orderdetail from "./components/User/Order_detail";
 
 
 import AdminVoucher from "./pages/Admin/Adminvoucher";
@@ -56,6 +57,7 @@ function App() {
           <Route path="/lienhe" element={<Lienhe />} />
           <Route path="/info" element={<Userprofile />} />
           <Route path="/info_order" element={<OrderUser />} />
+          <Route path="/info_order_detail/:order_id" element={<Orderdetail />} />
           <Route path="/info_changepass" element={<ChangePass />} />
           <Route path="/reset_pass" element={<ChangePassnologin />} />
           <Route path="/check_payment" element={<Checkpayment />} />

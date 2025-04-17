@@ -50,25 +50,38 @@ router.get('/orderdetail_user/:order_id', async (req, res) => {
     const order_id = req.params.order_id;
 
     try {
-        const sql = `
-            SELECT 
-                od.*, 
-                o.name AS order_name, 
-                o.phone AS order_phone, 
-                o.address AS order_address, 
-                o.note AS order_note 
-            FROM order_detail od 
-            JOIN \`order\` o ON od.order_id = o.id 
-            WHERE od.order_id = ?
-        `;
+        // Truy vấn thông tin đơn hàng
+        const [orderRows] = await pool.query(
+            `SELECT *FROM \`order\` WHERE id = ?`, [order_id]
+        );
 
-        const [result] = await pool.query(sql, [order_id]);
-
-        if (result.length === 0) {
-            return res.status(404).json({ message: "Không tìm thấy chi tiết đơn hàng" });
+        if (orderRows.length === 0) {
+            return res.status(404).json({ message: "Không tìm thấy đơn hàng" });
         }
 
-        res.json(result);
+        // Truy vấn chi tiết sản phẩm trong đơn hàng
+        const [detailRows] = await pool.query(
+            `SELECT 
+                od.id, 
+                od.order_id, 
+                od.pr_id, 
+                p.name AS product_name, 
+                od.quantity, 
+                od.price, 
+                od.total, 
+                od.create_at
+             FROM order_detail od
+             JOIN product p ON od.pr_id = p.id
+             WHERE od.order_id = ?`,
+            [order_id]
+        );
+
+        // Gửi về frontend theo định dạng:
+        res.json({
+            order: orderRows[0],    // Thông tin đơn hàng
+            items: detailRows       // Danh sách sản phẩm
+        });
+
     } catch (error) {
         console.error("Lỗi truy vấn:", error);
         res.status(500).json({ message: "Lỗi server" });

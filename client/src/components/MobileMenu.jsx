@@ -55,7 +55,7 @@ export default function MobileMenu() {
             </div>
 
             {/* CSS nội bộ */}
-            <style jsx>{`
+            <style>{`
                .menu-icon {
         font-size: 24px;
         cursor: pointer;

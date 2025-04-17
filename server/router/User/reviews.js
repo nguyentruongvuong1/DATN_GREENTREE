@@ -29,36 +29,37 @@ router.get('/check-purchase', async (req, res) => {
 });
 // API Submit đánh giá
 router.post('/submit-review', async (req, res) => {
-  const { userId, productId, content, stars } = req.body;
-  console.log('Received data:', req.body);
-  try {
-      // Kiểm tra lại quyền (đảm bảo an toàn)
-      const [checkRows] = await pool.query(`
-          SELECT od.id 
-          FROM \`order\` o
-          JOIN order_detail od ON o.id = od.order_id
-          WHERE o.user_id = ? 
-          AND od.pr_id = ?
-          AND o.order_status = 4
-          AND o.transaction_status = 2
-          LIMIT 1
-      `, [userId, productId]);
-
-      if (checkRows.length === 0) {
-          return res.status(403).json({ error: 'Không có quyền đánh giá' });
-      }
-
-      // Lưu đánh giá
-      await pool.query(`
-          INSERT INTO reviews (id_order_detail, content, start, create_date)
-          VALUES (?, ?, ?, NOW())
-      `, [checkRows[0].id, content, stars]);
-
-      res.json({ success: true });
-  } catch (error) {
-      res.status(500).json({ error: 'Lỗi server' });
-  }
-});
+    const { userId, productId, content, stars } = req.body;
+    console.log('Received data:', req.body);
+    try {
+        // Kiểm tra lại quyền (đảm bảo an toàn)
+        const [checkRows] = await pool.query(`
+            SELECT od.id 
+            FROM \`order\` o
+            JOIN order_detail od ON o.id = od.order_id
+            WHERE o.user_id = ? 
+            AND od.pr_id = ?
+            AND o.order_status = 4
+            AND o.transaction_status = 2
+            LIMIT 1
+        `, [userId, productId]);
+  
+        if (checkRows.length === 0) {
+            return res.status(403).json({ error: 'Không có quyền đánh giá' });
+        }
+  
+        // Lưu đánh giá
+        await pool.query(`
+            INSERT INTO reviews (order_detail_id, user_id, content, star, create_date)
+            VALUES (?, ?, ?, ?, NOW())
+        `, [checkRows[0].id, userId, content, stars]);
+  
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Lỗi server' });
+    }
+  });
 
 // Kiểm tra người dùng đã đánh giá sản phẩm chưa
 router.get("/check-reviewed", async (req, res) => {
@@ -70,7 +71,7 @@ router.get("/check-reviewed", async (req, res) => {
 
   try {
       const [rows] = await pool.execute(
-          "SELECT id_order_detail FROM reviews WHERE id_order_detail IN (SELECT id FROM order_detail WHERE pr_id = ? AND order_id IN (SELECT id FROM `order` WHERE user_id = ?))",
+          "SELECT order_detail_id FROM reviews WHERE order_detail_id IN (SELECT id FROM order_detail WHERE pr_id = ? AND order_id IN (SELECT id FROM `order` WHERE user_id = ?))",
           [productId, userId]
       );
 
@@ -93,7 +94,7 @@ router.get('/product-reviews', async (req, res) => {
       const [reviews] = await pool.query(`
           SELECT 
               r.content,
-              r.start AS rating,
+              r.star AS rating,
               r.create_date AS reviewDate,
               od.pr_id AS productId,
               p.name AS productName,
@@ -102,7 +103,7 @@ router.get('/product-reviews', async (req, res) => {
           FROM 
               reviews r
           JOIN 
-              order_detail od ON r.id_order_detail = od.id
+              order_detail od ON r.order_detail_id = od.id
           JOIN 
               product p ON od.pr_id = p.id
           JOIN 
@@ -139,10 +140,10 @@ router.get("/average-rating/:productId", async (req, res) => {
   
     const sql = `
     SELECT 
-        SUM(r.start) / COUNT(*) AS average_rating, 
+        SUM(r.star) / COUNT(*) AS average_rating, 
         COUNT(*) AS total_reviews
     FROM reviews r
-    JOIN order_detail od ON r.id_order_detail = od.id
+    JOIN order_detail od ON r.order_detail_id = od.id
     WHERE od.pr_id = ?;
   `;
   
