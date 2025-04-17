@@ -58,7 +58,7 @@ const Admincate = () => {
     }
   };
 
- 
+
 
   const handleDelete = async (id) => {
     if (!window.confirm("Bạn có chắc muốn xóa cate này không?")) return;
@@ -75,7 +75,9 @@ const Admincate = () => {
         alert("Xóa thành công!");
         fetchcates(); // Load lại danh sách
       } else {
-        alert("Xóa thất bại: " + data.message);
+        console.error("Lỗi thêm danh mục:", data);
+        const errorMessage = data.message || "Thêm thất bại, dữ liệu không hợp lệ.";
+        alert(errorMessage);
       }
     } catch (error) {
       console.error("Lỗi khi xóa cate:", error);
@@ -95,6 +97,16 @@ const Admincate = () => {
   const handleAddcate = async (e) => {
     e.preventDefault();
 
+    // Kiểm tra dữ liệu trước khi gửi
+    if (!newcate.name.trim() || !newcate.content.trim()) {
+      alert("Vui lòng điền đầy đủ thông tin cần thiết");
+      return;
+    }
+
+    if (!newcate.image || !newcate.image_content) {
+      alert("Vui lòng chọn đầy đủ ảnh và ảnh nội dung.");
+      return;
+    }
     const formData = new FormData();
     formData.append("name", newcate.name);
     formData.append("content", newcate.content);
@@ -122,16 +134,15 @@ const Admincate = () => {
         fetchcates();
         setShowAddForm(false);
       } else {
-        alert("Thêm thất bại: " + data.message);
+        console.error("Lỗi cập nhật:", data);
+        const message = data.message || "Cập nhật thất bại";
+        alert(message);
+        return;
       }
     } catch (error) {
       console.error("Lỗi khi thêm danh mục:", error);
     }
   };
-
-
-
-
 
 
   // Hàm mở form sửa
@@ -147,6 +158,13 @@ const Admincate = () => {
   // Hàm lưu dữ liệu sau khi chỉnh sửa
   const handleSave = async (e) => {
     e.preventDefault();
+
+    //  Kiểm tra dữ liệu trước khi gửi
+    if (!editcate.name.trim() || !editcate.content.trim()) {
+      alert("Vui lòng điền đầy đủ thông tin cần thiết");
+      return;
+    }
+
 
     try {
       const formData = new FormData();
@@ -167,7 +185,14 @@ const Admincate = () => {
         body: formData,
       });
 
-      if (!response.ok) throw new Error("Cập nhật thất bại");
+      const data = await response.json(); //thông báo trả về từ server về trùng name danh mục
+      if (!response.ok) {
+        console.error("Lỗi cập nhật:", data);
+        const message = data.message || "Cập nhật thất bại";
+        alert(message);
+        return;
+      }
+
 
       alert("Cập nhật thành công!");
       fetchcates();
@@ -189,16 +214,16 @@ const Admincate = () => {
           <Menu size={24} />
         </div>
         <div className="search">
-  <label>
-  <input
+          <label>
+            <input
               type="text"
               value={search}
               onChange={onchangeSearch} placeholder="Tìm kiếm..."
 
             />
-    <Search size={24} />
-  </label>
-</div>
+            <Search size={24} />
+          </label>
+        </div>
 
         <div className="user">
           <img src="/images/user.jpg" alt="User" />
@@ -228,19 +253,19 @@ const Admincate = () => {
                 <tr key={cate.id}>
                   <td>{cate.id}</td>
                   <td><img style={{ width: '50px', height: '50px' }} src={
-                        cate.image &&
-                        cate.image.startsWith("../../public/images")
-                          ? `${import.meta.env.VITE_API_URL}/${cate.image}`
-                          : cate.image 
-                      } alt="" /></td>
+                    cate.image &&
+                      cate.image.startsWith("../../public/images")
+                      ? `${import.meta.env.VITE_API_URL}/${cate.image}`
+                      : cate.image
+                  } alt="" /></td>
                   <td>{cate.name}</td>
                   <td width={'250px'}>{cate.content.length > 30 ? cate.content.slice(0, 30) + '...' : cate.content}</td>
                   <td><img style={{ width: '50px', height: '50px' }} src={
-                        cate.image_content &&
-                        cate.image_content.startsWith("../../public/images")
-                          ? `${import.meta.env.VITE_API_URL}/${cate.image_content}`
-                          : cate.image_content 
-                      }
+                    cate.image_content &&
+                      cate.image_content.startsWith("../../public/images")
+                      ? `${import.meta.env.VITE_API_URL}/${cate.image_content}`
+                      : cate.image_content
+                  }
                     alt="" /></td>
                   <td>{moment(cate.create_date).format('DD-MM-YYYY')}</td>
                   <td>
@@ -268,11 +293,27 @@ const Admincate = () => {
                   <input type="text" name="content" value={editcate.content || ""} onChange={handleChange} required />
 
                   <label>Ảnh hiện tại:</label>
-                  <img src={`${import.meta.env.VITE_API_URL}/public/${editcate.image}`} alt="Ảnh" width="60" />
+                  <img
+                    src={
+                      editcate.image?.startsWith("../../public/images")
+                        ? `${import.meta.env.VITE_API_URL}/${editcate.image}`
+                        : editcate.image
+                    }
+                    alt="Ảnh"
+                    width="60"
+                  />
                   <input type="file" name="image" accept="image/*" onChange={(e) => setEditcate({ ...editcate, newImage: e.target.files[0] })} />
 
                   <label>Ảnh nội dung hiện tại:</label>
-                  <img src={`${import.meta.env.VITE_API_URL}/public/${editcate.image_content}`} alt="Ảnh ND" width="60" />
+                  <img
+                    src={
+                      editcate.image_content?.startsWith("../../public/images")
+                        ? `${import.meta.env.VITE_API_URL}/${editcate.image_content}`
+                        : editcate.image_content
+                    }
+                    alt="Ảnh ND"
+                    width="60"
+                  />
                   <input type="file" name="image_content" accept="image/*" onChange={(e) => setEditcate({ ...editcate, newImageContent: e.target.files[0] })} />
 
                   <label>Trạng thái:</label>

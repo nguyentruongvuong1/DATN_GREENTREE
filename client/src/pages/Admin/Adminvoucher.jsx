@@ -106,6 +106,7 @@ const AdminVoucher = () => {
       setShowForm(false);
     } catch (error) {
       console.error("Lỗi khi lưu voucher:", error);
+      alert(error.response?.data?.message || "Lưu voucher thất bại!");
     }
   };
 

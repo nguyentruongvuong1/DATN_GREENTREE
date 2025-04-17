@@ -14,7 +14,7 @@ const Admincharacteristic = () => {
         cate_id: "",  // Không để undefined
         name: "",     // Không để undefined
     });
-    
+
 
     // Lấy danh sách characteristics khi component mount
     useEffect(() => {
@@ -73,6 +73,9 @@ const Admincharacteristic = () => {
             }
         } catch (error) {
             console.error("Lỗi khi thêm đặc điểm:", error);
+            if (error.response && error.response.data.message) {
+                alert("Lỗi: " + error.response.data.message);
+            }
         }
     };
 
@@ -118,6 +121,9 @@ const Admincharacteristic = () => {
             }
         } catch (error) {
             console.error("Lỗi khi cập nhật characteristic:", error);
+            if (error.response && error.response.data.message) {
+                alert("Lỗi: " + error.response.data.message);
+            }
         }
     };
 
@@ -201,7 +207,7 @@ const Admincharacteristic = () => {
                                     <input type="text" name="name" value={newcharacteristic.name} onChange={handleNewcharacteristicChange} required />
                                     <label>Danh Mục:</label>
                                     <select name="cate_id" value={newcharacteristic.cate_id || ""} onChange={handleNewcharacteristicChange} required>
-                                    <option value="">-- Chọn danh mục --</option>
+                                        <option value="">-- Chọn danh mục --</option>
                                         {categories.map((cate) => (
                                             <option key={cate.id} value={cate.id}>
                                                 {cate.name}

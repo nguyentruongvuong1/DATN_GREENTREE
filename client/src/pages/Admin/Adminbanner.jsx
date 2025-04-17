@@ -67,6 +67,12 @@ const AdminBanner = () => {
         form.append("image", formData.image);
       }
 
+      // Kiểm tra nếu đang thêm mới mà chưa chọn ảnh
+      if (!isEdit && !(formData.image instanceof File)) {
+        alert("Vui lòng chọn ảnh banner trước khi thêm!");
+        return;
+      }
+
       if (isEdit) {
         await axios.put(
           `${import.meta.env.VITE_API_URL}/admin/banner/${formData.id}`,

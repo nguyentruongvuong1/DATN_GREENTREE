@@ -13,41 +13,41 @@ const baseUrl = process.env.BASE_URL; // Lấy từ .env
 // API VOUCHER------------------------------------------------------------------------------------------------------------------------------------------
 // API lấy danh sách voucher
 router.get("/vouchers", async (req, res) => {
-    const { page = 1, limit = 8 } = req.query;
+  const { page = 1, limit = 8 } = req.query;
 
-    // Validate input
-    const pageNumber = parseInt(page);
-    const limitNumber = parseInt(limit);
-    if (isNaN(pageNumber) || isNaN(limitNumber) || pageNumber < 1 || limitNumber < 1) {
-        return res.status(400).json({ message: "Tham số phân trang không hợp lệ" });
-    }
+  // Validate input
+  const pageNumber = parseInt(page);
+  const limitNumber = parseInt(limit);
+  if (isNaN(pageNumber) || isNaN(limitNumber) || pageNumber < 1 || limitNumber < 1) {
+    return res.status(400).json({ message: "Tham số phân trang không hợp lệ" });
+  }
 
-    const offset = (pageNumber - 1) * limitNumber;
+  const offset = (pageNumber - 1) * limitNumber;
 
-    try {
-        // Query lấy danh sách voucher có phân trang
-        const [vouchers] = await pool.query(`
+  try {
+    // Query lấy danh sách voucher có phân trang
+    const [vouchers] = await pool.query(`
             SELECT * FROM voucher
             LIMIT ? OFFSET ?
         `, [limitNumber, offset]);
 
-        // Query lấy tổng số voucher
-        const [[totalResult]] = await pool.query(`
+    // Query lấy tổng số voucher
+    const [[totalResult]] = await pool.query(`
             SELECT COUNT(*) as total FROM voucher
         `);
 
-        res.json({
-            vouchers,
-            total: totalResult.total,
-            page: pageNumber,
-            totalPages: Math.ceil(totalResult.total / limitNumber),
-            limit: limitNumber
-        });
+    res.json({
+      vouchers,
+      total: totalResult.total,
+      page: pageNumber,
+      totalPages: Math.ceil(totalResult.total / limitNumber),
+      limit: limitNumber
+    });
 
-    } catch (err) {
-        console.error("Lỗi lấy voucher:", err);
-        res.status(500).json({ message: "Lỗi lấy voucher", error: err.message });
-    }
+  } catch (err) {
+    console.error("Lỗi lấy voucher:", err);
+    res.status(500).json({ message: "Lỗi lấy voucher", error: err.message });
+  }
 });
 
 
@@ -66,6 +66,12 @@ router.put('/voucher/:id', async (req, res) => {
   } = req.body;
 
   try {
+    // Kiểm tra mã đã tồn tại 
+    const [exists] = await pool.query("SELECT id FROM voucher WHERE code = ? AND id != ?", [code, id]);
+    if (exists.length > 0) {
+      return res.status(400).json({ message: "Mã voucher đã tồn tại" });
+    }
+
     // Kiểm tra voucher có tồn tại không
     const [rows] = await pool.query("SELECT * FROM voucher WHERE id = ?", [id]);
     if (rows.length === 0) {
@@ -88,25 +94,24 @@ router.put('/voucher/:id', async (req, res) => {
 });
 
 
-
 // API xóa voucher
 router.delete('/voucher/:id', async (req, res) => {
-    const { id } = req.params;
-    const sql = "DELETE FROM voucher WHERE id = ?";
+  const { id } = req.params;
+  const sql = "DELETE FROM voucher WHERE id = ?";
 
-    try {
-        const [result] = await pool.query(sql, [id]);
+  try {
+    const [result] = await pool.query(sql, [id]);
 
-        // Kiểm tra xem voucher có tồn tại không trước khi xóa
-        if (result.affectedRows === 0) {
-            return res.status(404).json({ message: "Voucher không tồn tại!" });
-        }
-
-        res.json({ message: "Xóa voucher thành công!", affectedRows: result.affectedRows });
-    } catch (err) {
-        console.error("Lỗi xóa voucher:", err);
-        return res.status(500).json({ message: "Lỗi server", error: err });
+    // Kiểm tra xem voucher có tồn tại không trước khi xóa
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Voucher không tồn tại!" });
     }
+
+    res.json({ message: "Xóa voucher thành công!", affectedRows: result.affectedRows });
+  } catch (err) {
+    console.error("Lỗi xóa voucher:", err);
+    return res.status(500).json({ message: "Lỗi server", error: err });
+  }
 });
 
 
@@ -114,35 +119,41 @@ router.delete('/voucher/:id', async (req, res) => {
 router.post('/voucher', async (req, res) => {
   const { code, discount_type, discount_value, quantity, start_date, end_date, status } = req.body;
 
-    // Kiểm tra dữ liệu đầu vào
-    if (!code || !discount_type || discount_value == null || quantity == null || start_date == null || !end_date || status == null) {
-      return res.status(400).json({ message: "Thiếu dữ liệu đầu vào!" });
+  // Kiểm tra dữ liệu đầu vào
+  if (!code || !discount_type || discount_value == null || quantity == null || start_date == null || !end_date || status == null) {
+    return res.status(400).json({ message: "Thiếu dữ liệu đầu vào!" });
+  }
+
+  const sql = "INSERT INTO voucher (code, discount_type, discount_value, quantity, end_date, status) VALUES (?, ?, ?, ?, ?, ?)";
+
+  try {
+    // Kiểm tra trùng code
+    const [exists] = await pool.query("SELECT id FROM voucher WHERE code = ?", [code]);
+    if (exists.length > 0) {
+      return res.status(400).json({ message: "Mã voucher đã tồn tại" });
     }
 
-    const sql = "INSERT INTO voucher (code, discount_type, discount_value, quantity, end_date, status) VALUES (?, ?, ?, ?, ?, ?)";
+    const [result] = await pool.query(sql, [code, discount_type, discount_value, quantity, start_date, end_date, status]);
 
-    try {
-      const [result] = await pool.query(sql, [code, discount_type, discount_value, quantity, start_date, end_date, status]);
-
-        // Kiểm tra xem có thực sự thêm được dữ liệu không
-        if (result.affectedRows === 0) {
-            return res.status(500).json({ message: "Không thể thêm voucher!" });
-        }
-
-        res.json({ message: "Thêm voucher thành công!", id: result.insertId });
-    } catch (err) {
-        console.error("Lỗi thêm voucher:", err);
-        return res.status(500).json({ message: "Lỗi server", error: err });
+    // Kiểm tra xem có thực sự thêm được dữ liệu không
+    if (result.affectedRows === 0) {
+      return res.status(500).json({ message: "Không thể thêm voucher!" });
     }
+
+    res.json({ message: "Thêm voucher thành công!", id: result.insertId });
+  } catch (err) {
+    console.error("Lỗi thêm voucher:", err);
+    return res.status(500).json({ message: "Lỗi server", error: err });
+  }
 });
 
 // API REVIEWS------------------------------------------------------------------------------------------------------------------------------------------
 router.get('/reviews', async function (req, res) {
-    try {
-        const { page = 1, limit = 8 } = req.query;
-        const offset = (page - 1) * limit;
+  try {
+    const { page = 1, limit = 8 } = req.query;
+    const offset = (page - 1) * limit;
 
-        const [results] = await pool.query(`
+    const [results] = await pool.query(`
             SELECT 
             reviews.id_order_detail AS id,
             user.username AS user_name,
@@ -161,13 +172,13 @@ router.get('/reviews', async function (req, res) {
 
         `, [parseInt(limit), parseInt(offset)]);
 
-        const [[{ total }]] = await pool.query(`SELECT COUNT(*) AS total FROM reviews`);
+    const [[{ total }]] = await pool.query(`SELECT COUNT(*) AS total FROM reviews`);
 
-        res.json({ comments: results, total });
-    } catch (err) {
-        console.error('Lỗi truy vấn dữ liệu:', err);
-        res.status(500).json({ error: 'Không thể lấy dữ liệu' });
-    }
+    res.json({ comments: results, total });
+  } catch (err) {
+    console.error('Lỗi truy vấn dữ liệu:', err);
+    res.status(500).json({ error: 'Không thể lấy dữ liệu' });
+  }
 });
 
 // API BANNER------------------------------------------------------------------------------------------------------------------------------------------
@@ -286,58 +297,58 @@ router.delete('/banner/:id', async (req, res) => {
 });
 
 
-  // User API
-  router.get('/users', async (req, res) => {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 8;
-    const offset = (page - 1) * limit;
-  
-    try {
-      const [users] = await pool.execute(`SELECT * FROM user ORDER BY total_buy DESC LIMIT ? OFFSET ?`, [limit, offset]);
-      const [count] = await pool.execute(`SELECT COUNT(*) AS total FROM user`);
-      res.json({ users, total: count[0].total });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Lỗi khi lấy danh sách người dùng' });
-    }
-  });
+// User API
+router.get('/users', async (req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 8;
+  const offset = (page - 1) * limit;
 
-  // Cập nhật status người dùng
+  try {
+    const [users] = await pool.execute(`SELECT * FROM user ORDER BY total_buy DESC LIMIT ? OFFSET ?`, [limit, offset]);
+    const [count] = await pool.execute(`SELECT COUNT(*) AS total FROM user`);
+    res.json({ users, total: count[0].total });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Lỗi khi lấy danh sách người dùng' });
+  }
+});
+
+// Cập nhật status người dùng
 router.put('/user/:id', async (req, res) => {
-    const { id } = req.params;
-    const { status } = req.body;
-  
-    if (typeof status === 'undefined') {
-      return res.status(400).json({ error: 'Thiếu trường status' });
-    }
-  
-    try {
-      await pool.execute(`UPDATE user SET status = ? WHERE id = ?`, [status, id]);
-      res.json({ message: 'Cập nhật trạng thái người dùng thành công' });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Lỗi khi cập nhật trạng thái người dùng' });
-    }
-  });
-  
+  const { id } = req.params;
+  const { status } = req.body;
+
+  if (typeof status === 'undefined') {
+    return res.status(400).json({ error: 'Thiếu trường status' });
+  }
+
+  try {
+    await pool.execute(`UPDATE user SET status = ? WHERE id = ?`, [status, id]);
+    res.json({ message: 'Cập nhật trạng thái người dùng thành công' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Lỗi khi cập nhật trạng thái người dùng' });
+  }
+});
+
 
 // Admin order
 router.get('/order', async function (req, res) {
   try {
-      const { page = 1, limit = 8 } = req.query;
-      const offset = (page - 1) * limit;
+    const { page = 1, limit = 8 } = req.query;
+    const offset = (page - 1) * limit;
 
-      const [results] = await pool.query(`
+    const [results] = await pool.query(`
           SELECT * FROM \`order\` LIMIT 8 OFFSET 0;
 
       `, [parseInt(limit), parseInt(offset)]);
 
-      const [[{ total }]] = await pool.query(`SELECT COUNT(*) AS total FROM \`order\` `);
+    const [[{ total }]] = await pool.query(`SELECT COUNT(*) AS total FROM \`order\` `);
 
-      res.json({ order: results, total });
+    res.json({ order: results, total });
   } catch (err) {
-      console.error('Lỗi truy vấn dữ liệu:', err);
-      res.status(500).json({ error: 'Không thể lấy dữ liệu' });
+    console.error('Lỗi truy vấn dữ liệu:', err);
+    res.status(500).json({ error: 'Không thể lấy dữ liệu' });
   }
 });
 
@@ -387,7 +398,7 @@ router.put('/order_status/:id', async (req, res) => {
 
     if (newStatus <= currentStatus) {
       await conn.rollback();
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: `Không thể chuyển từ ${getStatusName(currentStatus)} về ${getStatusName(newStatus)}`
       });
     }
@@ -404,7 +415,7 @@ router.put('/order_status/:id', async (req, res) => {
   } catch (err) {
     await conn.rollback();
     console.error("Lỗi server:", err);
-    res.status(500).json({ 
+    res.status(500).json({
       error: "Lỗi khi cập nhật trạng thái",
       detail: err.message  // Gửi chi tiết lỗi về frontend
     });

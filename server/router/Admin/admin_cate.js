@@ -4,6 +4,9 @@ var pool = require('../../database/db'); // Đảm bảo đã sử dụng mysql2
 var upload = require('../../multerConfig');
 require('dotenv').config();
 const baseUrl = process.env.BASE_URL; // Lấy từ .env
+const path = require('path');
+const fs = require('fs');
+
 
 // API CATE------------------------------------------------------------------------------------------------------------------------------------------
 // API lấy danh sách cate
@@ -12,7 +15,7 @@ router.get('/cate', async function (req, res, next) {
         const [results] = await pool.execute('SELECT * FROM cate'); // Sử dụng execute
         res.json(results);
     } catch (err) {
-        console.error('Lỗi truy vấn dữ liệu:', err); 
+        console.error('Lỗi truy vấn dữ liệu:', err);
         res.status(500).json({ error: 'Không thể lấy dữ liệu' });
     }
 });
@@ -50,6 +53,13 @@ router.put('/cate/:id', upload.fields([
         const [rows] = await pool.query("SELECT * FROM cate WHERE id = ?", [id]);
         if (rows.length === 0) {
             return res.status(404).json({ message: "Danh mục không tồn tại" });
+        }
+
+        if (name) {
+            const [existing] = await pool.query("SELECT id FROM cate WHERE name = ? AND id != ?", [name, id]);
+            if (existing.length > 0) {
+                return res.status(400).json({ message: "Tên danh mục đã tồn tại!" });
+            }
         }
 
         const oldData = rows[0];
@@ -125,6 +135,11 @@ router.post('/cate', upload.fields([
             return res.status(400).json({ message: "Vui lòng nhập đầy đủ tên và nội dung." });
         }
 
+        const [existing] = await pool.query("SELECT id FROM cate WHERE name = ?", [name]);
+        if (existing.length > 0) {
+            return res.status(400).json({ message: "Tên danh mục đã tồn tại!" });
+        }
+
         const sql = `
             INSERT INTO cate (name, content, status, image, image_content)
             VALUES (?, ?, ?, ?, ?)
@@ -161,7 +176,7 @@ router.get('/characteristic', async function (req, res, next) {
 });
 
 // Lấy danh sách characteristic theo cate_id
-router.get('/characteristic/:cate_id', async (req, res) => {    
+router.get('/characteristic/:cate_id', async (req, res) => {
     const { cate_id } = req.params;
 
     try {
@@ -210,6 +225,14 @@ router.put('/characteristic/:id', async (req, res) => {
             return res.status(404).json({ message: "characteristic không tồn tại" });
         }
 
+        // Kiểm tra trùng tên 
+        if (name) {
+            const [exists] = await pool.query("SELECT id FROM characteristic WHERE name = ? AND id != ?", [name, id]);
+            if (exists.length > 0) {
+                return res.status(400).json({ message: "Tên đặc điểm đã tồn tại" });
+            }
+        }
+
         // Lấy dữ liệu cũ nếu không có dữ liệu mới
         const oldData = rows[0]; // Dữ liệu truy vấn được
         const updatedName = name || oldData.name;
@@ -239,12 +262,19 @@ router.post('/characteristic', async (req, res) => {
     const sql = "INSERT INTO characteristic (name, cate_id, create_at) VALUES (?, ?, NOW())";
 
     try {
+        // Kiểm tra trùng tên
+        const [exists] = await pool.query("SELECT id FROM characteristic WHERE name = ?", [name]);
+        if (exists.length > 0) {
+            return res.status(400).json({ message: "Tên đặc điểm đã tồn tại" });
+        }
+
         const [result] = await pool.query(sql, [name, cate_id]);
         res.json({ message: "Thêm characteristic thành công!", id: result.insertId });
     } catch (err) {
         console.error("Lỗi khi thêm characteristic:", err);
         return res.status(500).json({ message: "Lỗi server", error: err });
     }
+
 });
 
 // API typecate------------------------------------------------------------------------------------------------------------------------------------------
@@ -299,15 +329,15 @@ router.delete('/typecate/:id', async (req, res) => {
 router.get('/type_cates/:characteristic_id', async (req, res) => {
     const { characteristic_id } = req.params;
     try {
-      const [rows] = await pool.execute(
-        `SELECT id, name FROM type_cate WHERE characteristic_id = ?`,
-        [characteristic_id]
-      );
-      res.json(rows); // Trả về danh sách { id, name }
+        const [rows] = await pool.execute(
+            `SELECT id, name FROM type_cate WHERE characteristic_id = ?`,
+            [characteristic_id]
+        );
+        res.json(rows); // Trả về danh sách { id, name }
     } catch (err) {
-      res.status(500).json({ error: err.message });
+        res.status(500).json({ error: err.message });
     }
-  });
+});
 
 
 // API cập nhật typecate
@@ -322,6 +352,13 @@ router.put('/typecate/:id', upload.single("image"), async (req, res) => {
             return res.status(404).json({ message: "typecate không tồn tại" });
         }
 
+         // Kiểm tra tên đã tồn tại chưa 
+         if (name) {
+            const [exists] = await pool.query("SELECT id FROM type_cate WHERE name = ? AND id != ?", [name, id]);
+            if (exists.length > 0) {
+                return res.status(400).json({ message: "Tên loại cây đã tồn tại" });
+            }
+        }
         const oldData = rows[0];
         const updatedImage = file ? `${baseUrl}/public/images/${file.filename}` : oldData.image;
         // Nếu có ảnh mới -> xóa ảnh cũ
@@ -370,6 +407,12 @@ router.post('/typecate', upload.single('image'), async (req, res) => {
     const sql = "INSERT INTO type_cate (characteristic_id, name, image, create_at, content) VALUES (?, ?, ?, NOW(), ?)";
 
     try {
+        // Kiểm tra tên đã tồn tại chưa
+        const [exists] = await pool.query("SELECT id FROM type_cate WHERE name = ?", [name]);
+        if (exists.length > 0) {
+            return res.status(400).json({ message: "Tên loại cây đã tồn tại" });
+        }
+
         const [result] = await pool.query(sql, [characteristic_id, name, image, content]);
         res.json({ message: "Thêm Type Cate thành công!", id: result.insertId });
     } catch (err) {

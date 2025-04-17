@@ -97,6 +97,10 @@ const AdminTypecate = () => {
         if (newTypecate.imageFile) {
             formData.append("image", newTypecate.imageFile);
         }
+        if (!newTypecate.image) {
+            alert("Vui lòng chọn đầy đủ ảnh.");
+            return;
+          }
 
         try {
             await axios.post("http://localhost:3000/adminc/typecate", formData, {
@@ -115,6 +119,7 @@ const AdminTypecate = () => {
             setShowAddForm(false);
         } catch (error) {
             console.error("Lỗi khi thêm:", error.response?.data || error.message);
+            alert(error.response?.data?.message || "Đã xảy ra lỗi khi thêm!");
         }
     };
 
@@ -148,8 +153,7 @@ const AdminTypecate = () => {
             fetchTypecate();
         } catch (err) {
             console.error("Lỗi khi cập nhật:", err);
-            alert("Cập nhật thất bại!");
-        }
+            alert(err.response?.data?.message || "Cập nhật thất bại!");}
     };
 
 
