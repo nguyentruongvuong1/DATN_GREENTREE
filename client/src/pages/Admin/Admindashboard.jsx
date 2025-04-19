@@ -71,7 +71,7 @@ const AdminDashboard = () => {
         <div className="card">
           <div>
             <div>
-              <div className="numbers">{revenueDay.toLocaleString()} VND</div>
+              <div className="numbers">{Number(revenueDay).toLocaleString('vi')} VND</div>
               <div className="cardName">Doanh Thu Theo Ngày</div>
             </div>
           </div>
@@ -81,7 +81,7 @@ const AdminDashboard = () => {
         </div>
         <div className="card">
           <div>
-            <div className="numbers">{revenueWeek.toLocaleString()} VND</div>
+            <div className="numbers">{Number(revenueWeek).toLocaleString('vi')} VND</div>
             <div className="cardName">Doanh Thu Theo Tuần</div>
           </div>
           <div className="iconBx">
@@ -90,7 +90,7 @@ const AdminDashboard = () => {
         </div>
         <div className="card">
           <div>
-            <div className="numbers">{revenueMonth.toLocaleString()} VND</div>
+            <div className="numbers">{Number(revenueMonth).toLocaleString('vi')} VND</div>
             <div className="cardName">Doanh Thu Theo Tháng</div>
           </div>
           <div className="iconBx">
@@ -99,7 +99,7 @@ const AdminDashboard = () => {
         </div>
         <div className="card">
           <div>
-            <div className="numbers">{totalRevenue.toLocaleString()} VND</div>
+            <div className="numbers">{Number(totalRevenue).toLocaleString('vi')} VND</div>
             <div className="cardName">Tổng Doanh Thu</div>
           </div>
           <div className="iconBx">
@@ -144,7 +144,7 @@ const AdminDashboard = () => {
         </div>
       </div>
       <div className="graphBox">
-
+        
         <Bieudo />
       </div>
 

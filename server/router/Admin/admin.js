@@ -501,4 +501,30 @@ router.get('/dashboard/revenue/all', async (req, res) => {
   }
 });
 
+// API doanh thu theo từng ngày trong tuần (Thứ 2 - Chủ nhật)
+router.get('/dashboard/revenue/weekdays', async (req, res) => {
+  try {
+    const [data] = await pool.query(`
+      SELECT 
+        DAYOFWEEK(create_at) AS weekday,
+        SUM(total) AS revenue
+      FROM order_detail
+      WHERE YEARWEEK(create_at, 1) = YEARWEEK(CURDATE(), 1)
+      GROUP BY weekday
+    `);
+
+    // Tạo mảng doanh thu từ Thứ 2 (2) đến Chủ nhật (1)
+    const revenuePerDay = Array(7).fill(0);
+    data.forEach(({ weekday, revenue }) => {
+      const index = weekday === 1 ? 6 : weekday - 2; // chuyển Chủ nhật (1) thành cuối
+      revenuePerDay[index] = revenue;
+    });
+
+    res.json({ revenuePerDay });
+  } catch (error) {
+    console.error("Lỗi khi lấy doanh thu theo thứ:", error);
+    res.status(500).json({ message: "Lỗi server", error: error.message });
+  }
+});
+
 module.exports = router;
