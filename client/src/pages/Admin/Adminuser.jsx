@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../../styles/Admin/styleadmin.css";
 import ReactPaginate from "react-paginate";
+import moment from "moment";
 
 const AdminUser = () => {
     const [users, setUsers] = useState([]);
@@ -103,7 +104,6 @@ const AdminUser = () => {
                                 <th>Trạng thái</th>
                                 <th>Ngày tạo</th>
                                 <th>Avatar</th>
-                                <th>Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -128,7 +128,7 @@ const AdminUser = () => {
                                             <option value={2}>Khóa</option>
                                         </select>
                                     </td>
-                                    <td>{user.create_date}</td>
+                                    <td>{moment(user.create_date).format('DD-MM-YYYY')}</td>
                                     <td><img src={user.avatar} alt="avatar" width={40} /></td>
 
                                 </tr>

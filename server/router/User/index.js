@@ -98,7 +98,7 @@ router.post('/dangky/resend-otp', cleanupExpiredOTP, async (req, res) => {
   
       // Tạo OTP mới
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
-      const expiresAt = new Date(Date.now() + 1 * 60 * 1000); // 1 phút
+      const expiresAt = new Date(Date.now() + 3 * 60 * 1000); // 1 phút
   
       // Luôn INSERT mới thay vì UPDATE
       await connection.execute(
@@ -138,54 +138,89 @@ router.post('/dangky/resend-otp', cleanupExpiredOTP, async (req, res) => {
   
 // Xác minh OTP
 router.post('/xacminhotp', cleanupExpiredOTP, async (req, res) => {
-    try {
-      const { username, email, password, phone, otp } = req.body;
-  
-      // Validate input
-      if (!username || !email || !password || !phone || !otp) {
-        return res.status(400).json({ success: false, message: 'Vui lòng nhập đầy đủ thông tin' });
-      }
-  
-      // Kiểm tra OTP
-      const [otpRecord] = await pool.execute(
-        'SELECT otp_code, expires_at FROM otp_codes WHERE email = ? ORDER BY id DESC LIMIT 1',
-        [email]
-      );
-  
-      if (otpRecord.length === 0) {
-        return res.status(400).json({ success: false, message: 'Không tìm thấy mã OTP' });
-      }
-  
-      const { otp_code, expires_at } = otpRecord[0];
-  
-      // Kiểm tra hết hạn
-      if (new Date(expires_at) < new Date()) {
-        return res.status(400).json({ success: false, message: 'Mã OTP đã hết hạn' });
-      }
-  
-      // Kiểm tra OTP
-      if (otp !== otp_code) {
-        return res.status(400).json({ success: false, message: 'Mã OTP không đúng' });
-      }
-  
-      // Hash password
-      const hashedPassword = await bcrypt.hash(password, 10);
-  
-      // Tạo user mới
-      await pool.execute(
-        'INSERT INTO user (username, email, phone, password) VALUES (?, ?, ?, ?)',
-        [username, email, phone, hashedPassword]
-      );
-  
-      // Xóa OTP đã sử dụng
-      await pool.execute('DELETE FROM otp_codes WHERE email = ?', [email]);
-  
-      res.json({ success: true, message: 'Đăng ký thành công!' });
-    } catch (err) {
-      console.error('Lỗi khi xác minh OTP:', err);
-      res.status(500).json({ success: false, message: 'Lỗi máy chủ' });
+  try {
+    const { username, email, password, phone, otp } = req.body;
+
+    // Validate input
+    if (!username || !email || !password || !phone || !otp) {
+      return res.status(400).json({ success: false, message: 'Vui lòng nhập đầy đủ thông tin' });
     }
-  });
+
+    // Kiểm tra OTP
+    const [otpRecord] = await pool.execute(
+      'SELECT otp_code, expires_at FROM otp_codes WHERE email = ? ORDER BY id DESC LIMIT 1',
+      [email]
+    );
+
+    if (otpRecord.length === 0) {
+      return res.status(400).json({ success: false, message: 'Không tìm thấy mã OTP' });
+    }
+
+    const { otp_code, expires_at } = otpRecord[0];
+
+    // Kiểm tra hết hạn
+    if (new Date(expires_at) < new Date()) {
+      return res.status(400).json({ success: false, message: 'Mã OTP đã hết hạn' });
+    }
+
+    // Kiểm tra OTP
+    if (otp !== otp_code) {
+      return res.status(400).json({ success: false, message: 'Mã OTP không đúng' });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Tạo user mới
+    await pool.execute(
+      'INSERT INTO user (username, email, phone, password) VALUES (?, ?, ?, ?)',
+      [username, email, phone, hashedPassword]
+    );
+
+    // Xóa OTP đã sử dụng
+    await pool.execute('DELETE FROM otp_codes WHERE email = ?', [email]);
+
+    // Gửi email thông báo đăng ký thành công
+    const mailOptions = {
+      from: "nguyentruongvuong11@gmail.com",
+      to: email,
+      subject: 'Đăng ký tài khoản thành công',
+      html: `
+        <h1>Chúc mừng bạn đã đăng ký tài khoản thành công tài khoản của GREEN TREE SHOP!</h1>
+        <p>Dưới đây là thông tin tài khoản của bạn:</p>
+        <ul>
+          <li><strong>Tên đăng nhập:</strong> ${username}</li>
+          <li><strong>Email:</strong> ${email}</li>
+          <li><strong>Số điện thoại:</strong> ${phone}</li>
+          <li><strong>Mật khẩu:</strong> ${password}</li>
+        </ul>
+        <p>Cảm ơn bạn đã đăng ký sử dụng dịch vụ của chúng tôi!</p>
+        <p>Nếu bạn không thực hiện đăng ký này, vui lòng liên hệ hỗ trợ ngay lập tức.</p>
+      `
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Lỗi khi gửi email:', error);
+        // Vẫn trả về thành công dù gửi email thất bại
+        return res.json({ 
+          success: true, 
+          message: 'Đăng ký thành công! (Lỗi khi gửi email thông báo)' 
+        });
+      } else {
+        console.log('Email đã gửi: ' + info.response);
+        return res.json({ 
+          success: true, 
+          message: 'Đăng ký thành công! Email xác nhận đã được gửi đến bạn.' 
+        });
+      }
+    });
+
+  } catch (err) {
+    console.error('Lỗi khi xác minh OTP:', err);
+    res.status(500).json({ success: false, message: 'Lỗi máy chủ' });
+  }
+});
 
   // Kiểm tra trạng thái OTP
 router.post('/xacminhotp/check-status', cleanupExpiredOTP, async (req, res) => {

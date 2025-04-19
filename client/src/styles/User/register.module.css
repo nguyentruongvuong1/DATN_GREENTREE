@@ -112,6 +112,28 @@ border-radius: 5px;
 
 }
 
+/* Loading animation */
+.loading_spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  .btn_loading {
+    opacity: 0.8;
+    pointer-events: none;
+  }
+
 @media only screen and (max-width: 480px) {
 
     .Form_register{

@@ -110,7 +110,12 @@
     display: block;
     margin-bottom: 8px;
     font-weight: 500;
-    color: white;
+    color: black;
+}
+
+.form-group img{
+    width: 50px;
+    height: 50px;
 }
 
 .form-control {
@@ -446,9 +451,7 @@
   .forgot-container button:hover {
     background: #45a049;
   }
-  .menu-item a {
-    text-decoration: none;
-  }
+ 
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -459,7 +462,111 @@
     .sidebar {
         width: 100%;
     }
-    .menu-item{
-        font-size:30px;
+    
+
+    .menu-item {
+        height: 50px;
+        padding: 0%;
+        font-size: 20px;
     }
+
+    .menu-item a{
+        font-size:20px;
+        height: 50px;
+        line-height: 50px;    
+
+    }
+
+
+    
+    /* Chi tiết dơn hàng */
+    .invoiceContainer {
+        padding: 15px;
+        box-shadow: none;
+        border-radius: 0;
+      }
+    
+      /* Header */
+      .invoiceHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 20px;
+      }
+    
+      .invoiceInfo {
+        margin-top: 15px;
+        width: 100%;
+      }
+    
+      .invoiceInfo h2,
+      .invoiceInfo p {
+        text-align: left;
+      }
+    
+      /* Customer info */
+      .customerInfo {
+        flex-direction: column;
+        padding: 15px;
+      }
+    
+      .shippingInfo,
+      .paymentInfo {
+        padding: 0;
+        margin-bottom: 15px;
+      }
+    
+      .shippingInfo:last-child,
+      .paymentInfo:last-child {
+        margin-bottom: 0;
+      }
+    
+      /* Order details table */
+      .orderDetails {
+        overflow-x: auto;
+      }
+    
+      .orderDetails table {
+        min-width: 600px; /* Cho phép scroll ngang nếu bảng rộng */
+      }
+    
+      .orderDetails th,
+      .orderDetails td {
+        padding: 8px 10px;
+        font-size: 14px;
+      }
+    
+      /* Footer */
+      .invoiceFooter {
+        flex-direction: column-reverse;
+        align-items: flex-start;
+      }
+    
+      .actions {
+        width: 100%;
+        text-align: left;
+        margin-bottom: 15px;
+      }
+    
+      .btn {
+        display: block;
+        width: 100%;
+        margin: 5px 0;
+        padding: 12px;
+      }
+    
+      /* Cải thiện hiển thị cho mobile */
+      .logo h1,
+      .invoiceInfo h2 {
+        font-size: 20px;
+      }
+    
+      .shippingInfo h3,
+      .paymentInfo h3 {
+        font-size: 16px;
+      }
+    
+      .totalRow td {
+        font-size: 16px;
+      }
+    
 }

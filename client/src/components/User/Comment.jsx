@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { Rate, message } from "antd";
 import styles from"../../styles/User/prdetail.module.css";
-
+import { Link } from "react-router-dom";
 export default function ProductReview() {
   const { id: productId } = useParams();
   const user = useSelector((state) => state.auth.user);
@@ -82,7 +82,7 @@ export default function ProductReview() {
   if (!isLoggedIn) {
     return (
       <div className={styles.reviewNotice}>
-        Vui lòng <a href="/dangnhap">đăng nhập</a> để đánh giá sản phẩm.
+        Vui lòng <Link to={'/dangnhap'}>đăng nhập</Link> để đánh giá sản phẩm.
       </div>
     );
   }

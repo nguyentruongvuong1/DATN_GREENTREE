@@ -67,14 +67,14 @@ router.post('/products', async (req, res) => {
   const conn = await pool.getConnection();
   try {
     const {
-      name, price, cate_id, images, type_cate_ids, inventory_quantity, description
+      name, price, sale, price_sale, cate_id, images, type_cate_ids, inventory_quantity, description
     } = req.body;
     console.log(req.body);
     // 1. Thêm vào bảng product
     const [result] = await conn.query(`
-        INSERT INTO product (name, price, cate_id, images, inventory_quantity, discription, status)
-        VALUES (?, ?, ?, ?, ?, ?, 1)
-      `, [name, price, cate_id, images, inventory_quantity, description]);
+        INSERT INTO product (name, price, sale, price_sale, cate_id, images, inventory_quantity, discription, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
+      `, [name, price, sale, price_sale, cate_id, images, inventory_quantity, description]);
 
     const productId = result.insertId;
 

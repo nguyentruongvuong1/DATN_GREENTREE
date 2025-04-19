@@ -67,8 +67,19 @@
 }
 .trangthai{
     font-size:18px;
-    
 }
+
+.trangthai strong{
+    color: black;
+    font-weight: 600;
+ }
+
+.trangthai p{
+   color: #f29320;
+   font-weight: 600;
+}
+
+
 .mota{
     font-size:18px;
     
@@ -116,6 +127,9 @@
     padding-top:10px;
     padding-bottom:30px;
 }
+
+
+
 
 
 
@@ -168,12 +182,6 @@
             height:44px;
         }
        
-        .counter #quantity { 
-            width:30px;
-            height:44px;
-            border-right:1px solid #ddd;
-            border-left:1px solid #ddd
-        }
         .counter button {
             border: none;
             background: none;
@@ -186,7 +194,7 @@
         }
 
         .counter input {
-            width: 40px;
+            width: 70px;
             text-align: center;
             border: none;
             font-size: 18px;
@@ -203,6 +211,15 @@
             line-height: 1.6;
             margin-bottom:15px;
             
+        }
+
+        .categories a{
+            font-size: 18px;
+            color: #224229;
+            line-height: 1.6;
+            margin-bottom:15px;
+            text-decoration: none;
+            font-style: italic;
         }
       
         .categories a:hover{
@@ -603,6 +620,7 @@ top: 4px;
     text-decoration: none;
     color: #224229;
     font-weight: bolder;
+    font-style: italic;
 }
 .reviewNotice a:hover{
     color: #00791C;
@@ -657,8 +675,9 @@ top: 4px;
         .mota p{
             font-size:20px;
         }
-        .trangthai p{
+        .trangthai {
             font-size:20px;
+      
         }
         .ocuoi{
         width:350px;

@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import '../../styles/Admin/formaddsp.css'; // Import CSS file for styling
+import '../../styles/Admin/formaddsp.css'; 
 const FormThemSanPham = () => {
   const [cates, setCates] = useState([]);
   const [characteristic, setCharacteristic] = useState([]);
   const [typeCates, setTypeCates] = useState([]);
   const [selectedTypeCates, setSelectedTypeCates] = useState([]);
   const [imageFiles, setImageFiles] = useState([]);
+  const [priceSale, setPriceSale] = useState(0);
    
 //   Upload ảnh
   const handleFileUpload = async (e) => {
@@ -53,19 +54,41 @@ const FormThemSanPham = () => {
 
   const [formData, setFormData] = useState({
     name: '',
-    price: '',
+    price: 0,
+    sale: 0,
     cate_id: '',
     characteristic_id: '',
     images: '',
-    inventory_quantity: '',
+    inventory_quantity: 0,
     description: ''
   });
+
+  // useEffect(() => {
+  //   const price = parseFloat(formData.price) || 0;
+  //   const sale = parseFloat(formData.sale) || 0;
+  //   const calculated = price - (price * sale / 100);
+  //   setPriceSale(calculated > 0 ? calculated.toFixed(0) : 0);
+  // }, [formData.price, formData.sale]);
+
+  useEffect(() => {
+    const price = parseFloat(formData.price) || 0;
+    const sale = parseFloat(formData.sale) || 0;
+
+    if (sale === 0) {
+        setPriceSale(0);  
+
+    } else {
+        const calculated = price - (price * sale / 100);
+        const finalPrice = calculated > 0 ? parseFloat(calculated.toFixed(0)) : 0;
+        setPriceSale(finalPrice);
+       
+    }
+}, [formData.price, formData.sale]);
 
   // Lấy danh sách cate
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_API_URL}/adminc/cate`).then((res) => {
       setCates(res.data);
-      console.log(res.data);
     });
   }, []);
 
@@ -109,7 +132,8 @@ useEffect(() => {
     e.preventDefault();
     const payload = {
       ...formData,
-      type_cate_ids: selectedTypeCates
+      type_cate_ids: selectedTypeCates,
+      price_sale: priceSale 
     };
 
     axios.post(`${import.meta.env.VITE_API_URL}/adminpr/products`, payload)
@@ -118,15 +142,17 @@ useEffect(() => {
         // Reset form
         setFormData({
           name: '',
-          price: '',
+          price: 0,
+          sale: 0,
           cate_id: '',
           images: '',
-          inventory_quantity: '',
+          inventory_quantity: 0,
           description: ''
         });
         setSelectedTypeCates([]);
         setTypeCates([]);
         setCharacteristic(null);
+        window.location.reload();
       })
       .catch(err => {
         console.error(err);
@@ -146,6 +172,16 @@ useEffect(() => {
       <div className="form-group">
         <label>Giá:</label>
         <input className="form-control" type="number" name="price" value={formData.price} onChange={handleInputChange} required />
+      </div>
+
+      <div className="form-group">
+        <label>Giảm giá (%):</label>
+        <input className="form-control" type="number" name="sale" value={formData.sale} onChange={handleInputChange} min={0} max={100} required/>
+      </div>
+
+      <div className="form-group">
+        <label>Giá đã giảm:</label>
+        <input className="form-control" type="number" name="price_sale" value={priceSale} readOnly required />
       </div>
   
       <div className="form-group">

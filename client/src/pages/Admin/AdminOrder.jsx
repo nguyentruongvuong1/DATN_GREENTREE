@@ -6,10 +6,7 @@ import "../../styles/Admin/styleadmin.css";
 import { Link } from "react-router-dom";
 import moment from "moment";
 
-
-
 export default function AdminOrder() {
-
   const getStatusName = (status) => {
     switch (status) {
       case 1:
@@ -34,8 +31,8 @@ export default function AdminOrder() {
   const [order_detail, setorder_detail] = useState([]);
 
   const [allOdr, setallOdr] = useState([]); // Tất cả đơn hàng để tìm kiếm
-  const [search, setsearch] = useState(''); // Trạng thái tìm kiếm
-  const [odrfilter, ganodrfilter] = useState([]) // Trạng thái tìm kiếm
+  const [search, setsearch] = useState(""); // Trạng thái tìm kiếm
+  const [odrfilter, ganodrfilter] = useState([]); // Trạng thái tìm kiếm
 
   const fecth_Ordetail = async (order_id) => {
     try {
@@ -55,7 +52,9 @@ export default function AdminOrder() {
   const fetchOrder = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/admin/order?page=${currentPage}&limit=${itemsPerPage}`
+        `${
+          import.meta.env.VITE_API_URL
+        }/admin/order?page=${currentPage}&limit=${itemsPerPage}`
       );
       setOrder(response.data.order || response.data);
       setTotalOrder(response.data.total || response.data.length);
@@ -66,24 +65,24 @@ export default function AdminOrder() {
     }
   };
 
-  useEffect(() =>{
-    fetchOrder()
-  },[])
+  useEffect(() => {
+    fetchOrder();
+  }, []);
 
   useEffect(() => {
-    if (search === '') {
-      ganodrfilter(order)
+    if (search === "") {
+      ganodrfilter(order);
     } else {
-      const FilterOdr = allOdr.filter(odr => odr.transaction_code.toLowerCase().includes(search.toLowerCase()))
-      ganodrfilter(FilterOdr)
+      const FilterOdr = allOdr.filter((odr) =>
+        odr.transaction_code.toLowerCase().includes(search.toLowerCase())
+      );
+      ganodrfilter(FilterOdr);
     }
-
-  }, [search, allOdr, order])
+  }, [search, allOdr, order]);
 
   const onchangeSearch = (e) => {
-    setsearch(e.target.value)
-  }
-
+    setsearch(e.target.value);
+  };
 
   const handleStatusChange = async (orderId, currentStatus, newStatus) => {
     try {
@@ -91,12 +90,14 @@ export default function AdminOrder() {
         `${import.meta.env.VITE_API_URL}/admin/order_status/${orderId}`,
         { order_status: newStatus }
       );
-  
+
       // Cập nhật UI ngay lập tức
-      setOrder(prev => prev.map(item => 
-        item.id === orderId ? { ...item, order_status: newStatus } : item
-      ));
-  
+      setOrder((prev) =>
+        prev.map((item) =>
+          item.id === orderId ? { ...item, order_status: newStatus } : item
+        )
+      );
+
       alert(res.data.message || "Cập nhật thành công!");
     } catch (error) {
       console.error("Chi tiết lỗi:", error.response?.data || error.message);
@@ -104,6 +105,32 @@ export default function AdminOrder() {
     }
   };
 
+  const handleTransactionStatusChange = async (
+    orderId,
+    currentTransactionStatus,
+    newTransactionStatus
+  ) => {
+    try {
+      const res = await axios.put(
+        `${import.meta.env.VITE_API_URL}/admin/transaction_status`,
+        { id: orderId, new_transaction_status: newTransactionStatus }
+      );
+
+      // Cập nhật lại UI trạng thái thanh toán
+      setOrder((prev) =>
+        prev.map((item) =>
+          item.id === orderId
+            ? { ...item, transaction_status: newTransactionStatus }
+            : item
+        )
+      );
+
+      alert(res.data.message || "Cập nhật trạng thái thanh toán thành công!");
+    } catch (error) {
+      console.error("Chi tiết lỗi:", error.response?.data || error.message);
+      alert(error.response?.data?.message || "Lỗi server! Vui lòng thử lại.");
+    }
+  };
 
   const handlePageChange = (selectedItem) => {
     setCurrentPage(selectedItem.selected + 1);
@@ -117,12 +144,13 @@ export default function AdminOrder() {
         </div>
         <div className="search">
           <label>
-          <input
+            <input
               type="text"
               value={search}
-              onChange={onchangeSearch} placeholder="Tìm kiếm..."
-
-            />            <Search size={24} />
+              onChange={onchangeSearch}
+              placeholder="Tìm kiếm..."
+            />{" "}
+            <Search size={24} />
           </label>
         </div>
         <div className="user">
@@ -137,12 +165,12 @@ export default function AdminOrder() {
           <table className="comment-table">
             <thead>
               <tr>
+                <th>STT</th>
                 <th>Mã DH</th>
-                <th>Mã US</th>
-                <th>Mã giảm giá</th>
                 <th>TT thanh toán</th>
                 <th>Mã thanh toán</th>
-                <th>TT thanh toán</th>
+                <th>Thanh toán</th>
+                <th>Tông tiền</th>
                 <th>Ngày</th>
                 <th>Trạng thái</th>
                 <th>Chi tiết</th>
@@ -151,14 +179,35 @@ export default function AdminOrder() {
             <tbody>
               {odrfilter.map((or, index) => (
                 <tr key={index}>
+                  <td>{index + 1}</td>
                   <td>{or.id}</td>
-                  <td>{or.user_id}</td>
                   <td>
-                    {or.voucher_id === null ? "Không sử dụng" : or.voucher_id}
+                    <select
+                      value={or.transaction_status}
+                      onChange={(e) =>
+                        handleTransactionStatusChange(
+                          or.id,
+                          or.transaction_status,
+                          parseInt(e.target.value)
+                        )
+                      }
+                    >
+                      {[1, 2].map((status) => (
+                        <option
+                          key={status}
+                          value={status}
+                          disabled={
+                            status === 1 && or.transaction_status === 2 // Không cho phép chuyển từ 2 về 1
+                          }
+                        >
+                          {status === 2 ? "Đã thanh toán" : "Chưa thanh toán"}
+                        </option>
+                      ))}
+                    </select>
                   </td>
-                  <td>{or.transaction_status === 2 ?'Đã thanh toán' : 'Chưa thanh toán' }</td>
                   <td>{or.transaction_code}</td>
-                  <td>{or.payment_method === 1 ? "Tiền mặt" : "MoMo"}</td>
+                  <td>{or.payment_method === 1 ? "Tiền mặt" : "VNPAYS"}</td>
+                  <td>{Number(or.total_amount).toLocaleString('vi')} VNĐ</td>
                   <td>{moment(or.create_at).format("DD-MM-YYYY")}</td>
                   <td>
                     <select
@@ -186,9 +235,7 @@ export default function AdminOrder() {
                     </select>
                   </td>
                   <td>
-                    <button onClick={() => fecth_Ordetail(or.id)}>
-                      Xem
-                    </button>
+                    <button onClick={() => fecth_Ordetail(or.id)}>Xem</button>
                   </td>
                 </tr>
               ))}
@@ -223,35 +270,35 @@ export default function AdminOrder() {
         </div>
 
         {model && (
-  <div className="modal-wrapper">
-    <table className="table_ordertail">
-      <thead>
-        <tr>
-          <th>Max DH</th>
-          <th>Mã SP</th>
-          <th>Tên SP</th>
-          <th>Số lượng</th>
-          <th>Đơn giá</th>
-          <th>Thành tiền</th>
-          <th>Ngày tạo</th>
-        </tr>
-      </thead>
-      <tbody>
-        {order_detail.map((order_d, index) => (
-          <tr key={index}>
-            <td>{order_d.order_id}</td>
-            <td>{order_d.pr_id}</td>
-            <td>{order_d.product_name}</td>
-            <td>{order_d.quantity}</td>
-            <td>{order_d.price}</td>
-            <td>{order_d.total}</td>
-            <td>{moment(order_d.create_at).format("DD-MM-YYYY")}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-)}
+          <div className="modal-wrapper">
+            <table className="table_ordertail">
+              <thead>
+                <tr>
+                  <th>Max DH</th>
+                  <th>Mã SP</th>
+                  <th>Tên SP</th>
+                  <th>Số lượng</th>
+                  <th>Đơn giá</th>
+                  <th>Thành tiền</th>
+                  <th>Ngày tạo</th>
+                </tr>
+              </thead>
+              <tbody>
+                {order_detail.map((order_d, index) => (
+                  <tr key={index}>
+                    <td>{order_d.order_id}</td>
+                    <td>{order_d.pr_id}</td>
+                    <td>{order_d.product_name}</td>
+                    <td>{order_d.quantity}</td>
+                    <td>{order_d.price}</td>
+                    <td>{order_d.total}</td>
+                    <td>{moment(order_d.create_at).format("DD-MM-YYYY")}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

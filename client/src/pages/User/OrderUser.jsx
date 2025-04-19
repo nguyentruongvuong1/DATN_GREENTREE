@@ -25,28 +25,28 @@ export default function OrderUser() {
   const [totalPrice, setTotalPrice] = useState(0);
 
   const Canccel_order = async (orderId, userId) => {
-
-    try{
-      const hoi = confirm('Bạn có chắc chắn muốn hủy đơn hàng không?');
-      if(hoi){
-        const res = await axios.post(`${import.meta.env.VITE_API_URL}/payment/cancel_order`, {order_id: orderId, user_id: userId});
-        if(res.data.success){
+    try {
+      const hoi = confirm("Bạn có chắc chắn muốn hủy đơn hàng không?");
+      if (hoi) {
+        const res = await axios.post(
+          `${import.meta.env.VITE_API_URL}/payment/cancel_order`,
+          { order_id: orderId, user_id: userId }
+        );
+        if (res.data.success) {
           message.success("Hủy đơn hàng thành công!");
           setTimeout(() => {
             window.location.reload();
           }, 1000);
-        }else{  
+        } else {
           message.error("Hủy đơn hàng thất bại!");
         }
-      }else{
+      } else {
         return;
       }
-      
-    }catch (error) {
+    } catch (error) {
       console.error("Lỗi khi tải thông tin đơn hàng:", error);
     }
-  }
-
+  };
 
   const statusMap = {
     1: "Chờ xác nhận",
@@ -90,7 +90,7 @@ export default function OrderUser() {
       setOrderInfo(data.order);
       setOrderItems(data.items);
 
-      const total = data.items.reduce((sum, item) => sum + item.total, 0)
+      const total = data.items.reduce((sum, item) => sum + item.total, 0);
       setTotalPrice(total);
 
       setShowModal(true);
@@ -102,8 +102,6 @@ export default function OrderUser() {
   const handlePrint = () => {
     window.print();
   };
-
-
 
   const closeModal = () => {
     setShowModal(false);
@@ -178,17 +176,15 @@ export default function OrderUser() {
             <h1 className={styles["content-title"]}>Đơn hàng</h1>
           </div>
 
-          <div className={styles.container}>
+          <div>
             <div className={styles.history}>
               <table className={styles.table_order}>
                 <thead>
                   <tr>
-                   <th>STT</th>
-                    <th>Mã ĐH</th>
-                    <th>TT đơn hàng</th>
-                    <th>TT thanh toán</th>
-                    <th>Mã Giao dịch</th>
-                    <th>Phương thức thanh toán</th>
+                    <th>STT</th>
+                    <th>Mã đơn hàng</th>
+                    <th>Trạng thái đơn hàng</th>
+                    <th>Tổng tiền</th>
                     <th>Ngày</th>
                     <th>Thao tác</th>
                   </tr>
@@ -198,15 +194,10 @@ export default function OrderUser() {
                     <tr key={index}>
                       <td>{index + 1}</td>
                       <td>{or.id}</td>
-                    
                       <td>{statusMap[or.order_status] || "Không xác định"}</td>
                       <td>
-                        {or.transaction_status === 2
-                          ? "Đã thanh toán"
-                          : "Chưa thanh toán"}
+                        {Number(or.total_amount).toLocaleString("vi")} VNĐ
                       </td>
-                      <td>{or.transaction_code}</td>
-                      <td>{or.payment_method === 1 ? "Tiền mặt" : "VNPAY"}</td>
                       <td>{moment(or.create_at).format("DD-MM-YYYY")}</td>
                       <td>
                         <button
@@ -216,17 +207,16 @@ export default function OrderUser() {
                           {" "}
                           Xem
                         </button>
-                          
-                          {or.order_status === 1 && (
-                             <button
-                             onClick={() => Canccel_order(or.id, user.id)}
-                             className={styles.btn_huy}
-                           >
-                             {" "}
-                             Hủy đơn
-                           </button>
-                          )}
 
+                        {or.order_status === 1 && (
+                          <button
+                            onClick={() => Canccel_order(or.id, user.id)}
+                            className={styles.btn_huy}
+                          >
+                            {" "}
+                            Hủy đơn
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -243,91 +233,97 @@ export default function OrderUser() {
             className={styles["modal-content"]}
             onClick={(e) => e.stopPropagation()}
           >
-       
             <div className={styles.invoiceContainer}>
-                  <div className={styles.invoiceHeader}>
-                    <div className={styles.logo}>
-                      <h1>GREEN TREE SHOP</h1>
-                    </div>
-                    <div className={styles.invoiceInfo}>
-                      <h2>CHI TIẾT ĐƠN HÀNG</h2>
-                      <p>
-                        Mã đơn hàng: <span>{orderInfo?.id}</span>
-                      </p>
-                      <p>
-                        Ngày đặt:{" "}
-                        <span>{moment(orderInfo?.create_at).format("DD-MM-YYYY")}</span>
-                      </p>
-                    </div>
-                  </div>
-            
-                  <div className={styles.customerInfo}>
-                    <div className={styles.shippingInfo}>
-                      <h3>Thông tin giao hàng</h3>
-                      <p>
-                        <strong>Họ tên:</strong> <span>{orderInfo?.name}</span>
-                      </p>
-                      <p>
-                        <strong>Địa chỉ:</strong> <span>{orderInfo?.address}</span>
-                      </p>
-                      <p>
-                        <strong>SĐT:</strong> <span>{orderInfo?.phone}</span>
-                      </p>
-                      {/* <p><strong>Email:</strong> <span>{orderInfo.email}</span></p> */}
-                      <p>
-                        <strong>Ghi chú:</strong>{" "}
-                        <span>
-                          {orderInfo?.note.length > 0
-                            ? orderInfo?.note
-                            : "Không có ghi chú"}
-                        </span>
-                      </p>
-                    </div>
-                    <div className={styles.paymentInfo}>
-                      <h3>Phương thức thanh toán</h3>
-                      <p>
-                        <strong>Hình thức:</strong>{" "}
-                        <span>
-                          {orderInfo?.payment_method === 1
-                            ? "Thanh toán khi nhận hàng"
-                            : " Thanh toán VNPAYS"}
-                        </span>
-                      </p>
-                      <p>
-                        <strong>Trạng thái:</strong> {" "}
-                        <span>
-                         {statusMap[orderInfo?.order_status] || "Không xác định"}
-                        </span>
-                      </p>
-                     
-                    </div>
-                  </div>
-            
-                  <div className={styles.orderDetails}>
-                    
-                    <table>
-                      <thead>
-                        <tr>
-                          <th>STT</th>
-                          <th>Sản phẩm</th>
-                          <th>Đơn giá</th>
-                          <th>Số lượng</th>
-                          <th>Thành tiền</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {orderItems.map((item, index) => (
-                            <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>{item.product_name}</td>
-                                <td>{Number(item.price).toLocaleString('vi')}</td>
-                                <td>{item.quantity}</td>
-                                <td>{Number(item.total).toLocaleString('vi')}</td>
-                            </tr>
-                        ))}
-                      </tbody>
-                      <tfoot>
-                        {/* <tr>
+              <div className={styles.invoiceHeader}>
+                <div className={styles.logo}>
+                  <h1>GREEN TREE SHOP</h1>
+                </div>
+                <div className={styles.invoiceInfo}>
+                  <h2>CHI TIẾT ĐƠN HÀNG</h2>
+                  <p>
+                    Mã đơn hàng: <span>{orderInfo?.id}</span>
+                  </p>
+                  <p>
+                    Ngày đặt:{" "}
+                    <span>
+                      {moment(orderInfo?.create_at).format("DD-MM-YYYY")}
+                    </span>
+                  </p>
+                </div>
+              </div>
+
+              <div className={styles.customerInfo}>
+                <div className={styles.shippingInfo}>
+                  <h3>Thông tin giao hàng</h3>
+                  <p>
+                    <strong>Họ tên:</strong> <span>{orderInfo?.name}</span>
+                  </p>
+                  <p>
+                    <strong>Địa chỉ:</strong> <span>{orderInfo?.address}</span>
+                  </p>
+                  <p>
+                    <strong>SĐT:</strong> <span>{orderInfo?.phone}</span>
+                  </p>
+                  {/* <p><strong>Email:</strong> <span>{orderInfo.email}</span></p> */}
+                  <p>
+                    <strong>Ghi chú:</strong>{" "}
+                    <span>
+                      {orderInfo?.note.length > 0
+                        ? orderInfo?.note
+                        : "Không có ghi chú"}
+                    </span>
+                  </p>
+                </div>
+                <div className={styles.paymentInfo}>
+                  <h3>Phương thức thanh toán</h3>
+                  <p>
+                    <strong>Hình thức:</strong>{" "}
+                    <span>
+                      {orderInfo?.payment_method === 1
+                        ? "Thanh toán khi nhận hàng"
+                        : " Thanh toán VNPAYS"}
+                    </span>
+                  </p>
+                  <p>
+                    <strong>Trạng thái:</strong>{" "}
+                    <span>
+                      {statusMap[orderInfo?.order_status] || "Không xác định"}
+                    </span>
+                  </p>
+
+                  <p>
+                    <strong>Thanh toán:</strong>{" "}
+                    <span>
+                      {orderInfo.transaction_status === 1 ? 'Chưa thanh toán' : 'Đã thanh toán'}
+                    </span>
+                  </p>
+                </div>
+              </div>
+
+              <div className={styles.orderDetails}>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>STT</th>
+                      <th>Sản phẩm</th>
+                      <th>Đơn giá</th>
+                      <th>Số lượng</th>
+                      <th>Thành tiền</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orderItems.map((item, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{item.product_name}</td>
+                        <td>{Number(item.price).toLocaleString("vi")}</td>
+                        <td>{item.quantity}</td>
+                        <td>{Number(item.total).toLocaleString("vi")}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    {/* <tr>
                           <td colSpan="4" className={styles.textRight}>
                             Tạm tính:
                           </td>
@@ -345,37 +341,37 @@ export default function OrderUser() {
                           </td>
                           <td>-</td>
                         </tr> */}
-                        <tr className={styles.totalRow}>
-                          <td colSpan="4" className={styles.textRight}>
-                            Tổng cộng:
-                          </td>
-                          <td>{Number(totalPrice).toLocaleString('vi')} VNĐ</td>
-                        </tr>
-                      </tfoot>
-                    </table>
-                  </div>
-            
-                  <div className={styles.invoiceFooter}>
-                    <div className={styles.thankYou}>
-                      <p>
-                        Cảm ơn quý khách đã mua hàng tại <strong>GREEN TREE SHOP</strong>!
-                      </p>
-                      <p>
-                        Mọi thắc mắc xin liên hệ hotline: <strong>0364185395</strong> 
-                      </p>
-                      <p>
-                        Email: <strong>greentreshop@gmail.com</strong>
-                      </p>
-                    </div>
-                    <div className={styles.actions}>
-                      <button onClick={handlePrint} className={styles.btn}>
-                        <FontAwesomeIcon icon={faPrint} /> In hóa đơn
-                      </button>
-  
-                    </div>
-                  </div>
+                    <tr className={styles.totalRow}>
+                      <td colSpan="4" className={styles.textRight}>
+                        Tổng cộng:
+                      </td>
+                      <td>{Number(totalPrice).toLocaleString("vi")} VNĐ</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+
+              <div className={styles.invoiceFooter}>
+                <div className={styles.thankYou}>
+                  <p>
+                    Cảm ơn quý khách đã mua hàng tại{" "}
+                    <strong>GREEN TREE SHOP</strong>!
+                  </p>
+                  <p>
+                    Mọi thắc mắc xin liên hệ hotline:{" "}
+                    <strong>0364185395</strong>
+                  </p>
+                  <p>
+                    Email: <strong>greentreshop@gmail.com</strong>
+                  </p>
                 </div>
-            
+                <div className={styles.actions}>
+                  <button onClick={handlePrint} className={styles.btn}>
+                    <FontAwesomeIcon icon={faPrint} /> In hóa đơn
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
