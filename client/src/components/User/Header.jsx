@@ -145,8 +145,7 @@ const Header = () => {
                   </div>
             
                   <div className={styles.dropdownMenu}>
-                    <Link to={`/info`}>Thông tin</Link>
-                    <Link to="/change-password">Đổi mật khẩu</Link>
+                    <Link to={`/info`}>Thông tin tài khoản</Link>
                     <button className={styles.btn} onClick={() => { message.success('Bạn đã đăng xuất tài khoản thành công'); dispatch(thoat())}}>Đăng xuất</button>
                   </div>
                 </div>

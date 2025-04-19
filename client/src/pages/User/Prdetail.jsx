@@ -311,7 +311,7 @@ export default function Prdetail() {
             <div className={styles.trangthai}>
               <p>
                 {" "}
-                <strong> Số lượng còn lại: </strong> {pr.inventory_quantity}{" "}
+                <strong> Số lượng còn lại: </strong> {pr?.inventory_quantity.length === 0 ? "Hết hàng" : pr?.inventory_quantity}{" "}
               </p>
             </div>
 

@@ -4,9 +4,8 @@ import { Menu, Search } from "lucide-react";
 import axios from "axios";
 import "../../styles/Admin/styleadmin.css";
 import moment from "moment";
-import { useNavigate } from "react-router-dom";
+import FormThemSanPham from "../../components/Admin/AdminAddPr";
 const AdminProduct = () => {
-    const navigate = useNavigate();
     const [products, setProducts] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(8); // Số sản phẩm mỗi trang
@@ -16,6 +15,8 @@ const AdminProduct = () => {
     const [search, setsearch] = useState(''); // Trạng thái tìm kiếm
     const [prfilter, ganprfilter] = useState([]) // Trạng thái tìm kiếm
     const [sortPr, SetsortPr] = useState("create_date");
+
+    const [modeladd, setmodeladd] = useState(false); 
 
     useEffect(() => {
         const fetchData = async () => {
@@ -94,7 +95,7 @@ const AdminProduct = () => {
                 <div className="recentOrders">
                     <div className="cardHeader">
                         <h2>Danh sách sản phẩm</h2>
-                        <button className="buttonAdd" onClick={() => navigate('/admin/addsp')}>Thêm Sản Phẩm</button>
+                        <button className="buttonAdd" onClick={() => setmodeladd(true)}>Thêm Sản Phẩm</button>
                     </div>
                     <div className="sxpr">
                             <select onChange={(e) => SetsortPr(e.target.value)}>
@@ -132,10 +133,7 @@ const AdminProduct = () => {
                                             <img src={product.images?.split(',')[0]} alt={product.name} style={{ width: "50px", height: "50px", objectFit: "cover" }} />
                                         </td>
                                         <td>{product.name}</td>
-
                                         <td>{product.category_name}</td>
-                                        {/* <td>{product.characteristic_name || "Không có"}</td>
-                                        <td>{product.type_name || "Không có"}</td> */}
                                         <td>{product.price}</td>
                                         <td>{product.sale}</td>
                                         <td>{product.price_sale}</td>
@@ -180,6 +178,16 @@ const AdminProduct = () => {
                             />
                         </div>
                     )}
+
+                    {modeladd && (
+                        <>
+                        <div className="modal-overlay" onClick={() => setmodeladd(false)} ></div>
+                        <div className="modal-container">
+                        <FormThemSanPham />
+                        </div>
+                        </>
+                    )
+                     }
 
 
                 </div>

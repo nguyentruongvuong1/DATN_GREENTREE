@@ -94,6 +94,13 @@ export default function Userprofile() {
 
         {userData && (
           <form>
+
+<div className={styles["form-group"]}>
+              <label>Ảnh đại diện</label>
+                <img src={userData.avatar} alt="" />
+                <input type="file"  />
+            </div>
+
             <div className={styles["form-group"]}>
               <label>Họ và tên</label>
               <input
@@ -105,7 +112,7 @@ export default function Userprofile() {
             </div>
 
             <div className={styles["form-group"]}>
-              <label>Email</label>
+              <label>Email (sẽ không thay đổi được)</label>
               <input
                 type="email"
                 id="email"

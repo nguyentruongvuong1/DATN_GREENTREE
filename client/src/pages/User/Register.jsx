@@ -1,9 +1,9 @@
 import React, { useState, useRef } from "react";
-import styles from"../../styles/User/register.module.css";
+import styles from "../../styles/User/register.module.css";
 import { Link, useNavigate } from "react-router-dom";
-
+import "@ant-design/v5-patch-for-react-19";
+import { message } from "antd";
 export default function Register() {
-  const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -12,7 +12,7 @@ export default function Register() {
     email: useRef(),
     phone: useRef(),
     password: useRef(),
-    confirmPassword: useRef()
+    confirmPassword: useRef(),
   };
 
   const validateForm = () => {
@@ -22,38 +22,44 @@ export default function Register() {
       email: email.current.value.trim(),
       phone: phone.current.value.trim(),
       password: password.current.value,
-      confirmPassword: confirmPassword.current.value
+      confirmPassword: confirmPassword.current.value,
     };
 
     // Kiểm tra các trường bắt buộc
-    if (!values.username || !values.email || !values.phone || !values.password || !values.confirmPassword) {
-      setError("Vui lòng nhập đầy đủ thông tin");
+    if (
+      !values.username ||
+      !values.email ||
+      !values.phone ||
+      !values.password ||
+      !values.confirmPassword
+    ) {
+      message.error("Vui lòng nhập đầy đủ thông tin");
       return false;
     }
 
     // Kiểm tra mật khẩu trùng khớp
     if (values.password !== values.confirmPassword) {
-      setError("Mật khẩu xác nhận không khớp");
+      message.error("Mật khẩu xác nhận không khớp");
       return false;
     }
 
     // Kiểm tra định dạng email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(values.email)) {
-      setError("Email không hợp lệ");
+      message.error("Email không hợp lệ");
       return false;
     }
 
     // Kiểm tra số điện thoại (ít nhất 10 số)
     const phoneRegex = /^(0|\+84)[1-9][0-9]{8}$/;
     if (!phoneRegex.test(values.phone)) {
-      setError("Số điện thoại không hợp lệ");
+      message.error("Số điện thoại không hợp lệ");
       return false;
     }
 
     // Kiểm tra độ dài mật khẩu
-    if (values.password.length < 6) {
-      setError("Mật khẩu phải có ít nhất 6 ký tự");
+    if (values.password.length < 6 > 20) {
+      message.error("Mật khẩu phải có ít nhất 6 ký tự và tối đa 20 ký tự");
       return false;
     }
 
@@ -61,7 +67,6 @@ export default function Register() {
   };
 
   const handleRegister = async () => {
-    setError(null);
     const formValues = validateForm();
     if (!formValues) return;
 
@@ -75,8 +80,8 @@ export default function Register() {
           username: formValues.username,
           email: formValues.email,
           phone: formValues.phone,
-          password: formValues.password
-        })
+          password: formValues.password,
+        }),
       });
 
       const data = await response.json();
@@ -87,14 +92,16 @@ export default function Register() {
         sessionStorage.setItem("username", formValues.username);
         sessionStorage.setItem("phone", formValues.phone);
         sessionStorage.setItem("password", formValues.password);
-        
+
         navigate("/xacminh-otp");
       } else {
-        setError(data.thongbao || "Đăng ký thất bại. Do email đã tồn tại.");
+        message.error(
+          data.thongbao || "Đăng ký thất bại. Do email đã tồn tại."
+        );
       }
     } catch (err) {
       console.error("Registration error:", err);
-      setError("Có lỗi xảy ra khi đăng ký. Vui lòng thử lại.");
+      message.error("Có lỗi xảy ra khi đăng ký. Vui lòng thử lại.");
     } finally {
       setIsLoading(false);
     }
@@ -110,32 +117,30 @@ export default function Register() {
               Đăng Ký
             </Link>
           </div>
-          
+
           <h2>Đăng Ký</h2>
-          
-          {error && <p className={styles.error}>{error}</p>}
-          
+
           <form onSubmit={(e) => e.preventDefault()}>
             <div className={styles["input-group"]}>
               <span className={styles.icon}>👤</span>
-              <input 
-                type="text" 
-                placeholder="Họ và tên" 
-                ref={formRefs.username} 
-                required 
+              <input
+                type="text"
+                placeholder="Họ và tên"
+                ref={formRefs.username}
+                required
               />
             </div>
-            
+
             <div className={styles["input-group"]}>
               <span className={styles.icon}>📧</span>
-              <input 
-                type="email" 
-                placeholder="Email" 
-                ref={formRefs.email} 
-                required 
+              <input
+                type="email"
+                placeholder="Email"
+                ref={formRefs.email}
+                required
               />
             </div>
-            
+
             <div className={styles["input-group"]}>
               <span className={styles.icon}>📞</span>
               <input
@@ -145,18 +150,18 @@ export default function Register() {
                 required
               />
             </div>
-            
+
             <div className={styles["input-group"]}>
               <span className={styles.icon}>🔒</span>
-              <input 
-                type="password" 
-                placeholder="Mật khẩu (ít nhất 6 ký tự)" 
-                ref={formRefs.password} 
-                required 
+              <input
+                type="password"
+                placeholder="Mật khẩu (ít nhất 6 ký tự và tối đa 20 ký tự)"
+                ref={formRefs.password}
+                required
                 minLength="6"
               />
             </div>
-            
+
             <div className={styles["input-group"]}>
               <span className={styles.icon}>🔑</span>
               <input
@@ -167,16 +172,30 @@ export default function Register() {
                 minLength="6"
               />
             </div>
-            
-            <button 
-              type="button" 
+
+            <button
+              type="button"
               onClick={handleRegister}
-              disabled={isLoading} className={styles.btn}
+              disabled={isLoading}
+              className={`${styles.btn} ${isLoading ? styles.btn_loading : ""}`}
             >
-              {isLoading ? "Đang xử lý..." : "Đăng Ký"}
+              {isLoading ? (
+                <span
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <span className={styles.loading_spinner}></span>
+                  Đang xử lý...
+                </span>
+              ) : (
+                "Đăng Ký"
+              )}
             </button>
           </form>
-          
+
           <p className={styles.linkdk}>
             Bạn đã có tài khoản? <Link to="/dangnhap">Đăng nhập.</Link>
           </p>

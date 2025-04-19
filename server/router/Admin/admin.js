@@ -424,6 +424,34 @@ router.put('/order_status/:id', async (req, res) => {
   }
 });
 
+// Cập nhật trạng thái thanh toán
+router.put('/transaction_status', async (req, res) =>{
+    const {id, new_transaction_status} = req.body;
+    try{
+      // Lấy trạng thái
+      const order = await pool.query(`SELECT transaction_status FROM \`order\`  WHERE id = ?`, [id]);
+
+      if(order.length === 0) {
+        return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+      }
+
+      const currentStatus = order[0].transaction_status;
+
+      // Nếu đã thanh toán thì không cập nhật lại được
+      if(currentStatus === 2 &&  new_transaction_status === 1){
+        return res.status(400).json({ message: 'Đơn hàng đã thanh toán, không thể chuyển về chưa thanh toán' });
+      }
+
+      // Cập nhật trạng thái thanh toán
+      await pool.query(`UPDATE \`order\` SET transaction_status = ? WHERE id = ? `, [new_transaction_status, id]);
+      res.json({ message: 'Cập nhật trạng thái thành công' });
+
+    }catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Lỗi server' });
+    }
+})
+
 // API DASHBOARD ------------------------------------------------------------------------------------------------------------------------------------------
 // API tổng số đơn hàng
 router.get('/dashboard/orders', async (req, res) => {

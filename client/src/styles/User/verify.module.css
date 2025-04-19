@@ -1,110 +1,121 @@
-.container {
+.verify_container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
   background-color: #f5f5f5;
   padding: 20px;
 }
 
-.card {
+.verify_box {
   background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 30px;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 400px;
+  max-width: 450px;
+  text-align: center;
 }
 
-.title {
-  text-align: center;
-  color: #333;
+.verify_box h2 {
+  color: #2c3e50;
   margin-bottom: 20px;
+  font-size: 24px;
 }
 
 .info {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #555;
+  color: #7f8c8d;
+  margin-bottom: 30px;
+  font-size: 16px;
 }
 
-.input {
+.otp_input {
   width: 100%;
-  padding: 12px 15px;
-  margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 16px;
+  padding: 15px;
+  border: 2px solid #224229;
+  border-radius: 8px;
+  font-size: 18px;
   text-align: center;
+  letter-spacing: 5px;
+  margin-bottom: 20px;
+  transition: border-color 0.3s;
+}
+
+.otp_input:focus {
+  outline: none;
+  border-color: #224229;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
 .timer {
-  text-align: center;
-  margin: 15px 0;
-  font-size: 14px;
-  color: #666;
+  color: #e74c3c;
+  margin-bottom: 20px;
+  font-weight: 500;
 }
 
-.buttonGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.verifyButton {
-  background-color: #4CAF50;
+.verify_button {
+  width: 100%;
+  padding: 15px;
+  background-color: #224229;
   color: white;
   border: none;
-  padding: 12px;
-  border-radius: 5px;
-  cursor: pointer;
+  border-radius: 8px;
   font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
   transition: background-color 0.3s;
+  margin-bottom: 15px;
 }
 
-.verifyButton:hover {
-  background-color: #45a049;
+.verify_button:hover {
+  background-color: #224229;
 }
 
-.verifyButton:disabled {
-  background-color: #cccccc;
+.verify_button:disabled {
+  background-color: #224229;
   cursor: not-allowed;
 }
 
-.resendButton {
-  background-color: #2196F3;
-  color: white;
-  border: none;
-  padding: 12px;
-  border-radius: 5px;
-  cursor: pointer;
+.resend_button {
+  width: 100%;
+  padding: 15px;
+  background-color: transparent;
+  color: #224229;
+  border: 1px solid #224229;
+  border-radius: 8px;
   font-size: 16px;
-  transition: background-color 0.3s;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
 }
 
-.resendButton:hover {
-  background-color: #0b7dda;
+.resend_button:hover {
+  /* background-color: #224229; */
 }
 
-.resendButton.disabled {
-  background-color: #cccccc;
+.resend_button.disabled {
+  color: #224229;
+  border-color: #224229;
   cursor: not-allowed;
 }
+
+
 
 .error {
-  color: #f44336;
-  background-color: #ffebee;
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 15px;
-  text-align: center;
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 14px;
+} 
+
+/* Animation cho resend button */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
 
-.success {
-  color: #4CAF50;
-  background-color: #e8f5e9;
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 15px;
-  text-align: center;
+.resend_button:not(.disabled):hover {
+  animation: pulse 1s infinite;
 }
