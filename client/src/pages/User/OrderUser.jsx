@@ -7,11 +7,12 @@ import { useDispatch } from "react-redux";
 import "@ant-design/v5-patch-for-react-19";
 import { message } from "antd";
 import moment from "moment";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPrint } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
-
+import ReactPaginate from "react-paginate";
+import { themPr } from "../../CartSlice";
 export default function OrderUser() {
   const user = useSelector((state) => state.auth.user);
   const DaDangNhap = useSelector((state) => state.auth.DaDangNhap);
@@ -23,6 +24,13 @@ export default function OrderUser() {
   const [orderInfo, setOrderInfo] = useState(null);
   const [orderItems, setOrderItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  const navigate = useNavigate()
+
+  // Paginate
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
+  const [totalOrder, setTotalorder] = useState(0);
+
 
   const Canccel_order = async (orderId, userId) => {
     try {
@@ -73,10 +81,17 @@ export default function OrderUser() {
   }, [user?.id]);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/user/order_user/${user?.id}`)
+    fetch(
+      `${import.meta.env.VITE_API_URL}/user/order_user/${
+        user?.id
+      }?page=${currentPage}&limit=${itemsPerPage}`
+    )
       .then((res) => res.json())
-      .then((result) => setorder(result));
-  }, [user?.id]);
+      .then((result) => {
+        setorder(result.orders);
+        setTotalorder(result.total);
+      });
+  }, [user?.id, currentPage, itemsPerPage]);
 
   const fetchOrderDetail = async (order_id) => {
     try {
@@ -99,6 +114,10 @@ export default function OrderUser() {
     }
   };
 
+  const handlePageChange = (page) => {
+    setCurrentPage(Math.max(1, page));
+  };
+
   const handlePrint = () => {
     window.print();
   };
@@ -106,6 +125,26 @@ export default function OrderUser() {
   const closeModal = () => {
     setShowModal(false);
   };
+
+  const showPr = () => {
+    setshowpr(false);
+  };
+
+  // Đánh giá sản phẩm
+  const [showpr, setshowpr] = useState(false)
+  const [pr, setpr] = useState([])
+
+    const FetchPr = async (order_id) =>{
+          try{
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/user/orderdetail_pr/${order_id}`);
+            const result = await res.json();
+            setpr(result)
+            setshowpr(true)
+          }catch (error) {
+            console.error("Lỗi khi tải thông tin đơn hàng:", error);
+          }
+    } 
+
 
   if (!isChecked) {
     // Nếu chưa kiểm tra đăng nhập xong thì chưa render gì cả
@@ -207,7 +246,6 @@ export default function OrderUser() {
                           {" "}
                           Xem
                         </button>
-
                         {or.order_status === 1 && (
                           <button
                             onClick={() => Canccel_order(or.id, user.id)}
@@ -217,13 +255,107 @@ export default function OrderUser() {
                             Hủy đơn
                           </button>
                         )}
+
+                        {or.order_status === 4 && or.transaction_status === 2 &&(
+                          <button
+                            onClick={() => FetchPr(or.id)}
+                            className={styles.btn_huy}
+                          >
+                            {" "}
+                            Đánh giá và mua lại 
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+
+              {totalOrder > itemsPerPage && (
+                <div className={styles.paginationContainer}>
+                  <ReactPaginate
+                    breakLabel="⋯"
+                    nextLabel=">"
+                    previousLabel="<"
+                    onPageChange={(selectedItem) =>
+                      handlePageChange(selectedItem.selected + 1)
+                    }
+                    pageRangeDisplayed={2}
+                    marginPagesDisplayed={1}
+                    pageCount={Math.ceil(totalOrder / itemsPerPage)}
+                    renderOnZeroPageCount={null}
+                    containerClassName={styles.pagination}
+                    pageClassName={styles.pageItem}
+                    pageLinkClassName={styles.pageLink}
+                    previousClassName={styles.pageItem}
+                    previousLinkClassName={`${styles.pageLink} ${styles.previousLink}`}
+                    nextClassName={styles.pageItem}
+                    nextLinkClassName={`${styles.pageLink} ${styles.nextLink}`}
+                    activeClassName={styles.active}
+                    breakClassName={styles.break}
+                    forcePage={Math.min(
+                      Math.max(0, currentPage - 1),
+                      Math.ceil(totalOrder / itemsPerPage) - 1
+                    )}
+                  />
+                </div>
+              )}
             </div>
           </div>
+        </div>
+      )}
+
+      {showpr &&(
+        <div className={styles.modal} onClick={() => showPr()}>
+        <div
+          className={styles["modal-content"]}
+        >
+          <table className={styles["product-table"]}>
+  <thead className={styles["product-table-header"]}>
+    <tr>
+      <th className={styles["product-table-th"]}>STT</th>
+      <th className={styles["product-table-th"]}>Tên sản phẩm</th>
+      <th className={styles["product-table-th"]}>Giá</th>
+      <th className={styles["product-table-th"]}>Thao tác</th>
+    </tr>
+  </thead>
+
+  <tbody className={styles["product-table-body"]}>
+    {pr.map((product, index) => (
+      <tr key={index} className={styles["product-table-row"]}>
+        <td className={styles["product-table-td"]}>{index + 1}</td>
+        <td className={styles["product-table-td"]}>{product.name}</td>
+        <td className={styles["product-table-td"]}>{Number(product.price).toLocaleString('vi')} VNĐ</td>
+        <td className={styles["product-table-td"]}>
+          <button
+            className={styles["btn-review"]}
+            onClick={() => navigate(`/chi_tiet_san_pham/${product.id}`)}
+          >
+            Đánh giá
+          </button>
+          <button
+            className={styles["btn-rebuy"]}
+            onClick={() => {
+              if (product.quantity === 0) {
+                message.error(
+                  'Sản phẩm đã hết hàng. Nếu bạn muốn mua sản phẩm này hãy liên hệ với chúng tôi để được hỗ trợ.'
+                );
+                return;
+              } else {
+                dispatch(themPr(product));
+                navigate('/giohang');
+              }
+            }}
+          >
+            Mua lại
+          </button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+        
+        </div>
         </div>
       )}
 
@@ -294,7 +426,9 @@ export default function OrderUser() {
                   <p>
                     <strong>Thanh toán:</strong>{" "}
                     <span>
-                      {orderInfo.transaction_status === 1 ? 'Chưa thanh toán' : 'Đã thanh toán'}
+                      {orderInfo.transaction_status === 1
+                        ? "Chưa thanh toán"
+                        : "Đã thanh toán"}
                     </span>
                   </p>
                 </div>

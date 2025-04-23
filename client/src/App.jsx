@@ -20,7 +20,10 @@ import Checkpayment from "./pages/User/checkpayment";
 import OrderUser from "./pages/User/OrderUser";
 import ChangePass from "./pages/User/ChangePass";
 import ChangePassnologin from "./components/User/ChangePassnologin";
-
+import Gioithieu from "./pages/User/Gioithieu";
+import Chinhsachbaomat from "./pages/User/Chinhsachbaomat";
+import Chinhsachbaohanh from "./pages/User/Chinhsachbaohanh";
+import Phuongthucvanchuyen from "./pages/User/Phuongthucvanchuyen";
 
 import AdminVoucher from "./pages/Admin/Adminvoucher";
 import AdminCate from "./pages/Admin/Admincate";
@@ -59,6 +62,11 @@ function App() {
           <Route path="/info_changepass" element={<ChangePass />} />
           <Route path="/reset_pass" element={<ChangePassnologin />} />
           <Route path="/check_payment" element={<Checkpayment />} />
+          <Route path="/gioithieu" element={<Gioithieu />} />
+          <Route path="/chinh_sach_bao_mat" element={<Chinhsachbaomat />} />
+          <Route path="/chinh_sach_bao_hanh" element={<Chinhsachbaohanh />} />
+          <Route path="/phuong_thuc_van_chuyen" element={<Phuongthucvanchuyen />} />
+          
           <Route path="*" element={<NotFound />} />
         </Route>
 

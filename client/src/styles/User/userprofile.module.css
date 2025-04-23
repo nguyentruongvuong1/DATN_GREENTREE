@@ -453,6 +453,140 @@
   }
  
 
+  /* paginate */
+ /* Pagination styles */
+/* Container chính */
+.paginationContainer {
+    display: flex;
+    justify-content: center;
+  }
+  
+  /* Danh sách pagination */
+  .pagination {
+    display: flex;
+    list-style: none;
+    padding: 20px 0;
+    gap: 8px;
+    align-items: center;
+
+  }
+  
+  /* Các nút trang và điều hướng */
+  .pageItem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .pageLink {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    border: 1px solid #d9d9d9;
+    color: #333;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+  
+  /* Nút Previous và Next */
+  .previousLink,
+  .nextLink {
+    padding: 0 8px;
+    width: auto;
+  }
+  
+  /* Trang hiện tại */
+  .active .pageLink {
+    background-color: #28a745;
+    color: white;
+    border-color: #28a745;
+  }
+  
+  /* Hiệu ứng hover */
+  .pageLink:hover:not(.active .pageLink) {
+    background-color: #f5f5f5;
+    border-color: #d9d9d9;
+  }
+  
+  /* Dấu ba chấm (ellipsis) */
+  .break {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: #333;
+  }
+
+  /* Đánh giá và mua lại */
+  .product-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+    background-color: #fff;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  
+  .product-table-header {
+    background-color: #224229;
+    color: white;
+  }
+  
+  .product-table-th,
+  .product-table-td {
+    padding: 12px 16px;
+    text-align: left;
+  }
+  
+  .product-table-row:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  
+  .product-table-row:hover {
+    background-color: #f1f1f1;
+    transition: background-color 0.3s;
+  }
+  
+  /* Nút "Đánh giá" */
+  .btn-review {
+    padding: 8px 12px;
+    margin-right: 8px;
+    border: none;
+    border-radius: 6px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s;
+  }
+  
+  .btn-review:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Nút "Mua lại" */
+  .btn-rebuy {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    background-color: #28a745;
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s;
+  }
+  
+  .btn-rebuy:hover {
+    background-color: #1e7e34;
+  }
+
+
 /* Responsive */
 @media (max-width: 768px) {
     .container {

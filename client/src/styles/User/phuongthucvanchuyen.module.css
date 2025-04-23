@@ -1,0 +1,49 @@
+
+
+.container{
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-bottom:20px;
+
+}
+
+.container h1{
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.content h2 {
+    font-size: 25px;
+    font-weight: bold;
+    color: #2E7D32; /* Màu xanh lá đậm */
+    padding-bottom:10px;
+}
+.content p{
+    font-size:18px;
+    line-height:35px;
+    padding-bottom:10px;
+    margin: 0;
+}
+.content .info p {
+    line-height:45px;
+}
+.background{
+    background-color: white;
+    padding: 20px 0;
+}
+
+.mini{
+    font-size:20px;
+    font-weight: bold;
+    color:#2E7D32;
+    padding:5px 0px;
+}
+@media (max-width: 480px) {
+.container {
+        padding: 0px 10px;   
+}
+
+.container h1{
+    font-size: 30px;
+}
+}

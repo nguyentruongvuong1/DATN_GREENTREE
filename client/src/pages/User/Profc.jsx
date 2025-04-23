@@ -380,8 +380,13 @@ const ProductC = () => {
                       <div className={styles.pr_themvaogio}>
                         <button
                           onClick={() => {
-                            dispatch(themPr(pr));
-                            message.success("Bạn đã thêm sản phẩm vào giỏ hàng");
+                            if(pr.inventory_quantity === 0){
+                              message.error('Sản phẩm đã hết hàng. Nếu bạn muốn mua sản phẩm này hãy liên hệ với chúng tôi để được hỗ trợ')
+                            }else{
+                              dispatch(themPr(pr));
+                              message.success("Bạn đã thêm sản phẩm vào giỏ hàng");
+                            }
+                           
                           }}
                         >
                           Thêm vào giỏ
