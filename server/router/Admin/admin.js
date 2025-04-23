@@ -425,31 +425,31 @@ router.put('/order_status/:id', async (req, res) => {
 });
 
 // Cập nhật trạng thái thanh toán
-router.put('/transaction_status', async (req, res) =>{
-    const {id, new_transaction_status} = req.body;
-    try{
-      // Lấy trạng thái
-      const order = await pool.query(`SELECT transaction_status FROM \`order\`  WHERE id = ?`, [id]);
+router.put('/transaction_status', async (req, res) => {
+  const { id, new_transaction_status } = req.body;
+  try {
+    // Lấy trạng thái
+    const order = await pool.query(`SELECT transaction_status FROM \`order\`  WHERE id = ?`, [id]);
 
-      if(order.length === 0) {
-        return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
-      }
-
-      const currentStatus = order[0].transaction_status;
-
-      // Nếu đã thanh toán thì không cập nhật lại được
-      if(currentStatus === 2 &&  new_transaction_status === 1){
-        return res.status(400).json({ message: 'Đơn hàng đã thanh toán, không thể chuyển về chưa thanh toán' });
-      }
-
-      // Cập nhật trạng thái thanh toán
-      await pool.query(`UPDATE \`order\` SET transaction_status = ? WHERE id = ? `, [new_transaction_status, id]);
-      res.json({ message: 'Cập nhật trạng thái thành công' });
-
-    }catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Lỗi server' });
+    if (order.length === 0) {
+      return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
     }
+
+    const currentStatus = order[0].transaction_status;
+
+    // Nếu đã thanh toán thì không cập nhật lại được
+    if (currentStatus === 2 && new_transaction_status === 1) {
+      return res.status(400).json({ message: 'Đơn hàng đã thanh toán, không thể chuyển về chưa thanh toán' });
+    }
+
+    // Cập nhật trạng thái thanh toán
+    await pool.query(`UPDATE \`order\` SET transaction_status = ? WHERE id = ? `, [new_transaction_status, id]);
+    res.json({ message: 'Cập nhật trạng thái thành công' });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Lỗi server' });
+  }
 })
 
 // API DASHBOARD ------------------------------------------------------------------------------------------------------------------------------------------
@@ -493,28 +493,27 @@ router.get('/dashboard/users/new', async (req, res) => {
 
 // API tổng doanh thu theo ngày, tuần, tháng và tổng doanh thu
 router.get('/dashboard/revenue/all', async (req, res) => {
-
   try {
     const [[{ revenueDay }]] = await pool.query(`
-      SELECT SUM(total) AS revenueDay
-      FROM order_detail
+      SELECT SUM(total_amount) AS revenueDay
+      FROM \`order\`
       WHERE DATE(create_at) = CURDATE()
     `);
 
     const [[{ revenueWeek }]] = await pool.query(`
-      SELECT SUM(total) AS revenueWeek
-      FROM order_detail
+      SELECT SUM(total_amount) AS revenueWeek
+      FROM \`order\`
       WHERE YEARWEEK(create_at, 1) = YEARWEEK(CURDATE(), 1)
     `);
 
     const [[{ revenueMonth }]] = await pool.query(`
-      SELECT SUM(total) AS revenueMonth
-      FROM order_detail
+      SELECT SUM(total_amount) AS revenueMonth
+      FROM \`order\`
       WHERE MONTH(create_at) = MONTH(CURDATE()) AND YEAR(create_at) = YEAR(CURDATE())
     `);
 
     const [[{ totalRevenue }]] = await pool.query(`
-      SELECT SUM(total) AS totalRevenue FROM order_detail
+      SELECT SUM(total_amount) AS totalRevenue FROM \`order\`
     `);
 
     res.json({
@@ -529,30 +528,113 @@ router.get('/dashboard/revenue/all', async (req, res) => {
   }
 });
 
-// API doanh thu theo từng ngày trong tuần (Thứ 2 - Chủ nhật)
-router.get('/dashboard/revenue/weekdays', async (req, res) => {
+
+// API doanh thu theo từng tháng trong năm hiện tại
+router.get('/dashboard/revenue/monthly', async (req, res) => {
   try {
     const [data] = await pool.query(`
-      SELECT 
-        DAYOFWEEK(create_at) AS weekday,
-        SUM(total) AS revenue
-      FROM order_detail
-      WHERE YEARWEEK(create_at, 1) = YEARWEEK(CURDATE(), 1)
-      GROUP BY weekday
+      SELECT MONTH(create_at) AS month, SUM(total_amount) AS revenue
+      FROM \`order\`
+      WHERE YEAR(create_at) = YEAR(CURDATE())
+      GROUP BY month
     `);
 
-    // Tạo mảng doanh thu từ Thứ 2 (2) đến Chủ nhật (1)
-    const revenuePerDay = Array(7).fill(0);
-    data.forEach(({ weekday, revenue }) => {
-      const index = weekday === 1 ? 6 : weekday - 2; // chuyển Chủ nhật (1) thành cuối
-      revenuePerDay[index] = revenue;
+    const revenuePerMonth = Array(12).fill(0);
+    data.forEach(({ month, revenue }) => {
+      revenuePerMonth[month - 1] = revenue;
+    });
+
+    res.json({ revenuePerMonth });
+  } catch (error) {
+    console.error("Lỗi khi lấy doanh thu theo tháng:", error);
+    res.status(500).json({ message: "Lỗi server", error: error.message });
+  }
+});
+
+// API doanh thu theo từng năm
+router.get('/dashboard/revenue/yearly', async (req, res) => {
+  try {
+    const [data] = await pool.query(`
+      SELECT YEAR(create_at) AS year, SUM(total_amount) AS revenue
+      FROM \`order\`
+      GROUP BY year
+      ORDER BY year
+    `);
+
+    res.json({ revenuePerYear: data });
+  } catch (error) {
+    console.error("Lỗi khi lấy doanh thu theo năm:", error);
+    res.status(500).json({ message: "Lỗi server", error: error.message });
+  }
+});
+
+router.get('/dashboard/revenue/daily/:month', async (req, res) => {
+  try {
+    const selectedMonth = parseInt(req.params.month, 10);
+    const [data] = await pool.query(`
+      SELECT DAY(create_at) AS day, SUM(total_amount) AS revenue
+      FROM \`order\`
+      WHERE MONTH(create_at) = ? AND YEAR(create_at) = YEAR(CURDATE())
+      GROUP BY day
+      ORDER BY day
+    `, [selectedMonth]);
+
+    const daysInMonth = new Date(new Date().getFullYear(), selectedMonth, 0).getDate();
+    const revenuePerDay = Array(daysInMonth).fill(0);
+    data.forEach(({ day, revenue }) => {
+      revenuePerDay[day - 1] = revenue;
     });
 
     res.json({ revenuePerDay });
   } catch (error) {
-    console.error("Lỗi khi lấy doanh thu theo thứ:", error);
+    console.error("Lỗi khi lấy doanh thu theo ngày:", error);
     res.status(500).json({ message: "Lỗi server", error: error.message });
   }
 });
+
+//API bảng doanh thu theo ngày
+// API doanh thu theo ngày kèm thông tin người dùng và trạng thái
+router.get('/dashboard/revenue/day/details', async (req, res) => {
+  try {
+    const [orders] = await pool.query(`
+      SELECT 
+        u.username AS username,
+        o.total_amount,
+        o.payment_method,
+        o.order_status
+      FROM \`order\` o
+      JOIN \`user\` u ON o.user_id = u.id 
+      WHERE DATE(o.create_at) = CURDATE() 
+    `);
+
+    // Optional: mapping để dễ hiểu hơn phía frontend
+    // Tạo một bảng ánh xạ trạng thái đơn hàng sang mô tả dễ hiểu hơn
+    const statusMap = {
+      1: "Chờ xác nhận",
+      2: "Xác nhận đơn hàng",
+      3: "Đang giao hàng",
+      4: "Giao hàng thành công"
+    };
+
+    const paymentMethodMap = {
+      1: "COD",
+      2: "VNPAY"
+    };
+
+    // Duyệt qua tất cả các đơn hàng và chuyển đổi giá trị theo bảng ánh xạ
+    const result = orders.map(order => ({
+      username: order.username,
+      total_amount: order.total_amount,
+      payment_method: paymentMethodMap[order.payment_method] || "Khác",
+      order_status: statusMap[order.order_status] || "Không rõ"
+    }));
+
+    res.json(result);
+  } catch (error) {
+    console.error("Lỗi khi lấy doanh thu chi tiết theo ngày:", error);
+    res.status(500).json({ message: "Lỗi server", error: error.message });
+  }
+});
+
 
 module.exports = router;

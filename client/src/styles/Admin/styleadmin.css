@@ -350,7 +350,7 @@ body {
     justify-content: center;
     align-items: center;
     padding: 20px;
-    width: 100%;
+    /* width: 1500px; */
   }
   
   
@@ -360,16 +360,17 @@ body {
     box-shadow: 0 7px 25px rgba(0, 0, 0, 0.1); 
     padding: 30px;                   
     height: 100%;
-    width: 70%;                   
+    /* width: 83%;                    */
     display: flex;
     justify-content: center;         
     align-items: center;             
   }
   
   .graphBox .box canvas {
-    width: 100% !important;          
-    height: auto;                   
+    width: 100% !important;
+    height: 500px !important;  
   }
+  
   /* charts */
 
 

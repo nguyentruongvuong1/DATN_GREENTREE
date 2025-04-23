@@ -15,6 +15,8 @@ const AdminDashboard = () => {
   const [revenueWeek, setRevenueWeek] = useState(0);
   const [revenueMonth, setRevenueMonth] = useState(0);
   const [totalRevenue, setTotalRevenue] = useState(0);
+  const [dailyOrders, setDailyOrders] = useState([]);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
 
   useEffect(() => {
@@ -58,6 +60,35 @@ const AdminDashboard = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchDailyDetails = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/dashboard/revenue/day/details`);
+        if (!res.ok) throw new Error("Lỗi khi gọi API doanh thu theo ngày");
+        const data = await res.json();
+        setDailyOrders(data);
+      } catch (error) {
+        console.error("Lỗi khi lấy doanh thu chi tiết theo ngày:", error);
+        setDailyOrders([]); // đảm bảo không undefined
+      }
+    };
+  
+    fetchDailyDetails();
+  }, []);
+  
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // cập nhật mỗi phút là đủ nếu chỉ hiển thị ngày
+  
+    return () => clearInterval(timer);
+  }, []);
+  
+  const formattedTime = currentTime.toLocaleDateString('vi-VN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
 
   return (
     <div className="main">
@@ -126,8 +157,8 @@ const AdminDashboard = () => {
         </div>
         <div className="card">
           <div>
-          <div className="numbers">{newUsers}</div>            
-          <div className="cardName">Người Dùng Mới</div>
+            <div className="numbers">{newUsers}</div>
+            <div className="cardName">Người Dùng Mới</div>
           </div>
           <div className="iconBx">
             <ion-icon name="people-outline"></ion-icon>
@@ -144,93 +175,44 @@ const AdminDashboard = () => {
         </div>
       </div>
       <div className="graphBox">
-        
+
         <Bieudo />
       </div>
 
       <div className="details">
         <div className="recentOrders">
           <div className="cardHeader">
-            <h2>Bảng Doanh Thu</h2>
+            <h2>Bảng Doanh Thu Trong Ngày</h2>
+            <h4>{formattedTime}</h4>
           </div>
           <table>
             <thead>
               <tr>
-                <td>Name</td>
-                <td>Price</td>
-                <td>Payment</td>
-                <td>Status</td>
+                <th>Người dùng</th>
+                <th>Doanh thu</th>
+                <th>Phương thức thanh toán</th>
+                <th>Trạng thái đơn hàng</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Star Refrigerator</td>
-                <td>$1200</td>
-                <td>Paid</td>
-                <td><span className="status delivered">Delivered</span></td>
-              </tr>
-              <tr>
-                <td>Window Coolers</td>
-                <td>$110</td>
-                <td>Due</td>
-                <td><span className="status pending">Pending</span></td>
-              </tr>
-              <tr>
-                <td>Speakers</td>
-                <td>$620</td>
-                <td>Paid</td>
-                <td><span className="status return">Return</span></td>
-              </tr>
-              <tr>
-                <td>Hp Laptop</td>
-                <td>$110</td>
-                <td>Due</td>
-                <td><span className="status inprogress">In Progress</span></td>
-              </tr>
-              <tr>
-                <td>Apple Watch</td>
-                <td>$1200</td>
-                <td>Paid</td>
-                <td><span className="status delivered">Delivered</span></td>
-              </tr>
-              <tr>
-                <td>Wall Fan</td>
-                <td>$110</td>
-                <td>Paid</td>
-                <td><span className="status pending">Pending</span></td>
-              </tr>
-              <tr>
-                <td>Adidas Shoes</td>
-                <td>$620</td>
-                <td>Paid</td>
-                <td><span className="status return">Return</span></td>
-              </tr>
-              <tr>
-                <td>Denim Shirts</td>
-                <td>$110</td>
-                <td>Due</td>
-                <td><span className="status inprogress">In Progress</span></td>
-              </tr>
-              <tr>
-                <td>Casual Shoes</td>
-                <td>$575</td>
-                <td>Paid</td>
-                <td><span className="status pending">Pending</span></td>
-              </tr>
-              <tr>
-                <td>Wall Fan</td>
-                <td>$110</td>
-                <td>Paid</td>
-                <td><span className="status pending">Pending</span></td>
-              </tr>
-              <tr>
-                <td>Denim Shirts</td>
-                <td>$110</td>
-                <td>Due</td>
-                <td><span className="status inprogress">In Progress</span></td>
-              </tr>
+              {Array.isArray(dailyOrders) && dailyOrders.length > 0 ? (
+                dailyOrders.map((order, index) => (
+                  <tr key={index}>
+                    <td>{order.username}</td>
+                    <td>{Number(order.total_amount).toLocaleString()} VND</td>
+                    <td>{order.payment_method}</td>
+                    <td>{order.order_status}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4">Không có doanh thu hôm nay hoặc lỗi khi tải dữ liệu.</td>
+                </tr>
+              )}
             </tbody>
+
           </table>
+
         </div>
 
       </div>
