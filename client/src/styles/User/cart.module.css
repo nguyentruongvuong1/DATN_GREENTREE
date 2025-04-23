@@ -143,16 +143,13 @@
     padding-bottom: 10px;
   }
   
-  .container_tongdonhang div {
-    margin-bottom: 15px;
-  }
+  
   
   .container_tongdonhang p {
     margin: 8px 0;
     font-size: 16px;
     color: #555;
   }
-  
   
   
   .container_tongdonhang input {
@@ -163,9 +160,35 @@
     font-size: 14px;
     width: 200px;
   }
-  
+ 
 
   .voucher button{
+    color: white;
+    background-color: #224229;
+    border-radius: 5px;
+    cursor: pointer;
+    border-style: none;
+    transition: all ease-in 0.3s;
+    padding: 10px;
+
+  }
+
+  .voucher button:hover{
+    background-color: #00791C;
+  }
+
+  .voucher_note{
+    color: red !important;
+    font-size: 14px !important;
+  }
+
+  .voucher_code{
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .voucher_code button{
     height: 34.4px;
     color: white;
     background-color: #224229;
@@ -173,11 +196,7 @@
     cursor: pointer;
     border-style: none;
     transition: all ease-in 0.3s;
-
-  }
-
-  .voucher button:hover{
-    background-color: #00791C;
+    padding: 10px;
   }
 
 
@@ -271,6 +290,7 @@
     .voucher {
         display: flex;
         flex-direction: column;
+        
     }
 
     .voucher button {

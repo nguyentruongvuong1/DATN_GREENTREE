@@ -6,16 +6,16 @@ const saveCart = (cartState) =>{
 
 const loadCartFromLocalStorage = () =>{
     try {
-        const Cart = localStorage.getItem('cart');
-        if(Cart === null) return [];
-        return JSON.parse(Cart)
-    }catch(err){
+        const cart = localStorage.getItem('cart');
+        if(cart === null) return { listPr: [], voucher: {} };
+        return JSON.parse(cart);
+    } catch(err) {
         console.error("Failed to load cart from localStorage:", err);
-        return [];
+        return { listPr: [], voucher: {} };
     }
 };
 
-const initialState = {listPr: loadCartFromLocalStorage() };
+const initialState = {listPr: loadCartFromLocalStorage().listPr || [], voucher: loadCartFromLocalStorage().voucher || null };
 
 export const cartSlice = createSlice({
     name: 'cart',
@@ -29,7 +29,7 @@ export const cartSlice = createSlice({
             } else {
                 state.listPr[index].so_luong += pr.so_luong || 1;
             }
-            saveCart(state.listPr);
+            saveCart(state);
         },
 
         SuaSL: (state, action) =>{
@@ -37,7 +37,7 @@ export const cartSlice = createSlice({
             const index = state.listPr.findIndex(p => p.id === id);
             if(index !== -1){
                 state.listPr[index].so_luong = Number(so_luong);
-                saveCart(state.listPr);
+                saveCart(state);
             }
         },
 
@@ -46,17 +46,30 @@ export const cartSlice = createSlice({
             const index = state.listPr.findIndex(p => p.id === id);
             if(index !== -1){
                 state.listPr.splice(index, 1);
-                saveCart(state.listPr);
+                saveCart(state);
             }
+        },
+
+        ApDungVoucher: (state, action) => {
+            state.voucher = action.payload;  
+            saveCart(state);
+        },
+        
+        XoaVoucher: (state) => {
+            state.voucher = null;
+            saveCart(state);
         },
 
         XoaGH: (state) =>{
             state.listPr = [];
-            saveCart(state.listPr)
-        }
+            state.voucher = null;
+            saveCart(state)
+        },
+
+        
     }
 })
 
 
-export const {themPr, SuaSL, XoaGH, XoaPr} = cartSlice.actions
+export const {themPr, SuaSL, XoaGH, XoaPr, ApDungVoucher, XoaVoucher} = cartSlice.actions
 export default cartSlice.reducer;

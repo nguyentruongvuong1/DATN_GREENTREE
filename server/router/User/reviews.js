@@ -14,8 +14,8 @@ router.get('/check-purchase', async (req, res) => {
           JOIN order_detail od ON o.id = od.order_id
           WHERE o.user_id = ?
           AND od.pr_id = ?
-          AND o.order_status = 4  -- Đã hoàn thành
-          AND o.transaction_status = 2  -- Đã thanh toán
+          AND o.order_status = 4  
+          AND o.transaction_status = 2  
           LIMIT 1
       `, [userId, productId]);
 

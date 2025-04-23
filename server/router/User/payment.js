@@ -95,6 +95,7 @@ router.post("/checkout", async (req, res) => {
     const {
       id,
       user_id,
+      voucher_id,
       order_status, 
       transaction_status,
       payment_method,
@@ -108,11 +109,12 @@ router.post("/checkout", async (req, res) => {
       // 1. Tạo đơn hàng chính
       const [orderResult] = await connection.query(
         `INSERT INTO \`order\` 
-    (id, user_id, name, phone,address, note, voucher_id, order_status, transaction_status, payment_method, total_amount) 
-    VALUES (?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?)`,
+    (id, user_id, voucher_id, name, phone, address, note, order_status, transaction_status, payment_method, total_amount) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           id,
           user_id,
+          voucher_id,
           customer_info.name,
           customer_info.phone,
           customer_info.address,
@@ -153,6 +155,12 @@ router.post("/checkout", async (req, res) => {
           `UPDATE product SET inventory_quantity = inventory_quantity - ? WHERE id = ?`,
           [item.quantity, item.pr_id]
         );
+      }
+
+
+      // Cạp nhật số lượng voucher
+      if(voucher_id) {
+        await connection.query(`UPDATE voucher SET quantity = quantity - 1 WHERE id = ?`, [voucher_id]);
       }
 
       // 3. Cập nhật thông tin người dùng nếu có user_id
@@ -210,7 +218,7 @@ router.post("/checkout", async (req, res) => {
         const [orderResult] = await connection.query(
           `INSERT INTO \`order\` 
             (id, user_id, name, phone, address, note, voucher_id, order_status, transaction_status, transaction_code, payment_method, total_amount) 
-            VALUES (?, ?, ?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)`,
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             id,
             user_id,
@@ -218,6 +226,7 @@ router.post("/checkout", async (req, res) => {
             customer_info.phone,
             customer_info.address,
             customer_info.note,
+            voucher_id,
             order_status, 
             0, 
             transaction_code,
@@ -375,6 +384,16 @@ router.get("/check_payment", async (req, res) => {
         );
       }
 
+      // Caapj nhaatj voucher
+      const [Voucher] = await connection.query(
+        `SELECT voucher_id FROM \`order\` WHERE id = ?`, [orderId]
+      );
+
+      if(Voucher[0].voucher_id){
+        await connection.query(`UPDATE voucher SET quantity = quantity - 1 WHERE id = ?`, [Voucher[0].voucher_id])
+          
+      }
+
       // 3. CẬP NHẬT THỐNG KÊ NGƯỜI DÙNG (PHẦN BỔ SUNG)
       // Lấy thông tin user_id và tổng tiền từ đơn hàng
       const [orderInfo] = await connection.query(
@@ -499,6 +518,13 @@ router.post("/cancel_order", async (req, res) => {
 
       // Tính tổng số lượng sản phẩm
       totalItemsCount += item.quantity;
+    }
+
+    // Cập nhật voucher
+    const [Voucher] = await connection.query(`SELECT voucher_id FROM \`order\` WHERE id = ?`,[order_id])
+
+    if(Voucher[0].voucher_id){
+      await connection.query(`UPDATE voucher SET quantity = quantity + 1 WHERE id = ?`, [Voucher[0].voucher_id])
     }
 
     // 3. Cập nhật thông tin user - SỬA LỖI Ở ĐÂY

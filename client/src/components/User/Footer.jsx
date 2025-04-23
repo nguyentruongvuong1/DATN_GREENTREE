@@ -1,5 +1,5 @@
 import styles from"../../styles/User/footer.module.css"; 
-
+import {Link} from 'react-router-dom'
 export default function Footer() {
     return (
         <footer className={styles.bgfooter}>
@@ -20,30 +20,29 @@ export default function Footer() {
   
           <div className={styles.footer_vct}>
             <p>VỀ CHÚNG TÔI</p>
-            <a href="">Giới thiệu</a>
-            <a href="">Liên hệ</a>
-            <a href="">Chính sách bảo mật</a>
-            <a href="">Chính sách bảo hành</a>
-            <a href="">Phương thức thanh toán</a>
-            <a href="">Phương thức vận chuyển</a>
+            <Link to={"/gioithieu"}>Giới thiệu</Link>
+            <Link to={"/lienhe"}>Liên hệ</Link>
+            <Link to={"/chinh_sach_bao_mat"}>Chính sách bảo mật</Link>
+            <Link to={"/chinh_sach_bao_hanh"}>Chính sách bảo hành</Link>
+            <Link to={"/phuong_thuc_van_chuyen"}>Phương thức vận chuyển</Link>
           </div>
   
           <div className={styles.footer_vct}>
             <p>LIÊN HỆ</p>
-            <a href="">Hotline 1: 0364185395</a>
-            <a href="">Hotline 2: 0364185395</a>
-            <a href="">Email: greentreeshop@gmail.com</a>
-            <a href="">Địa chỉ: Công Viên Phần Mền Quang Trung</a>
+            <Link to={"/"}>Hotline 1: 0364185395</Link>
+            <Link to={"/"}>Hotline 2: 0364185395</Link>
+            <Link to={"/"}>Email: greentreeshop@gmail.com</Link>
+            <Link to={"/"}>Địa chỉ: Công Viên Phần Mền Quang Trung</Link>
           </div>
   
           <div className={styles.footer_vct}>
             <p>PHƯƠNG THỨC THANH TOÁN</p>
-            <a href="">Giới thiệu</a>
-            <a href="">Liên hệ</a>
-            <a href="">Chính sách bảo mật</a>
-            <a href="">Chính sách bảo hành</a>
-            <a href="">Phương thức thanh toán</a>
-            <a href="">Phương thức vận chuyển</a>
+            <Link to={"/"}>Giới thiệu</Link>
+            <Link to={"/"}>Liên hệ</Link>
+            <Link to={"/"}>Chính sách bảo mật</Link>
+            <Link to={"/"}>Chính sách bảo hành</Link>
+            <Link to={"/"}>Phương thức thanh toán</Link>
+            <Link to={"/"}>Phương thức vận chuyển</Link>
           </div>
         </div>
   

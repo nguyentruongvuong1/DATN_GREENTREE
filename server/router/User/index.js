@@ -338,16 +338,20 @@ router.post('/checkvoucher', async (req, res) => {
     try {
         const [rows] = await pool.query(
             `SELECT * FROM voucher WHERE code = ? AND status = 1 
-             AND start_date <= ? AND end_date >= ? AND used_count < quantity`, 
+             AND start_date <= ? AND end_date >= ? `, 
             [code, now, now]
         ); 
         
         if (rows.length === 0) {
             return res.status(400).json({ message: "Voucher không hợp lệ hoặc đã hết hạn" });
+        }else if(rows[0].quantity === 0){
+          return res.status(400).json({ message: "Voucher không hợp lệ hoặc đã hết hạn" });
         }
 
         const voucher = rows[0]; // Lấy voucher đầu tiên
         res.json({
+            id: rows[0].id,
+            code: code,
             discount_type: voucher.discount_type,
             discount_value: voucher.discount_value
         });

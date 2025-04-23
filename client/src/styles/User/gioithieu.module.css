@@ -1,0 +1,392 @@
+
+.title_gt {
+    text-align: center;
+    padding: 20px;
+    }
+    .title_gt h1 {
+    margin: 0;
+    font-size: 28px;
+    }
+    .title_gt p {
+    font-style: italic;
+    color: #666;
+    font-size:18px;
+    padding-top:10px;
+    margin: 0;
+    }
+    
+    .container{
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 20px;
+    display: flex;
+    padding: 10px 0;
+    }
+    .container-another{
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0;
+    
+    
+    }
+    
+    .text-content {
+    flex: 1;
+    padding-left:10px;
+    }
+    .text-content h2 {
+    color: #2e8b57;
+    font-size:30px;
+    }
+    .text-content p {
+    line-height: 1.6;
+    }
+    .image-content img {
+    max-width: 100%;
+    border-radius: 8px;
+    padding-top:10px;
+    
+    }
+    .features {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    background-color: #FCF9F3;
+    padding-top:20px;
+    
+    }
+    .feature {
+    flex: 1;
+    padding: 20px;
+    
+    
+    }
+    .feature img {
+    width: 90px;
+    }
+    .feature h3 {
+    color: #214738;
+    font-size:30px;
+    padding-top:20px;
+    }
+    .feature p{
+    text-align: left;
+    padding-top:20px;
+    font-size:18px;
+    color:#224229;
+    }
+    .background-image {
+    background-color:#FCF9F3 ;
+    
+    
+    }
+    .background-image img{
+    width:1600px;
+    
+    }
+    
+    .tinnhan{
+    padding-top:20px;;
+    font-size:18px;
+    line-height: 30px;
+    color:#224229;
+    }
+
+    .tinnhan p{
+        margin: 0;
+    }
+    
+    .quote-container {
+    max-width: 1200px;
+    margin:0 auto;
+    display: flex;
+    align-items: center;
+    padding: 20px 0px;
+    
+    }
+    .story-container {
+    max-width: 800px;
+    margin:0 auto;
+    
+    
+    
+    }
+    .quote-container img {
+    width:600px;
+    height:400px;
+    right:-200px;
+    
+    /* border-radius: 8px; */
+    
+    
+    }
+    .quote-box {
+    /* position: absolute; */
+    position: relative;
+    left:-100px;
+    bottom:10px;
+    background-color: #fef3eb;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 200px;
+    /* height:240px; */
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    
+    
+    }
+    .quote-box p {
+    font-size: 18px;
+    color: #2e4d32;
+    margin: 0;
+    }
+    .quote-box small {
+    display: block;
+    margin-top: 10px;
+    font-style: italic;
+    color: #555;
+    font-size:18px;
+    
+    }
+    .header{
+    text-align: center;
+    font-size:30px;
+    font-weight: bold;
+    color:#214738;
+    }
+    header p{
+    font-size:18px;
+    }
+    .background{
+    background-color: #F0F2E4;
+    }
+    
+    
+    
+    
+    .quote-container1 {
+    max-width: 1400px;
+    margin:0 auto;
+    display: flex;
+    align-items: center;
+    
+    
+    }
+    
+    .quote-container1 img {
+    width:800px;
+    right:-200px;
+    height: 500px;
+    /* border-radius: 8px; */
+    
+    
+    }
+    .quote-box1 {
+    /* position: absolute; */
+    position: relative;
+    left:-200px;
+    bottom:-200px;
+    background-color: #fef3eb;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 416px;
+    height:260px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    font-size:18px;
+    line-height:30px;
+    
+    
+    }
+    .quote-box1 p {
+    font-size: 18px;
+    color: #2e4d32;
+    margin: 0;
+    }
+    .quote-box1 small {
+    display: block;
+    margin-top: 10px;
+    font-style: italic;
+    color: #555;
+    font-size:18px;
+    }
+    
+    
+    
+    .container4{
+    max-width: 1200px;
+    height:600px;
+    margin: 0 auto;
+    
+    }
+    .content {
+    display: grid;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    
+    }
+    
+    .info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, auto);
+    
+    width:60%;
+    background-color: rgb(255, 255, 255);
+    
+    
+    }
+    .info .o {
+    text-align: center;
+    background-color: rgb(255, 255, 255);
+    padding: 10%;
+    border-radius: 10px;
+    font-size:18px;
+    line-height:30px;
+    }
+    .info img {
+    width: 50px;
+    height: 50px;
+    }
+    .info h3 {
+    margin: 10px 0 15px;
+    }
+    .map {
+    width: 50%;
+    
+    }
+    iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 10px;
+    
+    }
+    .text{
+    font-size:30px;
+    padding-bottom:20px;
+    line-height:40px;
+    }
+    .o{
+    height:250px;
+    width:300px;
+    
+    
+    }
+    .o b{
+    font-size:24px;
+    }
+    .o p{
+        font-size:16px;
+    }
+    .o img{
+    width:40px;
+    height:40px;
+    }
+    .info .o{
+    background-color: rgb(255, 255, 255);
+    }
+    
+    @media (max-width: 480px) { 
+    header h1 {
+    font-size: 22px;
+    }
+    header p {
+    font-size: 16px;
+    }
+    
+    .container {
+    flex-direction: column;
+    padding: 10px;
+    }
+    
+    .text-content h2 {
+    font-size: 20px;
+    }
+    
+    .text-content .tinnhan {
+    font-size: 14px;
+    line-height: 24px;
+    }
+    
+    .image-content {
+    display: none; /* Ẩn ảnh để tiết kiệm không gian */
+    }
+    
+    .features {
+    flex-direction: column;
+    padding: 10px;
+    }
+    
+    .feature {
+    padding: 10px;
+    }
+    
+    .feature img {
+    width: 60px;
+    }
+    
+    .feature h3 {
+    font-size: 18px;
+    }
+    
+    .feature p {
+    font-size: 14px;
+    }
+    
+    .quote-container,
+    .quote-container1 {
+    flex-direction: column;
+    text-align: center;
+    padding:10px;
+    height:auto;
+    }
+    
+    .quote-container img,
+    .quote-container1 img {
+    width: 100%;
+    height: auto;
+    }
+    
+    .quote-box,
+    .quote-box1 {
+    position: static;
+    max-width: 100%;
+    margin: 10px auto;
+    font-size: 16px;
+    padding: 15px;
+    }
+    
+    .info {
+    width: 100%;
+    grid-template-columns: 1fr;
+    }
+    
+    .o {
+    width: 100%;
+    padding: 15px;
+    }
+    .o h3{
+        font-size: 24px;;
+    }
+    .info .o p{
+        font-size:20px;
+    }
+    .map {
+    display: none; /* Ẩn bản đồ trên mobile */
+    }
+    
+    .quote-box1{
+    height:auto;
+    }
+    
+    .o img{
+        width:40px;
+        
+    }
+    .story-container{
+        padding:10px;
+    }
+    .container4{
+        height: auto;
+    }
+    }

@@ -43,6 +43,7 @@
     text-align: justify;
     position: relative; 
     z-index: 2;
+    margin-top: 10px;
 }
 
 .footer_vct{

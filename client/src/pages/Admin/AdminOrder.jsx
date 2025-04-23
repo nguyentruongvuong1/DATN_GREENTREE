@@ -74,7 +74,7 @@ export default function AdminOrder() {
       ganodrfilter(order);
     } else {
       const FilterOdr = allOdr.filter((odr) =>
-        odr.transaction_code.toLowerCase().includes(search.toLowerCase())
+        odr.id.toLowerCase().includes(search.toLowerCase())
       );
       ganodrfilter(FilterOdr);
     }

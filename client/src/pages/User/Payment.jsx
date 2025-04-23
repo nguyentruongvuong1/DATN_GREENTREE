@@ -12,14 +12,17 @@ export default function Payment() {
   const cartItems = cart.listPr || [];
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+  const voucher = useSelector((state) => state.cart.voucher)
   useEffect(() => {
      if (cartItems.length === 0) {
       message.error("Giỏ hàng trống, vui lòng thêm sản phẩm trước khi thanh toán");
       navigate('/');
+      return;
     }else if (!user?.id) {
       message.error("Vui lòng đăng nhập trước khi thanh toán");
       navigate('/dangnhap');
+      return;
+
     } 
   }, [user, cartItems, navigate]);
 
@@ -42,8 +45,16 @@ export default function Payment() {
   }, 0);
 
   const shippingFee = 50000;
-  const grandTotal = total + shippingFee;
+  let discountvalue = 0;
 
+  if(voucher && voucher.discount_type ==='fixed'){
+    discountvalue = voucher.discount_value || 0;
+  }else if(voucher && voucher.discount_type === 'percent'){
+    discountvalue = total * ((voucher.discount_value || 0) / 100)
+  };
+
+  const grandTotal = Math.max(total + shippingFee - discountvalue, 0);
+  
 
 
   // Tự động điền thông tin khi user có sẵn thông tin
@@ -101,6 +112,7 @@ export default function Payment() {
     try {
       const orderPayload = {
         id: OrderId(),
+        voucher_id: voucher?.id || null,
         user_id: user?.id || null,
         order_status: 0,
         transaction_status: paymentMethod === "cash_on_delivery" ? 1 : 2,
@@ -144,7 +156,7 @@ export default function Payment() {
             setTimeout(() => {
             navigate("/");
             dispatch(XoaGH());
-            }, 3000);
+            }, 2000);
           }
           else {
             throw new Error("Không nhận được phản hồi từ máy chủ");
@@ -276,9 +288,27 @@ export default function Payment() {
               <strong>Phí vận chuyển:</strong>{" "}
               <span>{shippingFee.toLocaleString()} VNĐ</span>
             </div>
+            {voucher && (
+              <>
+               <div>
+              <strong>Mã giảm giá:</strong>{" "}
+              <span>{voucher.code}</span>
+            </div>
+            <div>
+              <strong>Giá trị giảm:</strong>{" "}
+              {voucher.discount_type === 'fixed' ? (
+                <span>{Number(voucher.discount_value).toLocaleString('vi')} VNĐ</span>
+              ) :(
+                <span>{voucher.discount_value} %</span>
+              )}
+              
+            </div>
+              </>
+            )}
+           
             <div className={styles["grand-total"]}>
               <strong>Tổng thanh toán:</strong>{" "}
-              <span>{grandTotal.toLocaleString()} VNĐ</span>
+              <span>{Number(grandTotal).toLocaleString('vi')} VNĐ</span>
             </div>
           </div>
 

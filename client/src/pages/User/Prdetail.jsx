@@ -278,14 +278,14 @@ export default function Prdetail() {
                     <strong>Giá: </strong>{" "}
                     <del style={{ color: "rgba(0, 0, 0, 0.603)" }}>
                       {" "}
-                      {pr.price} VNĐ
+                      {Number(pr.price).toLocaleString('vi')} VNĐ
                     </del>
                   </p>
                 </div>
                 <div className={styles.gia}>
                   <p>
                     {" "}
-                    <strong>Giá đã giảm: </strong> {pr.price_sale} VNĐ
+                    <strong>Giá đã giảm: </strong> {Number(pr.price_sale).toLocaleString('vi')} VNĐ
                   </p>
                 </div>
               </div>
@@ -293,7 +293,7 @@ export default function Prdetail() {
               <div className={styles.gia}>
                 <p>
                   {" "}
-                  <strong>Giá: </strong> {pr.price} VNĐ
+                  <strong>Giá: </strong> {Number(pr.price).toLocaleString('vi')} VNĐ
                 </p>
               </div>
             )}
@@ -311,7 +311,7 @@ export default function Prdetail() {
             <div className={styles.trangthai}>
               <p>
                 {" "}
-                <strong> Số lượng còn lại: </strong> {pr?.inventory_quantity.length === 0 ? "Hết hàng" : pr?.inventory_quantity}{" "}
+                <strong> Số lượng còn lại: </strong> {pr?.inventory_quantity === 0 ? "Hết hàng" : pr?.inventory_quantity}{" "}
               </p>
             </div>
 
@@ -484,8 +484,13 @@ export default function Prdetail() {
                   <div className={styles.pr_themvaogio}>
                     <button
                       onClick={() => {
-                        dispatch(themPr(pr));
-                        message.success("Bạn đã thêm sản phẩm vào giỏ hàng");
+                        if(pr.inventory_quantity === 0){
+                          message.error('Sản phẩm đã hết hàng. Nếu bạn muốn mua sản phẩm này hãy liên hệ với chúng tôi để được hỗ trợ')
+                        }else{
+                          dispatch(themPr(pr));
+                          message.success("Bạn đã thêm sản phẩm vào giỏ hàng");
+                        }
+                       
                       }}
                     >
                       Thêm vào giỏ

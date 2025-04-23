@@ -30,20 +30,39 @@ router.get('/user/:id', async (req , res) =>{
 
 
 // Lấy danh sách dơn hàng của người dùng
-router.get('/order_user/:id', async(req, res) =>{
+router.get('/order_user/:id', async (req, res) => {
     let id = req.params.id;
+    const { page = 1, limit = 5 } = req.query;
 
-    try{
-        const sql = `SELECT * FROM \`order\` WHERE user_id = ?`;
-        const [result] = await pool.query(sql, [id]);
-        res.json(result);
+    const pageNumber = parseInt(page);
+    const limitNumber = parseInt(limit);
+    if (isNaN(pageNumber) || isNaN(limitNumber) || pageNumber < 1 || limitNumber < 1) {
+        return res.status(400).json({ message: "Tham số phân trang không hợp lệ" });
     }
 
-    catch(error){
+    const offset = (pageNumber - 1) * limitNumber;
+
+    try {
+        const sql = `SELECT * FROM \`order\` WHERE user_id = ? ORDER BY create_at DESC LIMIT ? OFFSET ?`;
+        const [orders] = await pool.query(sql, [id, limitNumber, offset]);
+
+        const [[totalResult]] = await pool.query(
+            `SELECT COUNT(*) AS total FROM \`order\` WHERE user_id = ?`,
+            [id]
+        );
+
+        res.json({
+            orders,
+            total: totalResult.total,
+            page: pageNumber,
+            totalPages: Math.ceil(totalResult.total / limitNumber),
+            limit: limitNumber
+        });
+    } catch (error) {
         console.error("Lỗi truy vấn:", error);
         res.status(500).json({ message: "Lỗi server" });
     }
-})
+});
 
 // Lấy đơn hàng chi tiết
 router.get('/orderdetail_user/:order_id', async (req, res) => {
@@ -87,6 +106,18 @@ router.get('/orderdetail_user/:order_id', async (req, res) => {
         res.status(500).json({ message: "Lỗi server" });
     }
 });
+
+// Lấy sản phẩm của order_detail để đánh giá
+router.get('/orderdetail_pr/:order_id', async (req, res) =>{
+    const {order_id} = req.params;
+    try{
+        const [Products] = await pool.query(`SELECT p.* FROM order_detail od JOIN product p ON od.pr_id = p.id WHERE od.order_id =?`,[order_id])
+        res.json(Products);
+    }catch (error) {
+        console.error("Lỗi truy vấn:", error);
+        res.status(500).json({ message: "Lỗi server" });
+    }
+})
 
 
 router.post('/request-otp', async (req, res) => {

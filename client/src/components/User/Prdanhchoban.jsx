@@ -94,7 +94,10 @@ export default function Prdanhchoban() {
       <section className={styles.container}>
         <div className={styles.title}>
           <div className={styles.title_name}>
-            <p>SẢN PHẨM DÀNH CHO BẠN</p>
+            <div className={styles.title_namegt}>
+            <img src={'/images/title.png'} alt="" />
+             SẢN PHẨM DÀNH CHO BẠN
+            </div>
           </div>
         </div>
 
@@ -152,10 +155,15 @@ export default function Prdanhchoban() {
                 </div>
                 <div className={styles.pr_themvaogio}>
                   <button
-                    onClick={() => {
+                   onClick={() => {
+                    if(pr.inventory_quantity === 0){
+                      message.error('Sản phẩm đã hết hàng. Nếu bạn muốn mua sản phẩm này hãy liên hệ với chúng tôi để được hỗ trợ')
+                    }else{
                       dispatch(themPr(pr));
                       message.success("Bạn đã thêm sản phẩm vào giỏ hàng");
-                    }}
+                    }
+                   
+                  }}
                   >
                     Thêm vào giỏ
                   </button>
