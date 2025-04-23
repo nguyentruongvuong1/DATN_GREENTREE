@@ -568,19 +568,24 @@ router.get('/dashboard/revenue/yearly', async (req, res) => {
   }
 });
 
+// API doanh thu theo ngày trong tháng
+// API doanh thu theo ngày trong tháng và năm
 router.get('/dashboard/revenue/daily/:month', async (req, res) => {
   try {
     const selectedMonth = parseInt(req.params.month, 10);
+    const selectedYear = parseInt(req.query.year || new Date().getFullYear(), 10);
+
     const [data] = await pool.query(`
       SELECT DAY(create_at) AS day, SUM(total_amount) AS revenue
       FROM \`order\`
-      WHERE MONTH(create_at) = ? AND YEAR(create_at) = YEAR(CURDATE())
+      WHERE MONTH(create_at) = ? AND YEAR(create_at) = ?
       GROUP BY day
       ORDER BY day
-    `, [selectedMonth]);
+    `, [selectedMonth, selectedYear]);
 
-    const daysInMonth = new Date(new Date().getFullYear(), selectedMonth, 0).getDate();
+    const daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
     const revenuePerDay = Array(daysInMonth).fill(0);
+
     data.forEach(({ day, revenue }) => {
       revenuePerDay[day - 1] = revenue;
     });
@@ -591,6 +596,24 @@ router.get('/dashboard/revenue/daily/:month', async (req, res) => {
     res.status(500).json({ message: "Lỗi server", error: error.message });
   }
 });
+
+// API trả về danh sách các năm có đơn hàng (có doanh thu)
+router.get('/dashboard/revenue/years', async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT DISTINCT YEAR(create_at) AS year
+      FROM \`order\`
+      ORDER BY year DESC
+    `);
+
+    const years = rows.map(row => row.year);
+    res.json({ years });
+  } catch (error) {
+    console.error("Lỗi khi lấy danh sách năm:", error);
+    res.status(500).json({ message: "Lỗi server", error: error.message });
+  }
+});
+
 
 //API bảng doanh thu theo ngày
 // API doanh thu theo ngày kèm thông tin người dùng và trạng thái
