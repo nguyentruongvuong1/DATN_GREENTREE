@@ -52,7 +52,7 @@ router.get("/vouchers", adminAuth, async (req, res) => {
 
 
 // API cập nhật voucher
-router.put('/voucher/:id', async (req, res) => {
+router.put('/voucher/:id',adminAuth,async (req, res) => {
   const { id } = req.params;
   const {
     code,
@@ -94,7 +94,7 @@ router.put('/voucher/:id', async (req, res) => {
 
 
 // API xóa voucher
-router.delete('/voucher/:id', async (req, res) => {
+router.delete('/voucher/:id', adminAuth, async (req, res) => {
   const { id } = req.params;
   const sql = "DELETE FROM voucher WHERE id = ?";
 
@@ -115,7 +115,7 @@ router.delete('/voucher/:id', async (req, res) => {
 
 
 // API thêm voucher
-router.post('/voucher', async (req, res) => {
+router.post('/voucher', adminAuth, async (req, res) => {
   const { code, discount_type, discount_value, quantity, start_date, end_date, status } = req.body;
 
   // Kiểm tra dữ liệu đầu vào

@@ -31,7 +31,7 @@ const AdminVoucher = () => {
         }
         }
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/admin/vouchers?page=${currentPage}&limit=${itemsPerPage}`,otp
+          `${import.meta.env.VITE_API_URL}/admin/vouchers?page=${currentPage}&limit=${itemsPerPage}`, otp
         );
         setVouchers(response.data.vouchers || response.data);
         setTotalVouchers(response.data.total || response.data.length);
@@ -57,24 +57,32 @@ const AdminVoucher = () => {
 
   }, [search, allVc, vouchers])
 
-  const fetchVouchers = async () => {
-    try {
-      const { data } = await axios.get(
-        `${import.meta.env.VITE_API_URL}/admin/vouchers?page=${currentPage}&limit=${itemsPerPage}`
-      );
-      setVouchers(data.vouchers || []);
-      setTotalVouchers(data.total || 0);
-    } catch (error) {
-      console.error("Lỗi khi lấy dữ liệu:", error);
-    }
-  };
+  // const fetchVouchers = async () => {
+  //   try {
+  //     const { data } = await axios.get(
+  //       `${import.meta.env.VITE_API_URL}/admin/vouchers?page=${currentPage}&limit=${itemsPerPage}`
+  //     );
+  //     setVouchers(data.vouchers || []);
+  //     setTotalVouchers(data.total || 0);
+  //   } catch (error) {
+  //     console.error("Lỗi khi lấy dữ liệu:", error);
+  //   }
+  // };
 
 
   const handleDelete = async (id) => {
     if (!window.confirm("Bạn có chắc muốn xóa voucher này không?")) return;
+    const otp = {
+      headers: {
+        "Content-Type": 'application/json',
+        'Authorization': 'Bearer ' + token
+    }}
+    
     try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/admin/voucher/${id}`);
-      fetchVouchers();
+      await axios.delete(`${import.meta.env.VITE_API_URL}/admin/voucher/${id}`,otp);
+      // fetchVouchers();
+      window.location.reload();
+
     } catch (error) {
       console.error("Lỗi khi xóa voucher:", error);
     }
@@ -103,12 +111,22 @@ const AdminVoucher = () => {
 
 
     try {
-      if (isEdit) {
-        await axios.put(`${import.meta.env.VITE_API_URL}/admin/voucher/${formData.id}`, preparedData);
-      } else {
-        await axios.post(`${import.meta.env.VITE_API_URL}/admin/voucher`, preparedData);
+
+      const otp = {
+        headers: {
+          "Content-Type": 'application/json',
+          'Authorization': 'Bearer ' + token
       }
-      fetchVouchers();
+    }
+
+      if (isEdit) {
+        await axios.put(`${import.meta.env.VITE_API_URL}/admin/voucher/${formData.id}`, preparedData , otp);
+      } else {
+        await axios.post(`${import.meta.env.VITE_API_URL}/admin/voucher`, preparedData, otp);
+      }
+      // fetchVouchers();
+      window.location.reload();
+
       setShowForm(false);
     } catch (error) {
       console.error("Lỗi khi lưu voucher:", error);
