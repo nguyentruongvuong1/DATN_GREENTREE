@@ -259,7 +259,7 @@ export default function OrderUser() {
                         {or.order_status === 4 && or.transaction_status === 2 &&(
                           <button
                             onClick={() => FetchPr(or.id)}
-                            className={styles.btn_huy}
+                            className={styles.btn_danhgia}
                           >
                             {" "}
                             Đánh giá và mua lại 

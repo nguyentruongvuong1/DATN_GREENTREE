@@ -41,6 +41,7 @@
 .user-email {
     font-size: 14px;
     color: #bdc3c7;
+    margin: 0;
 }
 
 .menu {
@@ -234,6 +235,22 @@
 .btn_huy:hover{
     background-color: red;
 }
+
+.btn_danhgia{
+  width: 100%;
+  padding: 10px 10px;
+  border-radius: 5px;
+  border-style: none;
+  cursor: pointer;
+  background-color: #f29320;
+  color: white;
+  margin-top: 5px;
+}
+
+.btn_danhgia:hover{
+  background-color: #D97904;
+}
+
 
 /* Chi tiết dơn hàng */
 .invoiceContainer {

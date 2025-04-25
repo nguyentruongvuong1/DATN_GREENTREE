@@ -4,7 +4,7 @@ import "../../styles/Admin/styleadmin.css";
 import ReactPaginate from "react-paginate";
 import moment from "moment";
 import { Menu, Search } from "lucide-react";
-
+import { useSelector } from "react-redux";
 
 const AdminVoucher = () => {
   const [vouchers, setVouchers] = useState([]);
@@ -18,14 +18,20 @@ const AdminVoucher = () => {
   const [sortOrder, setSortOrder] = useState("asc"); // Trạng thái sắp xếp (tăng dần hoặc giảm dần)
   const [search, setsearch] = useState(''); // Trạng thái tìm kiếm
   const [vcfilter, ganvcfilter] = useState([]) // Trạng thái tìm kiếm
-  
+  const token = useSelector((state) => state.auth.token)
 
 
   useEffect(() => {
     const fetchVouchers = async () => {
       try {
+        const otp = {
+          headers: {
+            "Content-Type": 'application/json',
+            'Authorization': 'Bearer ' + token
+        }
+        }
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/admin/vouchers?page=${currentPage}&limit=${itemsPerPage}`
+          `${import.meta.env.VITE_API_URL}/admin/vouchers?page=${currentPage}&limit=${itemsPerPage}`,otp
         );
         setVouchers(response.data.vouchers || response.data);
         setTotalVouchers(response.data.total || response.data.length);

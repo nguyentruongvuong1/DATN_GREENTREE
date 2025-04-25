@@ -47,10 +47,7 @@ router.get("/prhot", async (req, res) => {
           return {
             ...category,
             products: products.map(product => ({
-              ...product,
-              // Format giá nếu cần
-              price: Number(product.price),
-              price_sale: Number(product.price_sale)
+              ...product
             }))
           };
         })
@@ -90,8 +87,8 @@ router.get('/detailPr/:id', async (req, res) => {
         let id = req.params.id;
 
         let sql = `
-          SELECT p.*, 
-            GROUP_CONCAT(DISTINCT JSON_OBJECT('id', tc.id, 'name', tc.name)) AS type_cate
+        SELECT p.*, 
+        GROUP_CONCAT(DISTINCT JSON_OBJECT('id', tc.id, 'name', tc.name)) AS type_cate
         FROM product p
         LEFT JOIN product_type_cate ptc ON p.id = ptc.pr_id
         LEFT JOIN type_cate tc ON ptc.type_cate_id = tc.id

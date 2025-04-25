@@ -14,6 +14,13 @@ export default function Userprofile() {
   const dispatch = useDispatch();
   const [userData, setUserData] = useState(null);
 
+  const level = {
+    0: "Đồng",
+    1: "Bạc",
+    2: 'Vàng',
+    3: 'Kim cương'
+  }
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -53,6 +60,7 @@ export default function Userprofile() {
             {userData?.username || "Người dùng"}
           </h3>
           <p className={styles["user-email"]}>{user?.email}</p>
+          <p className={styles["user-email"]}>Tài khoản bậc: {level[user?.level]}</p>
         </div>
 
         <div className={styles.menu}>

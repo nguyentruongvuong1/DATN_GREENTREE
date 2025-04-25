@@ -6,13 +6,12 @@ const path = require('path');
 const fs = require('fs');
 require('dotenv').config(); // Đảm bảo dotenv đã được cài đặt và cấu hình
 const baseUrl = process.env.BASE_URL; // Lấy từ .env
-
-// Import multer config
+const {adminAuth} = require('../auth')
 
 
 // API VOUCHER------------------------------------------------------------------------------------------------------------------------------------------
 // API lấy danh sách voucher
-router.get("/vouchers", async (req, res) => {
+router.get("/vouchers", adminAuth, async (req, res) => {
   const { page = 1, limit = 8 } = req.query;
 
   // Validate input

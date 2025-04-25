@@ -9,10 +9,21 @@ import axios from "axios";
 export default function Cart() {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart.listPr);
+  const user = useSelector((state) => state.auth.user);
   const voucher = useSelector((state) => state.cart.voucher);
   const [modal, contextHolder] = Modal.useModal();
-  const shippingFee = 50000;
-  
+
+  let shippingFee = 50000;
+ if(user.level === 0){
+  shippingFee = 50000;
+ }else if(user.level === 1){
+  shippingFee = 25000;
+ }else if(user.level === 2){
+  shippingFee = 10000;
+ }else if(user.level === 3)(
+  shippingFee = 0
+ )
+
   // Tính tổng tiền
   const Tongtien = useCallback(() => {
     return cart.reduce((tong, pr) => tong + pr.so_luong * pr.price, 0);
