@@ -203,7 +203,7 @@ router.get("/banners", async (req, res) => {
 });
 
 // Thêm banner mới
-router.post('/banner', upload.single('image'), async (req, res) => {
+router.post('/banner', adminAuth, upload.single('image'), async (req, res) => {
 
   const { status } = req.body;
   const image = req.file ? `${baseUrl}/public/images/${req.file.filename}` : null;
@@ -232,7 +232,7 @@ router.post('/banner', upload.single('image'), async (req, res) => {
 
 // PUT update banner
 // Sửa banner
-router.put('/banner/:id', upload.single('image'), async (req, res) => {
+router.put('/banner/:id', adminAuth, upload.single('image'), async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
   let newImagePath = req.file ? `http://localhost:3000/public/images/${req.file.filename}` : null;

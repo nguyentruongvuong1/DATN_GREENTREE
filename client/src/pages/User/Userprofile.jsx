@@ -6,6 +6,7 @@ import { thoat } from "../../AuthSlice";
 import { useDispatch } from "react-redux";
 import "@ant-design/v5-patch-for-react-19";
 import { message } from "antd";
+import axios from 'axios'
 
 export default function Userprofile() {
   const user = useSelector((state) => state.auth.user);
@@ -13,13 +14,20 @@ export default function Userprofile() {
   const isChecked = useSelector((state) => state.auth.isChecked);
   const dispatch = useDispatch();
   const [userData, setUserData] = useState(null);
-
   const level = {
     0: "Đồng",
     1: "Bạc",
     2: 'Vàng',
     3: 'Kim cương'
   }
+
+  const [formData, setformData] = useState(
+    {
+      username: '',
+      phone: '',
+      address: '',
+    }
+  )
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -30,6 +38,11 @@ export default function Userprofile() {
           );
           const data = await res.json();
           setUserData(data);
+          setformData({
+            username: data.username || '',
+            phone: data.phone || '',
+            address: data.address || '',
+          })
         }
       } catch (error) {
         console.error("Lỗi khi tải thông tin người dùng:", error);
@@ -37,6 +50,67 @@ export default function Userprofile() {
     };
     fetchUser();
   }, [user?.id]);
+
+  const infochange = (e) =>{
+    const {name, value} = e.target;
+    setformData((pre) =>({
+      ...pre, 
+      [name] : value,
+    }))
+  }
+
+
+  const Updateinfo = async (e) =>{
+    e.preventDefault();
+    try{
+      const res = await axios.put(`${import.meta.env.VITE_API_URL}/user/update/${user.id}`, formData)
+      if(res.data?.message === 'Cập nhật thành công') {
+        message.success('Bạn đã cập nhật thông tin tài khoản thành công.')
+        setUserData((prevData) => ({
+          ...prevData,
+          ...formData,
+        }));
+      }else{
+        message.error('Cập nhật thông tin thất bại')
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật:", error);
+      message.error("Có lỗi xảy ra!");
+    }
+  }
+
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+    try{
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/user/upload-avatar/${user.id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      if (res.data?.avatar) {
+        message.success('Cập nhật ảnh đại diện thành công!');
+        setUserData((prev) => ({
+          ...prev,
+          avatar: res.data.avatar,
+        }));
+      }else{
+        message.error('Cập nhật ảnh đại diện thất bại!');
+      }
+
+    }catch (error) {
+    console.error('Lỗi upload avatar:', error);
+    message.error('Đã xảy ra lỗi khi cập nhật ảnh đại diện.');
+  }
+  };
 
   if (!isChecked) {
     // Nếu chưa kiểm tra đăng nhập xong thì chưa render gì cả
@@ -47,6 +121,9 @@ export default function Userprofile() {
     return <Navigate to="/dangnhap" replace={true} />;
   }
 
+ 
+
+
   return (
     <div className={styles.container}>
       <div className={styles.sidebar}>
@@ -55,6 +132,14 @@ export default function Userprofile() {
             src={userData?.avatar || "/default-avatar.png"}
             alt="User Avatar"
             className={styles.avatar}
+            onClick={() => document.getElementById('avatarInput').click()}  // Khi nhấn vào ảnh sẽ mở input
+
+          />
+          <input
+            type="file"
+            id="avatarInput"
+            style={{ display: 'none' }}
+            onChange={handleAvatarChange}  // Khi chọn ảnh mới sẽ gọi hàm này
           />
           <h3 className={styles.username}>
             {userData?.username || "Người dùng"}
@@ -101,21 +186,16 @@ export default function Userprofile() {
         </div>
 
         {userData && (
-          <form>
-
-<div className={styles["form-group"]}>
-              <label>Ảnh đại diện</label>
-                <img src={userData.avatar} alt="" />
-                <input type="file"  />
-            </div>
-
+          <form onSubmit={Updateinfo}>
             <div className={styles["form-group"]}>
               <label>Họ và tên</label>
               <input
                 type="text"
                 id="fullname"
+                name="username"
                 className={styles["form-control"]}
-                value={userData.username}
+                value={formData.username}
+                onChange={infochange}
               />
             </div>
 
@@ -130,12 +210,14 @@ export default function Userprofile() {
             </div>
 
             <div className={styles["form-group"]}>
-              <label for="phone">Số điện thoại</label>
+              <label>Số điện thoại</label>
               <input
                 type="tel"
                 id="phone"
+                name="phone"
                 className={styles["form-control"]}
-                value={userData.phone}
+                value={formData.phone}
+                onChange={infochange}
               />
             </div>
 
@@ -143,16 +225,18 @@ export default function Userprofile() {
               <label>Địa chỉ</label>
               <textarea
                 id="address"
+                name="address"
                 className={styles["form-control"]}
                 rows="3"
-              >
-                {userData.address.length > 0
-                  ? userData.address
-                  : "Bạn chưa nhập địa chỉ"}
-              </textarea>
+                value={formData.address}
+                
+                onChange={infochange}
+
+              />
+              
             </div>
 
-            <button type="submit" className={styles.btn}>
+            <button type="submit"  className={styles.btn}>
               Cập nhật thông tin
             </button>
           </form>

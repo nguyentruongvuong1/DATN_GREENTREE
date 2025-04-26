@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
 import "../../styles/Admin/styleadmin.css";
+import {useSelector} from 'react-redux'
 
 const AdminBanner = () => {
   const [banners, setBanners] = useState([]);
@@ -15,7 +16,7 @@ const AdminBanner = () => {
   const [bnfilter, ganbnfilter] = useState([]) // Trạng thái tìm kiếm
   const [allBn, setallBn] = useState([]); // Tất cả banner để tìm kiếm
   const [search, setsearch] = useState(''); // Trạng thái tìm kiếm
-
+  const token = useSelector((state) => state.auth.token)
 
   useEffect(() => {
     fetchBanners();
@@ -61,6 +62,13 @@ const AdminBanner = () => {
   const handleSave = async (e) => {
     e.preventDefault();
     try {
+
+      const otp = {
+        headers: {
+          "Content-Type": 'multipart/form-data',
+          'Authorization': 'Bearer ' + token
+      }}
+
       const form = new FormData();
       form.append("status", formData.status);
       if (formData.image instanceof File) {
@@ -76,15 +84,10 @@ const AdminBanner = () => {
       if (isEdit) {
         await axios.put(
           `${import.meta.env.VITE_API_URL}/admin/banner/${formData.id}`,
-          form,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
+          form, otp
         );
       } else {
-        await axios.post(`${import.meta.env.VITE_API_URL}/admin/banner`, form, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        await axios.post(`${import.meta.env.VITE_API_URL}/admin/banner`, form, otp);
       }
 
       fetchBanners();
