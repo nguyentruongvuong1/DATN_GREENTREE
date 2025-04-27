@@ -5,7 +5,7 @@ import axios from "axios";
 import "../../styles/Admin/styleadmin.css";
 import { Link } from "react-router-dom";
 import moment from "moment";
-// import { useNavigate } from "react-router-dom";
+
 
 
 const AdminReviews = () => {
@@ -19,10 +19,7 @@ const AdminReviews = () => {
     const [rvfilter, ganrvfilter] = useState([]) // Trạng thái tìm kiếm
 
     
-    // const navigate = useNavigate();
-    // const handleViewReview = (productId) => {
-    //     navigate(`/chi_tiet_san_pham/${productId}`);
-    // };
+   
 
     useEffect(() => {
         fetchReviews();
@@ -88,7 +85,7 @@ const AdminReviews = () => {
                     <table className="comment-table">
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>STT</th>
                                 <th>Người Dùng</th>
                                 <th>Sản Phẩm</th>
                                 <th>Nội dung</th>
@@ -98,13 +95,13 @@ const AdminReviews = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {rvfilter.map((review) => (
-                                <tr key={review.id}>
-                                    <td>{review.id}</td>
+                            {rvfilter.map((review, index) => (
+                                <tr key={index}>
+                                    <td>{index + 1}</td>
                                     <td>{review.user_name}</td>
                                     <td>{review.product_name.length > 20 ? review.product_name.slice(0, 20)+'...' : review.product_name}</td>
                                     <td width={'200px'}>{review.content}</td>
-                                    <td>{review.start}</td>
+                                    <td>{review.star}</td>
                                     <td>{moment(review.create_date).format(' DD-MM-YYYY')}</td>
                                     <td>
                                     <button className="xemdanhgia" >

@@ -6,11 +6,12 @@ require('dotenv').config();
 const baseUrl = process.env.BASE_URL; // Lấy từ .env
 const path = require('path');
 const fs = require('fs');
+const {adminAuth} = require('../auth')
 
 
 // API CATE------------------------------------------------------------------------------------------------------------------------------------------
 // API lấy danh sách cate
-router.get('/cate', async function (req, res, next) {
+router.get('/cate', adminAuth, async function (req, res, next) {
     try {
         const [results] = await pool.execute('SELECT * FROM cate'); // Sử dụng execute
         res.json(results);
@@ -21,7 +22,7 @@ router.get('/cate', async function (req, res, next) {
 });
 
 // API xóa cate
-router.delete('/cate/:id', async (req, res) => {
+router.delete('/cate/:id', adminAuth, async (req, res) => {
     const { id } = req.params;
     const sql = "DELETE FROM cate WHERE id = ?";
 
@@ -39,7 +40,7 @@ router.delete('/cate/:id', async (req, res) => {
 
 
 // API cập nhật cate
-router.put('/cate/:id', upload.fields([
+router.put('/cate/:id', adminAuth, upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'image_content', maxCount: 1 }
 ]), async (req, res) => {
@@ -115,7 +116,7 @@ router.put('/cate/:id', upload.fields([
 
 
 // Thêm danh mục với ảnh
-router.post('/cate', upload.fields([
+router.post('/cate', adminAuth, upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'image_content', maxCount: 1 }
 ]), async (req, res) => {

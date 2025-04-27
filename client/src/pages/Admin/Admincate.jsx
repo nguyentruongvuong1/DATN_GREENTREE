@@ -5,12 +5,13 @@ import { Menu, Search } from "lucide-react";
 import { FaArrowRight } from "react-icons/fa"; // Import icon mũi tên
 import moment from "moment"; // Import thư viện moment.js để định dạng ngày tháng
 import "../../styles/Admin/styleadmin.css";
+import { useSelector } from "react-redux";
 
 const Admincate = () => {
   const [cate, setcates] = useState([]);
   const [editcate, setEditcate] = useState(null); // Lưu cate đang chỉnh sửa
   const [showAddForm, setShowAddForm] = useState(false); // Ẩn/hiện form
-
+  const token = useSelector((state) => state.auth.token)
   const [newcate, setNewcate] = useState({
     name: "",
     content: "",
@@ -25,7 +26,12 @@ const Admincate = () => {
 
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/adminc/cate`)
+    const otp = {
+      headers: {
+        "Content-Type": 'multipart/form-data',
+        'Authorization': 'Bearer ' + token
+    }}
+    axios.get(`${import.meta.env.VITE_API_URL}/adminc/cate`, otp)
       .then((response) => {
         setcates(response.data);
         setallCt(response.data); // gán allCt với dữ liệu cate
@@ -66,6 +72,11 @@ const Admincate = () => {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/adminc/cate/${id}`, {
         method: "DELETE",
+        headers: {
+          "Content-Type": 'multipart/form-data',
+          'Authorization': 'Bearer ' + token
+      }
+
       });
 
       const data = await response.json();
@@ -75,7 +86,7 @@ const Admincate = () => {
         alert("Xóa thành công!");
         fetchcates(); // Load lại danh sách
       } else {
-        console.error("Lỗi thêm danh mục:", data);
+        console.error("Lỗi xóa danh mục:", data);
         const errorMessage = data.message || "Thêm thất bại, dữ liệu không hợp lệ.";
         alert(errorMessage);
       }
@@ -118,6 +129,9 @@ const Admincate = () => {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/adminc/cate`, {
         method: "POST",
         body: formData,
+        headers: {
+          'Authorization': 'Bearer ' + token
+      }
       });
 
       const data = await response.json();
@@ -183,6 +197,10 @@ const Admincate = () => {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/adminc/cate/${editcate.id}`, {
         method: "PUT",
         body: formData,
+        headers: {
+          'Authorization': 'Bearer ' + token
+      }
+
       });
 
       const data = await response.json(); //thông báo trả về từ server về trùng name danh mục

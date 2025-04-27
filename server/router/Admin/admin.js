@@ -154,19 +154,20 @@ router.get('/reviews', async function (req, res) {
 
     const [results] = await pool.query(`
             SELECT 
-            reviews.id_order_detail AS id,
+            reviews.order_detail_id AS id,
             user.username AS user_name,
             product.name AS product_name,
             order_detail.pr_id,
             reviews.content,
-            reviews.start,
+            reviews.star,
             reviews.create_date,
             reviews.status
         FROM reviews
-        JOIN order_detail ON reviews.id_order_detail = order_detail.id
+        JOIN order_detail ON reviews.order_detail_id = order_detail.id
         JOIN product ON order_detail.pr_id = product.id
         JOIN \`order\` ON order_detail.order_id = \`order\`.id
-        JOIN user ON \`order\`.user_id = user.id
+        JOIN user ON \`order\`.user_id = user.id 
+        ORDER BY reviews.create_date DESC
         LIMIT 8 OFFSET 0;
 
         `, [parseInt(limit), parseInt(offset)]);
