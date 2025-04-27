@@ -304,7 +304,7 @@ router.get('/users', async (req, res) => {
   const offset = (page - 1) * limit;
 
   try {
-    const [users] = await pool.execute(`SELECT * FROM user ORDER BY total_buy DESC LIMIT ? OFFSET ?`, [limit, offset]);
+    const [users] = await pool.execute(`SELECT * FROM user ORDER BY level DESC, create_date DESC LIMIT ? OFFSET ?`, [limit, offset]);
     const [count] = await pool.execute(`SELECT COUNT(*) AS total FROM user`);
     res.json({ users, total: count[0].total });
   } catch (err) {

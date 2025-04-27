@@ -14,6 +14,12 @@ const AdminUser = () => {
     const [allUs, setallUs] = useState([]); // Tất cả để tìm kiếm
     const [search, setsearch] = useState(''); // Trạng thái tìm kiếm
 
+    const level = {
+        0: "Đồng",
+        1: "Bạc",
+        2: 'Vàng',
+        3: 'Kim cương'
+      }
 
     useEffect(() => {
         fetchUsers();
@@ -92,18 +98,15 @@ const AdminUser = () => {
                     <table>
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                <th>Mã tài khoản</th>
                                 <th>Tên đăng nhập</th>
-                                <th>Tên</th>
                                 <th>Điện thoại</th>
-                                <th>Email</th>
-                                <th>Địa chỉ</th>
-                                <th>Số lượng đã mua</th>
                                 <th>Tổng tiền đã mua</th>
+                                <th>Bậc</th>
                                 <th>Vai trò</th>
                                 <th>Trạng thái</th>
                                 <th>Ngày tạo</th>
-                                <th>Avatar</th>
+                                <th>Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -111,12 +114,9 @@ const AdminUser = () => {
                                 <tr key={user.id}>
                                     <td>{user.id}</td>
                                     <td>{user.username}</td>
-                                    <td>{user.name}</td>
                                     <td>{user.phone}</td>
-                                    <td>{user.email}</td>
-                                    <td>{user.address}</td>
-                                    <td>{user.quantity_pr_buy}</td>
                                     <td>{user.total_buy}</td>
+                                    <td>{level[user.level]}</td>
                                     <td>{user.role === 1 ? "Người dùng" : "Admin"}</td>
                                     <td>
                                         <select
@@ -129,7 +129,7 @@ const AdminUser = () => {
                                         </select>
                                     </td>
                                     <td>{moment(user.create_date).format('DD-MM-YYYY')}</td>
-                                    <td><img src={user.avatar} alt="avatar" width={40} /></td>
+                                    <td>Xem</td>
 
                                 </tr>
                             ))}

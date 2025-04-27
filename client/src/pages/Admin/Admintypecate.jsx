@@ -97,7 +97,7 @@ const AdminTypecate = () => {
         if (newTypecate.imageFile) {
             formData.append("image", newTypecate.imageFile);
         }
-        if (!newTypecate.image) {
+        if (!newTypecate.imageFile) {
             alert("Vui lòng chọn đầy đủ ảnh.");
             return;
           }

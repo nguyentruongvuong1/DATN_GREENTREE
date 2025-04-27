@@ -294,6 +294,7 @@ router.get('/typecate', async function (req, res) {
                 type_cate.content 
             FROM type_cate
             JOIN characteristic ON type_cate.characteristic_id = characteristic.id
+            ORDER BY type_cate.create_at DESC, characteristic_id DESC
             LIMIT ? OFFSET ?;
         `, [parseInt(limit), parseInt(offset)]);
 
