@@ -5,6 +5,8 @@ import axios from "axios";
 import "../../styles/Admin/styleadmin.css";
 import { Link } from "react-router-dom";
 import moment from "moment";
+import { useSelector } from "react-redux";
+
 
 export default function AdminOrder() {
   const getStatusName = (status) => {
@@ -33,11 +35,19 @@ export default function AdminOrder() {
   const [allOdr, setallOdr] = useState([]); // Tất cả đơn hàng để tìm kiếm
   const [search, setsearch] = useState(""); // Trạng thái tìm kiếm
   const [odrfilter, ganodrfilter] = useState([]); // Trạng thái tìm kiếm
+  const token = useSelector((state) => state.auth.token)
+
 
   const fecth_Ordetail = async (order_id) => {
     try {
+      const otp = {
+        headers: {
+          "Content-Type": 'application/json',
+          'Authorization': 'Bearer ' + token
+        }
+      }
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/admin/order_detail/${order_id}`
+        `${import.meta.env.VITE_API_URL}/admin/order_detail/${order_id}`, otp
       );
       const data = await res.json(); // Thêm await
       setorder_detail(Array.isArray(data) ? data : []); // Đảm bảo luôn là mảng
@@ -51,10 +61,15 @@ export default function AdminOrder() {
 
   const fetchOrder = async () => {
     try {
+      const otp = {
+        headers: {
+          "Content-Type": 'application/json',
+          'Authorization': 'Bearer ' + token
+        }
+      }
       const response = await axios.get(
-        `${
-          import.meta.env.VITE_API_URL
-        }/admin/order?page=${currentPage}&limit=${itemsPerPage}`
+        `${import.meta.env.VITE_API_URL
+        }/admin/order?page=${currentPage}&limit=${itemsPerPage}`, otp
       );
       setOrder(response.data.order || response.data);
       setTotalOrder(response.data.total || response.data.length);
@@ -86,10 +101,16 @@ export default function AdminOrder() {
 
   const handleStatusChange = async (orderId, currentStatus, newStatus) => {
     try {
+      const otp = {
+        headers: {
+          "Content-Type": 'application/json',
+          'Authorization': 'Bearer ' + token
+        }
+      }
       const res = await axios.put(
-        `${import.meta.env.VITE_API_URL}/admin/order_status/${orderId}`,
+        `${import.meta.env.VITE_API_URL}/admin/order_status/${orderId}`, 
         { order_status: newStatus }
-      );
+        ,otp);
 
       // Cập nhật UI ngay lập tức
       setOrder((prev) =>
@@ -111,9 +132,15 @@ export default function AdminOrder() {
     newTransactionStatus
   ) => {
     try {
+      const otp = {
+        headers: {
+          "Content-Type": 'application/json',
+          'Authorization': 'Bearer ' + token
+        }
+      }
       const res = await axios.put(
-        `${import.meta.env.VITE_API_URL}/admin/transaction_status`,
-        { id: orderId, new_transaction_status: newTransactionStatus }
+        `${import.meta.env.VITE_API_URL}/admin/transaction_status`, 
+        { id: orderId, new_transaction_status: newTransactionStatus },otp
       );
 
       // Cập nhật lại UI trạng thái thanh toán

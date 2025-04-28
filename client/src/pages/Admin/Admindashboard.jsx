@@ -5,6 +5,8 @@ import { Menu } from "lucide-react";
 
 import "../../styles/Admin/styleadmin.css"; // Đảm bảo đường dẫn đúng
 import Bieudo from "../../components/Admin/Bieudo.jsx"; // Đảm bảo đường dẫn đúng
+import { useSelector } from "react-redux";
+
 
 
 const AdminDashboard = () => {
@@ -17,32 +19,43 @@ const AdminDashboard = () => {
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [dailyOrders, setDailyOrders] = useState([]);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const token = useSelector((state) => state.auth.token)
+
 
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Lấy tổng số đơn hàng
-        const ordersResponse = await fetch(`${import.meta.env.VITE_API_URL}/admin/dashboard/orders`);
+        const otp = {
+          method: 'GET',
+          headers: {
+            "Content-Type": 'application/json',
+            'Authorization': 'Bearer ' + token
+          }
+        }
+
+        const ordersResponse = await fetch(`${import.meta.env.VITE_API_URL}/admin/dashboard/orders`, otp);
         if (!ordersResponse.ok) throw new Error("Lỗi khi lấy tổng số đơn hàng");
         const ordersData = await ordersResponse.json();
         setTotalOrders(ordersData.total || 0);
 
         // Lấy tổng số người dùng
-        const usersResponse = await fetch(`${import.meta.env.VITE_API_URL}/admin/dashboard/users`);
+
+        const usersResponse = await fetch(`${import.meta.env.VITE_API_URL}/admin/dashboard/users`, otp);
         if (!usersResponse.ok) throw new Error("Lỗi khi lấy tổng số người dùng");
         const usersData = await usersResponse.json();
         setTotalUsers(usersData.total || 0);
 
         // Lấy số người dùng mới
-        const newUsersResponse = await fetch(`${import.meta.env.VITE_API_URL}/admin/dashboard/users/new`);
+        const newUsersResponse = await fetch(`${import.meta.env.VITE_API_URL}/admin/dashboard/users/new`, otp);
         if (!newUsersResponse.ok) throw new Error("Lỗi khi lấy người dùng mới");
         const newUsersData = await newUsersResponse.json();
         setNewUsers(newUsersData.newUsers || 0);
 
 
         // Gọi API doanh thu gộp theo ngày, tuần, tháng và tổng doanh thu
-        const revenueAllResponse = await fetch(`${import.meta.env.VITE_API_URL}/admin/dashboard/revenue/all`);
+        const revenueAllResponse = await fetch(`${import.meta.env.VITE_API_URL}/admin/dashboard/revenue/all`, otp);
         if (!revenueAllResponse.ok) throw new Error("Lỗi khi lấy doanh thu tổng hợp");
         const revenueAllData = await revenueAllResponse.json();
 
@@ -63,7 +76,14 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchDailyDetails = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/dashboard/revenue/day/details`);
+        const otp = {
+          method : 'GET',
+          headers: {
+            "Content-Type": 'application/json',
+            'Authorization': 'Bearer ' + token
+        }
+        }
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/dashboard/revenue/day/details`,otp);
         if (!res.ok) throw new Error("Lỗi khi gọi API doanh thu theo ngày");
         const data = await res.json();
         setDailyOrders(data);
@@ -72,18 +92,18 @@ const AdminDashboard = () => {
         setDailyOrders([]); // đảm bảo không undefined
       }
     };
-  
+
     fetchDailyDetails();
   }, []);
-  
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000); // cập nhật mỗi phút là đủ nếu chỉ hiển thị ngày
-  
+
     return () => clearInterval(timer);
   }, []);
-  
+
   const formattedTime = currentTime.toLocaleDateString('vi-VN', {
     day: '2-digit',
     month: '2-digit',

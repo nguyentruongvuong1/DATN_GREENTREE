@@ -5,6 +5,7 @@ import axios from "axios";
 import "../../styles/Admin/styleadmin.css";
 import { Link } from "react-router-dom";
 import moment from "moment";
+import { useSelector } from "react-redux";
 
 
 
@@ -17,10 +18,9 @@ const AdminReviews = () => {
     const [allRv, setallRv] = useState([]); // Tất cả để tìm kiếm
     const [search, setsearch] = useState(''); // Trạng thái tìm kiếm
     const [rvfilter, ganrvfilter] = useState([]) // Trạng thái tìm kiếm
+    const token = useSelector((state) => state.auth.token)
 
     
-   
-
     useEffect(() => {
         fetchReviews();
         
@@ -28,7 +28,13 @@ const AdminReviews = () => {
 
     const fetchReviews  = async () => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin/reviews?page=${currentPage}&limit=${itemsPerPage}`);
+            const otp = {
+                headers: {
+                  "Content-Type": 'application/json',
+                  'Authorization': 'Bearer ' + token
+                }
+              }
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin/reviews?page=${currentPage}&limit=${itemsPerPage}`,otp);
             setReviews(response.data.comments || response.data);
             setTotalReviews(response.data.total || response.data.length);
             setallRv(response.data.comments || response.data); // gán allRv với dữ liệu reviews

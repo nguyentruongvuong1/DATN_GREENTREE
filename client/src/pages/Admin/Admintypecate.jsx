@@ -4,6 +4,8 @@ import ReactPaginate from "react-paginate";
 
 import axios from "axios";
 import "../../styles/Admin/styleadmin.css";
+import { useSelector } from "react-redux";
+
 
 const AdminTypecate = () => {
     const [typecate, setTypecate] = useState([]);
@@ -22,6 +24,8 @@ const AdminTypecate = () => {
     const [search, setsearch] = useState(''); // Trạng thái tìm kiếm
     const [tlfilter, gantlfilter] = useState([]) // Trạng thái tìm kiếm
     const [allTl, setallTl] = useState([]); // Tất cả loại cây để tìm kiếm
+    const token = useSelector((state) => state.auth.token)
+
 
 
     useEffect(() => {
@@ -37,7 +41,13 @@ const AdminTypecate = () => {
 
     const fetchCharacteristics = async () => {
         try {
-            const response = await axios.get("http://localhost:3000/adminc/characteristic");
+            const otp = {
+                headers: {
+                    "Content-Type": 'application/json',
+                    'Authorization': 'Bearer ' + token
+                }
+            }
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/adminc/characteristic`, otp);
             setCharacteristics(response.data);
         } catch (error) {
             console.error("Lỗi khi lấy đặc điểm:", error);
@@ -46,7 +56,13 @@ const AdminTypecate = () => {
 
     const fetchTypecate = async () => {
         try {
-            const response = await axios.get(`http://localhost:3000/adminc/typecate?page=${currentPage + 1}&limit=${itemsPerPage}`);
+            const otp = {
+                headers: {
+                    "Content-Type": 'application/json',
+                    'Authorization': 'Bearer ' + token
+                }
+            }
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/adminc/typecate?page=${currentPage + 1}&limit=${itemsPerPage}`, otp);
             setTypecate(response.data.typecates);
             setTotalItems(response.data.total);
             setallTl(response.data.typecates); // gán allTl với dữ liệu loại cây
@@ -72,7 +88,13 @@ const AdminTypecate = () => {
     const handleDelete = async (id) => {
         if (!window.confirm("Bạn có chắc muốn xóa không?")) return;
         try {
-            await axios.delete(`http://localhost:3000/adminc/typecate/${id}`);
+            const otp = {
+                headers: {
+                    "Content-Type": 'application/json',
+                    'Authorization': 'Bearer ' + token
+                }
+            }
+            await axios.delete(`${import.meta.env.VITE_API_URL}/adminc/typecate/${id}`, otp);
             alert("Xóa thành công!");
             fetchTypecate();
         } catch (error) {
@@ -100,13 +122,17 @@ const AdminTypecate = () => {
         if (!newTypecate.imageFile) {
             alert("Vui lòng chọn đầy đủ ảnh.");
             return;
-          }
+        }
 
         try {
-            await axios.post("http://localhost:3000/adminc/typecate", formData, {
+            const otp = {
                 headers: {
-                    "Content-Type": "multipart/form-data"
+                    "Content-Type": 'multipart/form-data',
+                    'Authorization': 'Bearer ' + token
                 }
+            }
+            await axios.post(`${import.meta.env.VITE_API_URL}/adminc/typecate`, formData, otp, {
+
             });
             alert("Thêm thành công!");
             setNewTypecate({
@@ -145,15 +171,21 @@ const AdminTypecate = () => {
         }
 
         try {
-            const res = await axios.put(`http://localhost:3000/adminc/typecate/${editTypecate.id}`, formData, {
-                headers: { "Content-Type": "multipart/form-data" },
-            });
+            const otp = {
+                headers: {
+                    "Content-Type": 'multipart/form-data',
+                    'Authorization': 'Bearer ' + token
+                }
+            }
+            const res = await axios.put(`${import.meta.env.VITE_API_URL}/adminc/typecate/${editTypecate.id}`, formData, otp
+            );
             alert(res.data.message);
             setEditTypecate(null);
             fetchTypecate();
         } catch (err) {
             console.error("Lỗi khi cập nhật:", err);
-            alert(err.response?.data?.message || "Cập nhật thất bại!");}
+            alert(err.response?.data?.message || "Cập nhật thất bại!");
+        }
     };
 
 
@@ -170,11 +202,6 @@ const AdminTypecate = () => {
         }
     };
 
-
-
-
-
-
     return (
         <div className="main">
             <div className="topbar">
@@ -183,7 +210,7 @@ const AdminTypecate = () => {
                 </div>
                 <div className="search">
                     <label>
-                    <input
+                        <input
                             type="text"
                             value={search}
                             onChange={onchangeSearch} placeholder="Tìm kiếm..."
@@ -222,9 +249,9 @@ const AdminTypecate = () => {
                                         <img
                                             src={
                                                 item.image?.startsWith("../../public/images")
-                                                  ? `http://localhost:3000/public/${item.image.replace("../../public/", "")}`
-                                                  : item.image
-                                              }
+                                                    ? `${import.meta.env.VITE_API_URL}/public/${item.image.replace("../../public/", "")}`
+                                                    : item.image
+                                            }
                                             alt={item.name}
                                             width="80"
                                         />
@@ -283,14 +310,14 @@ const AdminTypecate = () => {
                                     <input type="file" name="image" accept="image/*" onChange={handleImageChange} />
                                     {editTypecate.image && (
                                         <img
-                                        src={
-                                            typeof editTypecate.image === "string"
-                                              ? `http://localhost:3000/public/${editTypecate.image}`
-                                              : URL.createObjectURL(editTypecate.image) // Nếu là File object
-                                          }
-                                        alt="preview"
-                                        width="100"
-                                    />
+                                            src={
+                                                editTypecate.imageFile
+                                                    ? URL.createObjectURL(editTypecate.imageFile)
+                                                    : editTypecate.image // đã là full URL
+                                            }
+                                    alt="preview"
+                                    width="100"
+                                        />
                                     )}
 
                                     <label>Content:</label>

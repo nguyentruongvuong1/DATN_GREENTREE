@@ -5,6 +5,10 @@ import { FaArrowRight, FaArrowLeft } from "react-icons/fa"; // Import icon mũi 
 import { Link } from "react-router-dom";
 import "../../styles/Admin/styleadmin.css";
 import moment from "moment"; // Import moment.js để định dạng ngày tháng
+import { useSelector } from "react-redux";
+import ReactPaginate from "react-paginate";
+
+
 const Admincharacteristic = () => {
     const [characteristic, setcharacteristics] = useState([]);
     const [editcharacteristic, setEditcharacteristic] = useState(null); // Lưu characteristic đang chỉnh sửa
@@ -15,6 +19,15 @@ const Admincharacteristic = () => {
         name: "",     // Không để undefined
     });
 
+    const token = useSelector((state) => state.auth.token)
+    const [viewTypecates, setViewTypecates] = useState([]);
+    const [showViewTypecates, setShowViewTypecates] = useState(false);
+    const [currentCharacteristicName, setCurrentCharacteristicName] = useState(""); // Để hiển thị tên
+    const itemsPerPage = 8;
+    const [totalItems, setTotalItems] = useState(0);
+    const [currentPage, setCurrentPage] = useState(0);
+
+
 
     // Lấy danh sách characteristics khi component mount
     useEffect(() => {
@@ -24,8 +37,15 @@ const Admincharacteristic = () => {
     // Hàm lấy danh sách characteristic từ API
     const fetchcharacteristics = async () => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/adminc/characteristic`);
-            setcharacteristics(response.data);
+            const otp = {
+                headers: {
+                    "Content-Type": 'application/json',
+                    'Authorization': 'Bearer ' + token
+                }
+            }
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/adminc/characteristic?page=${currentPage + 1}&limit=${itemsPerPage}`, otp);
+            setcharacteristics(response.data.characteristics);
+            setTotalItems(response.data.total);
         } catch (error) {
             console.error("Lỗi khi lấy dữ liệu:", error);
         }
@@ -36,7 +56,13 @@ const Admincharacteristic = () => {
         if (!window.confirm("Bạn có chắc muốn xóa characteristic này không?")) return;
 
         try {
-            const response = await axios.delete(`${import.meta.env.VITE_API_URL}/adminc/characteristic/${id}`);
+            const otp = {
+                headers: {
+                    "Content-Type": 'application/json',
+                    'Authorization': 'Bearer ' + token
+                }
+            }
+            const response = await axios.delete(`${import.meta.env.VITE_API_URL}/adminc/characteristic/${id}`, otp);
             console.log("Response:", response.data);
 
             if (response.status === 200) {
@@ -60,7 +86,13 @@ const Admincharacteristic = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/adminc/characteristic`, newcharacteristic);
+            const otp = {
+                headers: {
+                    "Content-Type": 'application/json',
+                    'Authorization': 'Bearer ' + token
+                }
+            }
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/adminc/characteristic`, newcharacteristic, otp);
             console.log("Response:", response.data);
 
             if (response.status === 200) {
@@ -81,7 +113,13 @@ const Admincharacteristic = () => {
 
     const fetchCategories = async () => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/adminc/cate`);
+            const otp = {
+                headers: {
+                    "Content-Type": 'application/json',
+                    'Authorization': 'Bearer ' + token
+                }
+            }
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/adminc/cate`, otp);
             setCategories(response.data);
         } catch (error) {
             console.error("Lỗi khi lấy danh mục:", error);
@@ -109,7 +147,13 @@ const Admincharacteristic = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.put(`${import.meta.env.VITE_API_URL}/adminc/characteristic/${editcharacteristic.id}`, editcharacteristic);
+            const otp = {
+                headers: {
+                    "Content-Type": 'application/json',
+                    'Authorization': 'Bearer ' + token
+                }
+            }
+            const response = await axios.put(`${import.meta.env.VITE_API_URL}/adminc/characteristic/${editcharacteristic.id}`, editcharacteristic, otp);
             console.log("Response:", response.data);
 
             if (response.status === 200) {
@@ -126,6 +170,32 @@ const Admincharacteristic = () => {
             }
         }
     };
+
+    const handleViewTypecate = async (characteristic) => {
+        try {
+            const otp = {
+                headers: {
+                    "Content-Type": 'application/json',
+                    'Authorization': 'Bearer ' + token
+                }
+            };
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/adminc/type_cates/${characteristic.id}`, otp);
+            setViewTypecates(response.data);
+            setCurrentCharacteristicName(characteristic.name);
+            setShowViewTypecates(true);
+        } catch (error) {
+            console.error("Lỗi khi lấy typecate:", error);
+            alert("Không thể tải danh sách thể loại");
+        }
+    };
+
+    const handlePageChange = ({ selected }) => {
+        setCurrentPage(selected);
+    };
+    useEffect(() => {
+        fetchcharacteristics();
+    }, [currentPage]);
+
 
     return (
         <div className="main">
@@ -170,7 +240,7 @@ const Admincharacteristic = () => {
                                     <td>
                                         <button className="btn-edit" onClick={() => handleEdit(characteristic)}>Sửa</button>
                                         <button className="btn-delete" onClick={() => handleDelete(characteristic.id)}>Xóa</button>
-
+                                        <button className="btn-detail" onClick={() => handleViewTypecate(characteristic)}>Xem</button>
                                     </td>
                                 </tr>
                             ))}
@@ -219,6 +289,52 @@ const Admincharacteristic = () => {
                                 </form>
                             </div>
                         </>
+                    )}
+
+                    {showViewTypecates && (
+                        <>
+                            <div className="modal-overlay" onClick={() => setShowViewTypecates(false)}></div>
+                            <div className="modal-container viewTypecates-modal">
+                                <span className="modal-close-btn" onClick={() => setShowViewTypecates(false)}>&times;</span>
+                                <h3>Thể loại của: {currentCharacteristicName}</h3>
+
+                                {viewTypecates.length > 0 ? (
+                                    <ul>
+                                        {viewTypecates.map((type) => (
+                                            <li key={type.id}>- {type.name}</li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p>Không có thể loại nào thuộc đặc điểm này.</p>
+                                )}
+
+                                <button className="cancel-btn" onClick={() => setShowViewTypecates(false)}>Đóng</button>
+                            </div>
+                        </>
+                    )}
+
+                    {totalItems > itemsPerPage && (
+                        <div className="paginationContainer">
+                            <ReactPaginate
+                                breakLabel="⋯"
+                                nextLabel=">"
+                                previousLabel="<"
+                                onPageChange={handlePageChange}
+                                pageRangeDisplayed={2}
+                                marginPagesDisplayed={1}
+                                pageCount={Math.ceil(totalItems / itemsPerPage)}
+                                containerClassName="pagination"
+                                pageClassName="pageItem"
+                                pageLinkClassName="pageLink"
+                                previousClassName="pageItem"
+                                previousLinkClassName="pageLink previousLink"
+                                nextClassName="pageItem"
+                                nextLinkClassName="pageLink nextLink"
+                                activeClassName="active"
+                                breakClassName="breakItem"
+                                forcePage={currentPage}
+                            />
+                        </div>
                     )}
                 </div>
             </div>

@@ -24,8 +24,13 @@ const AdminBanner = () => {
 
   const fetchBanners = async () => {
     try {
+      const otp = {
+        headers: {
+          "Content-Type": 'multipart/form-data',
+          'Authorization': 'Bearer ' + token
+      }}
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/admin/banners?page=${currentPage}&limit=${itemsPerPage}`
+        `${import.meta.env.VITE_API_URL}/admin/banners?page=${currentPage}&limit=${itemsPerPage}`,       otp
       );
       setBanners(response.data.banners);
       setTotalBanners(response.data.total);
@@ -241,11 +246,11 @@ const AdminBanner = () => {
 
                   {formData.image && (
                     <img
-                      src={
-                        formData.image instanceof File
-                          ? URL.createObjectURL(formData.image)
-                          : `${import.meta.env.VITE_API_URL}/${formData.image}`
-                      }
+                    src={
+                      formData.image instanceof File
+                        ? URL.createObjectURL(formData.image)
+                        : formData.image 
+                    }
                       alt="Preview"
                       style={{ width: "150px", marginTop: "10px" }}
                     />

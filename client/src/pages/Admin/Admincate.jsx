@@ -23,14 +23,17 @@ const Admincate = () => {
   const [search, setsearch] = useState(''); // Trạng thái tìm kiếm
   const [allCt, setallCt] = useState([]); // Tất cả cate để tìm kiếm
   const [ctfilter, ganctfilter] = useState([]) // Trạng thái tìm kiếm
+  const [viewCate, setViewCate] = useState(null);
 
+  
 
   useEffect(() => {
     const otp = {
       headers: {
         "Content-Type": 'multipart/form-data',
         'Authorization': 'Bearer ' + token
-    }}
+      }
+    }
     axios.get(`${import.meta.env.VITE_API_URL}/adminc/cate`, otp)
       .then((response) => {
         setcates(response.data);
@@ -57,7 +60,13 @@ const Admincate = () => {
 
   const fetchcates = async () => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/adminc/cate`);
+      const otp = {
+        headers: {
+          "Content-Type": 'multipart/form-data',
+          'Authorization': 'Bearer ' + token
+        }
+      }
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/adminc/cate`, otp);
       setcates(response.data);
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu:", error);
@@ -75,7 +84,7 @@ const Admincate = () => {
         headers: {
           "Content-Type": 'multipart/form-data',
           'Authorization': 'Bearer ' + token
-      }
+        }
 
       });
 
@@ -131,7 +140,7 @@ const Admincate = () => {
         body: formData,
         headers: {
           'Authorization': 'Bearer ' + token
-      }
+        }
       });
 
       const data = await response.json();
@@ -199,7 +208,7 @@ const Admincate = () => {
         body: formData,
         headers: {
           'Authorization': 'Bearer ' + token
-      }
+        }
 
       });
 
@@ -222,6 +231,40 @@ const Admincate = () => {
     }
   };
 
+  const handleView = async (cate) => {
+    try {
+      const otp = {
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json',
+        },
+      };
+
+      const charRes = await axios.get(`${import.meta.env.VITE_API_URL}/adminc/characteristic/${cate.id}`, otp);
+
+      const characteristicsWithTypecates = [];
+
+      for (const char of charRes.data) {
+        const typeRes = await axios.get(`${import.meta.env.VITE_API_URL}/adminc/type_cates/${char.id}`, otp);
+
+        characteristicsWithTypecates.push({
+          ...char,
+          typecates: typeRes.data, // Gắn thêm typecates vào từng characteristic
+        });
+      }
+
+      setViewCate({
+        ...cate,
+        characteristics: characteristicsWithTypecates, // chú ý đổi key
+      });
+
+    } catch (error) {
+      console.error("Lỗi khi lấy chi tiết danh mục:", error);
+      if (error.response) {
+        console.error('Response error:', error.response.data);
+      }
+    }
+  };
 
   return (
 
@@ -289,6 +332,8 @@ const Admincate = () => {
                   <td>
                     <button className="btn-edit" onClick={() => handleEdit(cate)}>Sửa</button>
                     <button className="btn-delete" onClick={() => handleDelete(cate.id)}>Xóa</button>
+                    <button className="btn-detail" onClick={() => handleView(cate)}>Xem</button>
+
                   </td>
                 </tr>
               ))}
@@ -347,8 +392,6 @@ const Admincate = () => {
             </>
           )}
 
-
-
           {/* Form thêm cate */}
 
           {showAddForm && (
@@ -385,7 +428,35 @@ const Admincate = () => {
             </>
           )}
 
+          {viewCate && (
+            <>
+              <div className="modal-overlay" onClick={() => setViewCate(null)}></div>
+              <div className="modal-container viewcate-modal">
+                <span className="modal-close-btn" onClick={() => setViewCate(null)}>&times;</span>
+                <h2 className="viewcate-title">Chi tiết danh mục: {viewCate.name}</h2>
 
+                <div className="viewcate-content">
+                  {viewCate.characteristics?.map((char) => (
+                    <div key={char.id} className="viewcate-section">
+                      <h3 className="viewcate-characteristic"> {char.name}</h3>
+
+                      <ul className="viewcate-typecate-list">
+                        {char.typecates.length > 0 ? (
+                          char.typecates.map((type) => (
+                            <li key={type.id} className="viewcate-typecate-item">- {type.name}</li>
+                          ))
+                        ) : (
+                          <li className="viewcate-no-typecate">(Không có loại nào)</li>
+                        )}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+
+                <button className="cancel-btn" onClick={() => setViewCate(null)}>Đóng</button>
+              </div>
+            </>
+          )}
 
         </div>
       </div>

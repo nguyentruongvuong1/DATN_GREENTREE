@@ -574,6 +574,12 @@ body {
     color: white !important;
 }
 
+.details table td .btn-detail {
+    background-color: #FFC107 !important;
+    /* Màu vàng */
+    color: black !important;
+}
+
 .details table td .btn-navigate {
     background-color: #FFC107 !important;
     /* Màu vàng */
@@ -908,4 +914,116 @@ body {
 
 /* CSS cho bảng chi tiết đơn hàng */
 
+/* form detail danh mục */  
+.viewcate-modal {
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  }
   
+ 
+  
+  .viewcate-title {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #2c3e50;
+    text-align: center;
+  }
+  
+  .viewcate-content {
+    margin-top: 10px;
+  }
+  
+  .viewcate-section {
+    margin-bottom: 25px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 10px;
+  }
+  
+  .viewcate-characteristic {
+    margin-bottom: 10px;
+    color: #3498db;
+    font-size: 20px;
+  }
+  
+  .viewcate-typecate-list {
+    padding-left: 20px;
+  }
+  
+  .viewcate-typecate-item {
+    margin-bottom: 5px;
+    color: #333;
+  }
+  
+  .viewcate-no-typecate {
+    color: #aaa;
+    font-style: italic;
+  }
+/* form detail danh mục */  
+/* Modal View Typecate */
+.viewTypecates-modal {
+    background: #fff;
+    padding: 30px 25px;
+    border-radius: 15px;
+    width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+  }
+  
+  .viewTypecates-modal h3 {
+    text-align: center;
+    font-size: 24px;
+    color: #2c3e50;
+    margin-bottom: 20px;
+  }
+  
+  .viewTypecates-modal ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+  }
+  
+  .viewTypecates-modal ul li {
+    padding: 8px 12px;
+    background: #f1f1f1;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    color: #333;
+    font-size: 16px;
+    transition: background 0.2s;
+  }
+  
+  
+  /* Modal View Typecate */
+
+  /* Modal View User Detail */
+  .userDetailOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.userDetailForm {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 500px;
+    max-width: 90%;
+    box-shadow: 0 0 10px rgba(0,0,0,0.25);
+}
+
+
+  /* Modal View User Detail */

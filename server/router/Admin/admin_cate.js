@@ -6,7 +6,7 @@ require('dotenv').config();
 const baseUrl = process.env.BASE_URL; // Lấy từ .env
 const path = require('path');
 const fs = require('fs');
-const {adminAuth} = require('../auth')
+const { adminAuth } = require('../auth')
 
 
 // API CATE------------------------------------------------------------------------------------------------------------------------------------------
@@ -162,14 +162,20 @@ router.post('/cate', adminAuth, upload.fields([
 });
 
 // API characteristic------------------------------------------------------------------------------------------------------------------------------------------
-router.get('/characteristic', async function (req, res, next) {
+router.get('/characteristic', adminAuth, async function (req, res, next) {
     try {
+        const { page = 1, limit = 8 } = req.query;
+        const offset = (page - 1) * limit;
         const [results] = await pool.execute(`
             SELECT characteristic.id, cate.name AS cate_name, characteristic.name, characteristic.create_at 
             FROM characteristic 
             JOIN cate ON characteristic.cate_id = cate.id
-    `);
-        res.json(results);
+            LIMIT ? OFFSET ?
+    `, [parseInt(limit), parseInt(offset)]);
+    const [countResult] = await pool.execute(`SELECT COUNT(*) as total FROM characteristic`);
+    const total = countResult[0].total;
+    res.json({ characteristics: results, total });
+    
     } catch (err) {
         console.error('Lỗi truy vấn dữ liệu:', err);
         res.status(500).json({ error: 'Không thể lấy dữ liệu' });
@@ -177,7 +183,7 @@ router.get('/characteristic', async function (req, res, next) {
 });
 
 // Lấy danh sách characteristic theo cate_id
-router.get('/characteristic/:cate_id', async (req, res) => {
+router.get('/characteristic/:cate_id', adminAuth, async (req, res) => {
     const { cate_id } = req.params;
 
     try {
@@ -197,7 +203,7 @@ router.get('/characteristic/:cate_id', async (req, res) => {
 })
 
 // API xóa characteristic
-router.delete('/characteristic/:id', async (req, res) => {
+router.delete('/characteristic/:id', adminAuth, async (req, res) => {
     const { id } = req.params;
     const sql = "DELETE FROM characteristic WHERE id = ?";
 
@@ -215,7 +221,7 @@ router.delete('/characteristic/:id', async (req, res) => {
 
 
 // API cập nhật characteristic
-router.put('/characteristic/:id', async (req, res) => {
+router.put('/characteristic/:id', adminAuth, async (req, res) => {
     const { id } = req.params;
     const { name, create_date } = req.body; // Không có status vì bảng không có cột này
 
@@ -253,7 +259,7 @@ router.put('/characteristic/:id', async (req, res) => {
 });
 
 // API thêm characteristic
-router.post('/characteristic', async (req, res) => {
+router.post('/characteristic', adminAuth, async (req, res) => {
     const { name, cate_id } = req.body;
 
     if (!name || !cate_id) {
@@ -291,7 +297,7 @@ router.get('/typecate', async function (req, res) {
                 type_cate.name, 
                 type_cate.image, 
                 type_cate.create_at, 
-                type_cate.content 
+                type_cate.content
             FROM type_cate
             JOIN characteristic ON type_cate.characteristic_id = characteristic.id
             ORDER BY type_cate.create_at DESC, characteristic_id DESC
@@ -306,9 +312,6 @@ router.get('/typecate', async function (req, res) {
         res.status(500).json({ error: 'Không thể lấy dữ liệu' });
     }
 });
-
-
-
 
 // API xóa typecate
 router.delete('/typecate/:id', async (req, res) => {
@@ -354,8 +357,8 @@ router.put('/typecate/:id', upload.single("image"), async (req, res) => {
             return res.status(404).json({ message: "typecate không tồn tại" });
         }
 
-         // Kiểm tra tên đã tồn tại chưa 
-         if (name) {
+        // Kiểm tra tên đã tồn tại chưa 
+        if (name) {
             const [exists] = await pool.query("SELECT id FROM type_cate WHERE name = ? AND id != ?", [name, id]);
             if (exists.length > 0) {
                 return res.status(400).json({ message: "Tên loại cây đã tồn tại" });

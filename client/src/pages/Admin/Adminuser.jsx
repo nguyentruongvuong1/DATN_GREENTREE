@@ -3,6 +3,8 @@ import axios from "axios";
 import "../../styles/Admin/styleadmin.css";
 import ReactPaginate from "react-paginate";
 import moment from "moment";
+import { useSelector } from "react-redux";
+
 
 const AdminUser = () => {
     const [users, setUsers] = useState([]);
@@ -13,13 +15,18 @@ const AdminUser = () => {
     const [usfilter, ganusfilter] = useState([]) // Trạng thái tìm kiếm
     const [allUs, setallUs] = useState([]); // Tất cả để tìm kiếm
     const [search, setsearch] = useState(''); // Trạng thái tìm kiếm
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [showDetail, setShowDetail] = useState(false);
+
+    const token = useSelector((state) => state.auth.token)
+
 
     const level = {
         0: "Đồng",
         1: "Bạc",
         2: 'Vàng',
         3: 'Kim cương'
-      }
+    }
 
     useEffect(() => {
         fetchUsers();
@@ -27,8 +34,14 @@ const AdminUser = () => {
 
     const fetchUsers = async () => {
         try {
+            const otp = {
+                headers: {
+                    "Content-Type": 'application/json',
+                    'Authorization': 'Bearer ' + token
+                }
+            }
             const { data } = await axios.get(
-                `${import.meta.env.VITE_API_URL}/admin/users?page=${currentPage}&limit=${itemsPerPage}`
+                `${import.meta.env.VITE_API_URL}/admin/users?page=${currentPage}&limit=${itemsPerPage}`, otp
             );
             setUsers(data.users || []);
             setTotalUsers(data.total || 0);
@@ -57,15 +70,29 @@ const AdminUser = () => {
     const handlePageChange = (selectedItem) => {
         setCurrentPage(selectedItem.selected + 1);
     };
-    
+
     const handleStatusChange = async (userId, newStatus) => {
         try {
-            await axios.put(`${import.meta.env.VITE_API_URL}/admin/user/${userId}`, { status: newStatus });
+            const otp = {
+                headers: {
+                    "Content-Type": 'application/json',
+                    'Authorization': 'Bearer ' + token
+                }
+            }
+            await axios.put(`${import.meta.env.VITE_API_URL}/admin/user/${userId}`, { status: newStatus }, otp);
             // Cập nhật lại danh sách người dùng
             fetchUsers();
         } catch (error) {
             console.error("Lỗi khi cập nhật trạng thái người dùng:", error);
         }
+    };
+    const handleViewUser = (user) => {
+        setSelectedUser(user);
+        setShowDetail(true);
+    };
+    const closeDetail = () => {
+        setSelectedUser(null);
+        setShowDetail(false);
     };
 
 
@@ -77,12 +104,12 @@ const AdminUser = () => {
                 </div>
                 <div className="search">
                     <label>
-                    <input
-                        type="text"
-                        value={search}
-                        onChange={onchangeSearch} placeholder="Tìm kiếm..."
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={onchangeSearch} placeholder="Tìm kiếm..."
 
-                    />                        <ion-icon name="search-outline"></ion-icon>
+                        />                        <ion-icon name="search-outline"></ion-icon>
                     </label>
                 </div>
                 <div className="user">
@@ -129,12 +156,36 @@ const AdminUser = () => {
                                         </select>
                                     </td>
                                     <td>{moment(user.create_date).format('DD-MM-YYYY')}</td>
-                                    <td>Xem</td>
+                                    <td>
+                                        <button className="btn-detail" onClick={() => handleViewUser(user)}>
+                                            Xem
+                                        </button>
+                                    </td>
 
                                 </tr>
                             ))}
                         </tbody>
                     </table>
+                    {showDetail && selectedUser && (
+                        <div className="modal-overlay userDetailOverlay">
+                            <div className="modal-container userDetailForm">
+                                <h2>Chi tiết người dùng</h2>
+                                <p><strong>ID:</strong> {selectedUser.id}</p>
+                                <p><strong>Tên đăng nhập:</strong> {selectedUser.username}</p>
+                                <p><strong>Điện thoại:</strong> {selectedUser.phone}</p>
+                                <p><strong>Email:</strong> {selectedUser.email}</p>
+                                <p><strong>Địa chỉ:</strong> {selectedUser.address}</p>
+                                <p><strong>Số lượng sản phẩm đã mua:</strong> {selectedUser.quantity_pr_buy}</p>
+                                <p><strong>Tổng tiền đã mua:</strong> {selectedUser.total_buy}</p>
+                                <p><strong>Bậc:</strong> {level[selectedUser.level]}</p>
+                                <p><strong>Vai trò:</strong> {selectedUser.role === 1 ? "Người dùng" : "Admin"}</p>
+                                <p><strong>Trạng thái:</strong> {selectedUser.status === 1 ? "Bình thường" : "Khóa"}</p>
+                                <p><strong>Ngày tạo:</strong> {moment(selectedUser.create_date).format('DD-MM-YYYY')}</p>
+                                <button type="button" className="cancel-btn" onClick={closeDetail}>Đóng</button>
+                            </div>
+                        </div>
+                    )}
+
                     {totalUsers > itemsPerPage && (
                         <div className="paginationContainer">
                             <ReactPaginate

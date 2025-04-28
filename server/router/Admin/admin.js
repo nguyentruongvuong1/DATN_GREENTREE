@@ -147,7 +147,7 @@ router.post('/voucher', adminAuth, async (req, res) => {
 });
 
 // API REVIEWS------------------------------------------------------------------------------------------------------------------------------------------
-router.get('/reviews', async function (req, res) {
+router.get('/reviews',adminAuth, async function (req, res) {
   try {
     const { page = 1, limit = 8 } = req.query;
     const offset = (page - 1) * limit;
@@ -183,7 +183,7 @@ router.get('/reviews', async function (req, res) {
 
 // API BANNER------------------------------------------------------------------------------------------------------------------------------------------
 // GET banners with pagination
-router.get("/banners", async (req, res) => {
+router.get("/banners",adminAuth, async (req, res) => {
   const { page = 1, limit = 8 } = req.query;
   const offset = (parseInt(page) - 1) * parseInt(limit);
 
@@ -228,8 +228,6 @@ router.post('/banner', adminAuth, upload.single('image'), async (req, res) => {
     res.status(500).json({ message: "Lỗi server", error: err.message });
   }
 });
-
-
 
 // PUT update banner
 // Sửa banner
@@ -298,7 +296,7 @@ router.delete('/banner/:id', async (req, res) => {
 
 
 // User API
-router.get('/users', async (req, res) => {
+router.get('/users',adminAuth, async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 8;
   const offset = (page - 1) * limit;
@@ -314,7 +312,7 @@ router.get('/users', async (req, res) => {
 });
 
 // Cập nhật status người dùng
-router.put('/user/:id', async (req, res) => {
+router.put('/user/:id',adminAuth, async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
@@ -331,9 +329,8 @@ router.put('/user/:id', async (req, res) => {
   }
 });
 
-
 // Admin order
-router.get('/order', async function (req, res) {
+router.get('/order',adminAuth, async function (req, res) {
   try {
     const { page = 1, limit = 8 } = req.query;
     const offset = (page - 1) * limit;
@@ -353,7 +350,7 @@ router.get('/order', async function (req, res) {
 });
 
 // Lấy chi tiết đơn hàng
-router.get('/order_detail/:order_id', async (req, res) => {
+router.get('/order_detail/:order_id',adminAuth, async (req, res) => {
   const { order_id } = req.params;
   try {
     const [result] = await pool.query(`
@@ -376,7 +373,7 @@ router.get('/order_detail/:order_id', async (req, res) => {
 });
 
 // Cập nhật trạng thái đơn hàng
-router.put('/order_status/:id', async (req, res) => {
+router.put('/order_status/:id',adminAuth, async (req, res) => {
   const conn = await pool.getConnection();
   try {
     await conn.beginTransaction();
@@ -425,7 +422,7 @@ router.put('/order_status/:id', async (req, res) => {
 });
 
 // Cập nhật trạng thái thanh toán
-router.put('/transaction_status', async (req, res) => {
+router.put('/transaction_status',adminAuth, async (req, res) => {
   const { id, new_transaction_status } = req.body;
   try {
     // Lấy trạng thái
@@ -454,7 +451,7 @@ router.put('/transaction_status', async (req, res) => {
 
 // API DASHBOARD ------------------------------------------------------------------------------------------------------------------------------------------
 // API tổng số đơn hàng
-router.get('/dashboard/orders', async (req, res) => {
+router.get('/dashboard/orders', adminAuth, async (req, res) => {
   try {
     const [[{ total }]] = await pool.query(`SELECT COUNT(*) AS total FROM \`order\``);
     res.json({ total });
@@ -465,7 +462,7 @@ router.get('/dashboard/orders', async (req, res) => {
 });
 
 // API tổng số người dùng
-router.get('/dashboard/users', async (req, res) => {
+router.get('/dashboard/users', adminAuth, async (req, res) => {
   try {
     const [[{ total }]] = await pool.query(`SELECT COUNT(*) AS total FROM \`user\``);
     res.json({ total });
@@ -476,7 +473,7 @@ router.get('/dashboard/users', async (req, res) => {
 });
 
 // api người dùng mới
-router.get('/dashboard/users/new', async (req, res) => {
+router.get('/dashboard/users/new', adminAuth, async (req, res) => {
   try {
     const [[{ newUsers }]] = await pool.query(`
       SELECT COUNT(*) AS newUsers
@@ -492,7 +489,7 @@ router.get('/dashboard/users/new', async (req, res) => {
 
 
 // API tổng doanh thu theo ngày, tuần, tháng và tổng doanh thu
-router.get('/dashboard/revenue/all', async (req, res) => {
+router.get('/dashboard/revenue/all', adminAuth, async (req, res) => {
   try {
     const [[{ revenueDay }]] = await pool.query(`
       SELECT SUM(total_amount) AS revenueDay
@@ -530,7 +527,7 @@ router.get('/dashboard/revenue/all', async (req, res) => {
 
 
 // API doanh thu theo từng tháng trong năm hiện tại
-router.get('/dashboard/revenue/monthly', async (req, res) => {
+router.get('/dashboard/revenue/monthly', adminAuth, async (req, res) => {
   try {
     const [data] = await pool.query(`
       SELECT MONTH(create_at) AS month, SUM(total_amount) AS revenue
@@ -617,7 +614,7 @@ router.get('/dashboard/revenue/years', async (req, res) => {
 
 //API bảng doanh thu theo ngày
 // API doanh thu theo ngày kèm thông tin người dùng và trạng thái
-router.get('/dashboard/revenue/day/details', async (req, res) => {
+router.get('/dashboard/revenue/day/details',adminAuth, async (req, res) => {
   try {
     const [orders] = await pool.query(`
       SELECT 
