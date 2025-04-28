@@ -35,9 +35,7 @@ const AdminTypecate = () => {
 
     const [characteristic, setCharacteristics] = useState([]);
 
-    useEffect(() => {
-        fetchCharacteristics();
-    }, []);
+
 
     const fetchCharacteristics = async () => {
         try {
@@ -48,11 +46,17 @@ const AdminTypecate = () => {
                 }
             }
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/adminc/characteristic`, otp);
-            setCharacteristics(response.data);
+
+            setCharacteristics(response.data.characteristics);
+            console.log(characteristic);
         } catch (error) {
             console.error("Lỗi khi lấy đặc điểm:", error);
         }
     };
+
+    useEffect(() => {
+        fetchCharacteristics();
+    }, []);
 
     const fetchTypecate = async () => {
         try {
@@ -315,8 +319,8 @@ const AdminTypecate = () => {
                                                     ? URL.createObjectURL(editTypecate.imageFile)
                                                     : editTypecate.image // đã là full URL
                                             }
-                                    alt="preview"
-                                    width="100"
+                                            alt="preview"
+                                            width="100"
                                         />
                                     )}
 
@@ -352,11 +356,12 @@ const AdminTypecate = () => {
                                         required
                                     >
                                         <option value="">-- Chọn đặc điểm --</option>
-                                        {characteristic.map((charac) => (
+                                        {Array.isArray(characteristic) && characteristic.map((charac) => (
                                             <option key={charac.id} value={charac.id}>
                                                 {charac.name}
                                             </option>
                                         ))}
+
                                     </select>
 
                                     <label>Tên:</label>

@@ -285,7 +285,7 @@ router.post('/characteristic', adminAuth, async (req, res) => {
 });
 
 // API typecate------------------------------------------------------------------------------------------------------------------------------------------
-router.get('/typecate', async function (req, res) {
+router.get('/typecate', adminAuth, async function (req, res) {
     try {
         const { page = 1, limit = 8 } = req.query;
         const offset = (page - 1) * limit;
@@ -314,7 +314,7 @@ router.get('/typecate', async function (req, res) {
 });
 
 // API xóa typecate
-router.delete('/typecate/:id', async (req, res) => {
+router.delete('/typecate/:id', adminAuth, async (req, res) => {
     const { id } = req.params;
     const sql = "DELETE FROM type_cate WHERE id = ?";
 
@@ -331,7 +331,7 @@ router.delete('/typecate/:id', async (req, res) => {
 });
 
 // API lấy typecate theo characteristic_id
-router.get('/type_cates/:characteristic_id', async (req, res) => {
+router.get('/type_cates/:characteristic_id',adminAuth, async (req, res) => {
     const { characteristic_id } = req.params;
     try {
         const [rows] = await pool.execute(
@@ -346,7 +346,7 @@ router.get('/type_cates/:characteristic_id', async (req, res) => {
 
 
 // API cập nhật typecate
-router.put('/typecate/:id', upload.single("image"), async (req, res) => {
+router.put('/typecate/:id',adminAuth, upload.single("image"), async (req, res) => {
     const { id } = req.params;
     const { characteristic_id, name, create_at, content } = req.body;
     const file = req.file;
