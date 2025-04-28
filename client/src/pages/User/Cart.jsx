@@ -14,13 +14,13 @@ export default function Cart() {
   const [modal, contextHolder] = Modal.useModal();
 
   let shippingFee = 50000;
- if(user.level === 0){
+ if(user?.level === 0){
   shippingFee = 50000;
- }else if(user.level === 1){
+ }else if(user?.level === 1){
   shippingFee = 25000;
- }else if(user.level === 2){
+ }else if(user?.level === 2){
   shippingFee = 10000;
- }else if(user.level === 3)(
+ }else if(user?.level === 3)(
   shippingFee = 0
  )
 

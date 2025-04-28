@@ -57,19 +57,6 @@ const AdminVoucher = () => {
 
   }, [search, allVc, vouchers])
 
-  // const fetchVouchers = async () => {
-  //   try {
-  //     const { data } = await axios.get(
-  //       `${import.meta.env.VITE_API_URL}/admin/vouchers?page=${currentPage}&limit=${itemsPerPage}`
-  //     );
-  //     setVouchers(data.vouchers || []);
-  //     setTotalVouchers(data.total || 0);
-  //   } catch (error) {
-  //     console.error("Lỗi khi lấy dữ liệu:", error);
-  //   }
-  // };
-
-
   const handleDelete = async (id) => {
     if (!window.confirm("Bạn có chắc muốn xóa voucher này không?")) return;
     const otp = {
@@ -105,7 +92,7 @@ const AdminVoucher = () => {
         ? `${formData.start_date} 00:00:00`
         : moment().format("YYYY-MM-DD HH:mm:ss"),
         end_date: formData.start_date?.trim()
-        ? `${formData.start_date} 00:00:00`
+        ? `${formData.end_date} 00:00:00`
         : moment().format("YYYY-MM-DD HH:mm:ss"),    };
 
 

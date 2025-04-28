@@ -121,15 +121,12 @@ export default function Userprofile() {
     return <Navigate to="/dangnhap" replace={true} />;
   }
 
- 
-
-
   return (
     <div className={styles.container}>
       <div className={styles.sidebar}>
         <div className={styles["profile-header"]}>
           <img
-            src={userData?.avatar || "/default-avatar.png"}
+            src={userData?.avatar}
             alt="User Avatar"
             className={styles.avatar}
             onClick={() => document.getElementById('avatarInput').click()}  // Khi nhấn vào ảnh sẽ mở input
@@ -142,10 +139,10 @@ export default function Userprofile() {
             onChange={handleAvatarChange}  // Khi chọn ảnh mới sẽ gọi hàm này
           />
           <h3 className={styles.username}>
-            {userData?.username || "Người dùng"}
+            {userData?.username}
           </h3>
-          <p className={styles["user-email"]}>{user?.email}</p>
-          <p className={styles["user-email"]}>Tài khoản bậc: {level[user?.level]}</p>
+          <p className={styles["user-email"]}>{userData?.email}</p>
+          <p className={styles["user-email"]}>Tài khoản bậc: {level[userData?.level]}</p>
         </div>
 
         <div className={styles.menu}>
@@ -206,6 +203,7 @@ export default function Userprofile() {
                 id="email"
                 className={styles["form-control"]}
                 value={userData.email}
+                readOnly
               />
             </div>
 

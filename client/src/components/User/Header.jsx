@@ -27,6 +27,7 @@ const Header = () => {
   const [cate, setCate] = useState([]);
   const [characteristis, setCharacteristics] = useState([]);
   const [ShowSearch, setShowSearch] = useState(false);
+  const [User, setUser] = useState(null)
 
   const [product, setproduct] = useState([]);
   const [searchpr, setsearchpr] = useState("");
@@ -56,6 +57,13 @@ const Header = () => {
       .then((res) => res.json())
       .then((data) => setproduct(data));
   }, []);
+
+  useEffect(() => {
+    if (!user?.id) return;
+     fetch(`${import.meta.env.VITE_API_URL}/user/user/${user?.id}`)
+    .then(res => res.json())
+    .then(data => setUser(data))
+  },[user?.id])
 
   // lay du lieu nguoi dung nhap vao
   const onchangeSearch = (e) => {
@@ -137,11 +145,11 @@ const Header = () => {
               </div>
               <p>|</p>
 
-              {DaDangNhap === true && user?.role === 1 ? (
+              {DaDangNhap === true && user?.role === 1 && User ? (
                   <div className={styles.userContainer}>
                   <div className={styles.user}>
-                    <img width="35px" height="35px" src="/images/user_circle.webp" alt="User" />
-                    <p>{user?.username.length > 4 ? user.username.slice(0, 4) + "..." : user.username}</p>
+                   <img width="35px" height="35px" src={User.avatar} alt="User" />
+                    <p>{User?.username.length > 4 ? User.username.slice(0, 4) + "..." : User.username}</p>
                   </div>
             
                   <div className={styles.dropdownMenu}>
@@ -151,11 +159,11 @@ const Header = () => {
                     <button className={styles.btn} onClick={() => { message.success('Bạn đã đăng xuất tài khoản thành công'); dispatch(thoat())}}>Đăng xuất</button>
                   </div>
                 </div>
-              ) : DaDangNhap === true && user?.role === 0 ?(
+              ) : DaDangNhap === true && user?.role === 0 && User ?(
                 <div className={styles.userContainer}>
                   <div className={styles.user}>
-                    <img width="35px" height="35px" src="/images/user_circle.webp" alt="User" />
-                    <p>{user?.username.length > 4 ? user.username.slice(0, 4) + "..." : user.username}</p>
+                    <img width="35px" height="35px" src={User.avatar} alt="User" />
+                    <p>{User?.username.length > 4 ? User.username.slice(0, 4) + "..." : User.username}</p>
                   </div>
             
                   <div className={styles.dropdownMenu}>
