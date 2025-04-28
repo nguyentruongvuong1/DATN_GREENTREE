@@ -23,6 +23,10 @@
     margin-bottom: 20px;
 }
 
+.profile-header img{
+  cursor: pointer;
+}
+
 .avatar {
     width: 100px;
     height: 100px;

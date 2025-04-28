@@ -401,7 +401,7 @@ router.put('/typecate/:id', upload.single("image"), async (req, res) => {
 });
 
 // API thêm typecate
-router.post('/typecate', upload.single('image'), async (req, res) => {
+router.post('/typecate',adminAuth, upload.single('image'), async (req, res) => {
     const { characteristic_id, name, content } = req.body;
     const image = req.file ? `${baseUrl}/public/images/${req.file.filename}` : null;
 

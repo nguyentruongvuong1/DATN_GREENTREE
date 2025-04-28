@@ -59,30 +59,30 @@ export default function AdminOrder() {
     }
   };
 
-  const fetchOrder = async () => {
-    try {
-      const otp = {
-        headers: {
-          "Content-Type": 'application/json',
-          'Authorization': 'Bearer ' + token
-        }
-      }
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL
-        }/admin/order?page=${currentPage}&limit=${itemsPerPage}`, otp
-      );
-      setOrder(response.data.order || response.data);
-      setTotalOrder(response.data.total || response.data.length);
-      setallOdr(response.data.order || response.data); // gán allOrder với dữ liệu đơn hàng
-      console.log(response.data);
-    } catch (error) {
-      console.error("Lỗi khi lấy dữ liệu bình luận:", error);
-    }
-  };
+  
 
   useEffect(() => {
+    const fetchOrder = async () => {
+      try {
+        const otp = {
+          headers: {
+            "Content-Type": 'application/json',
+            'Authorization': 'Bearer ' + token
+          }
+        }
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL
+          }/admin/order?page=${currentPage}&limit=${itemsPerPage}`, otp
+        );
+        setOrder(response.data.order || response.data);
+        setTotalOrder(response.data.total || response.data.length);
+        setallOdr(response.data.order || response.data); // gán allOrder với dữ liệu đơn hàng
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu bình luận:", error);
+      }
+    };
     fetchOrder();
-  }, []);
+  }, [currentPage, itemsPerPage, token]);
 
   useEffect(() => {
     if (search === "") {
@@ -234,7 +234,7 @@ export default function AdminOrder() {
                   </td>
                   <td>{or.transaction_code}</td>
                   <td>{or.payment_method === 1 ? "Tiền mặt" : "VNPAYS"}</td>
-                  <td>{Number(or.total_amount).toLocaleString('vi')} VNĐ</td>
+                  <td>{Number(or.total_amount).toLocaleString("vi")} VNĐ</td>
                   <td>{moment(or.create_at).format("DD-MM-YYYY")}</td>
                   <td>
                     <select

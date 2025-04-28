@@ -336,8 +336,7 @@ router.get('/order',adminAuth, async function (req, res) {
     const offset = (page - 1) * limit;
 
     const [results] = await pool.query(`
-          SELECT * FROM \`order\` LIMIT 8 OFFSET 0;
-
+          SELECT * FROM \`order\` ORDER BY order_status ASC, create_at DESC LIMIT ? OFFSET ?;
       `, [parseInt(limit), parseInt(offset)]);
 
     const [[{ total }]] = await pool.query(`SELECT COUNT(*) AS total FROM \`order\` `);
