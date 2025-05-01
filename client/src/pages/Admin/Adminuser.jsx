@@ -21,12 +21,7 @@ const AdminUser = () => {
     const token = useSelector((state) => state.auth.token)
 
 
-    const level = {
-        0: "Đồng",
-        1: "Bạc",
-        2: 'Vàng',
-        3: 'Kim cương'
-    }
+    
 
     useEffect(() => {
         fetchUsers();
@@ -129,7 +124,7 @@ const AdminUser = () => {
                                 <th>Tên đăng nhập</th>
                                 <th>Điện thoại</th>
                                 <th>Tổng tiền đã mua</th>
-                                <th>Bậc</th>
+                                {/* <th>Bậc</th> */}
                                 <th>Vai trò</th>
                                 <th>Trạng thái</th>
                                 <th>Ngày tạo</th>
@@ -143,7 +138,7 @@ const AdminUser = () => {
                                     <td>{user.username}</td>
                                     <td>{user.phone}</td>
                                     <td>{user.total_buy}</td>
-                                    <td>{level[user.level]}</td>
+                                    {/* <td>{level[user.level]}</td> */}
                                     <td>{user.role === 1 ? "Người dùng" : "Admin"}</td>
                                     <td>
                                         <select
@@ -176,8 +171,8 @@ const AdminUser = () => {
                                 <p><strong>Email:</strong> {selectedUser.email}</p>
                                 <p><strong>Địa chỉ:</strong> {selectedUser.address}</p>
                                 <p><strong>Số lượng sản phẩm đã mua:</strong> {selectedUser.quantity_pr_buy}</p>
-                                <p><strong>Tổng tiền đã mua:</strong> {selectedUser.total_buy}</p>
-                                <p><strong>Bậc:</strong> {level[selectedUser.level]}</p>
+                                <p><strong>Tổng tiền đã mua:</strong> {Number(selectedUser.total_buy).toLocaleString('vi')} VNĐ</p>
+                                {/* <p><strong>Bậc:</strong> {level[selectedUser.level]}</p> */}
                                 <p><strong>Vai trò:</strong> {selectedUser.role === 1 ? "Người dùng" : "Admin"}</p>
                                 <p><strong>Trạng thái:</strong> {selectedUser.status === 1 ? "Bình thường" : "Khóa"}</p>
                                 <p><strong>Ngày tạo:</strong> {moment(selectedUser.create_date).format('DD-MM-YYYY')}</p>

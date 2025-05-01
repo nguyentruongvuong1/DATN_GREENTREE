@@ -176,16 +176,6 @@ router.post("/checkout", async (req, res) => {
         );
       }
 
-      // 4. cập nhật level
-      const [userResult] = await connection.query(`SELECT total_buy FROM user WHERE id =? `, [user_id]);
-      const totalBuy = userResult[0].total_buy;
-
-      let level = 0;
-      if(totalBuy >= 10000000) level = 3;
-      else if(totalBuy >= 5000000) level = 2;
-      else if(totalBuy >= 2000000) level = 1;
-
-      await connection.query(`UPDATE user SET level = ? WHERE id =?`,[level, user_id]);
 
 
       await connection.commit();
@@ -423,16 +413,6 @@ router.get("/check_payment", async (req, res) => {
         );
       }
 
-      // 4. cập nhật level
-      const [userResult] = await connection.query(`SELECT total_buy FROM user WHERE id =? `, [orderInfo[0].user_id]);
-      const totalBuy = userResult[0].total_buy;
-
-      let level = 0;
-      if(totalBuy >= 10000000) level = 3;
-      else if(totalBuy >= 5000000) level = 2;
-      else if(totalBuy >= 2000000) level = 1;
-
-      await connection.query(`UPDATE user SET level = ? WHERE id =?`,[level, orderInfo[0].user_id]);
 
       // Thêm gửi email xác nhận
       const [orderInfoemail] = await connection.query(
@@ -559,16 +539,6 @@ router.post("/cancel_order", async (req, res) => {
       [totalItemsCount, total_amount, user_id]
     );
 
-     // 4. cập nhật level
-     const [userResult] = await connection.query(`SELECT total_buy FROM user WHERE id =? `, [user_id]);
-     const totalBuy = userResult[0].total_buy;
-
-     let level = 0;
-     if(totalBuy >= 10000000) level = 3;
-     else if(totalBuy >= 5000000) level = 2;
-     else if(totalBuy >= 2000000) level = 1;
-
-     await connection.query(`UPDATE user SET level = ? WHERE id =?`,[level, user_id]);
 
     // 5. Xóa chi tiết đơn hàng
     await connection.query(

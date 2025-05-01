@@ -282,4 +282,15 @@ router.post(
     }
   );
 
+// Lấy rank của user
+router.get('/rank/:user_id', async (req, res) =>{
+  const {user_id} = req.params;
+  try{
+    const [result] = await pool.query(`SELECT l.rank, l.discount_value FROM user u JOIN level l ON u.total_buy >= l.total_buy WHERE u.id = ? ORDER BY l.total_buy DESC LIMIT 1`, [user_id]);
+    res.json(result)
+  } catch(error){
+    res.json('Lỗi lấy rank của user', error)
+  }
+})
+
 module.exports = router;

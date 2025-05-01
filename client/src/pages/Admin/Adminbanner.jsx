@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
 import "../../styles/Admin/styleadmin.css";
-import {useSelector} from 'react-redux'
+import {useSelector} from 'react-redux';
+import moment from 'moment'
 
 const AdminBanner = () => {
   const [banners, setBanners] = useState([]);
@@ -167,7 +168,7 @@ const AdminBanner = () => {
                     />
                   </td>
                   <td>{banner.status === 1 ? "Hiển thị" : "Ẩn"}</td>
-                  <td>{banner.create_date}</td>
+                  <td>{moment(banner.create_date).format('DD-MM-YYYY')}</td>
                   <td>
                     <button
                       onClick={() => {

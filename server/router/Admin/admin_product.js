@@ -6,6 +6,7 @@ var upload = require('../../multerConfig');
 const path = require('path');
 const fs = require('fs');
 const baseUrl = process.env.BASE_URL; // Lấy từ .env
+const {adminAuth} = require('../auth')
 
 // up nhiều sản phẩm
 router.post('/upload', upload.array('images', 10), (req, res) => {
@@ -94,6 +95,31 @@ router.post('/products', async (req, res) => {
     conn.release();
   }
 });
+// API xóa ảnh
+router.delete('/delete-image', async (req, res) => {
+  try {
+    const { imageUrl } = req.body;
+    
+    if (!imageUrl) {
+      return res.status(400).json({ error: 'Thiếu URL ảnh' });
+    }
+
+    // Lấy tên file từ URL (phần sau cùng sau dấu /)
+    const filename = imageUrl.split('/').pop();
+    const imagePath = path.join(__dirname, '../../public/images', filename);
+
+    // Kiểm tra file tồn tại trước khi xóa
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath); // Xóa file vật lý
+      return res.json({ success: true, message: 'Xóa ảnh thành công' });
+    } else {
+      return res.status(404).json({ error: 'Ảnh không tồn tại' });
+    }
+  } catch (err) {
+    console.error('Lỗi khi xóa ảnh:', err);
+    res.status(500).json({ error: 'Lỗi server khi xóa ảnh' });
+  }
+});
 
 // API xóa sản phẩm
 router.delete('/product/:id', async (req, res) => {
@@ -138,5 +164,89 @@ router.delete('/product/:id', async (req, res) => {
     conn.release();
   }
 });
+
+
+router.get(`/products/:id`, adminAuth, async (req,res) =>{
+  const {id} = req.params;
+  try{
+    const [result] = await pool.query(`SELECT * FROM product WHERE id = ?`, [id]);
+    res.json(result[0])
+
+  }catch(error){
+    res.json('Lỗi khi lấy sản phẩm', error)
+  }
+})
+
+router.put('/products/:id', adminAuth, upload.array('newImages', 10), async (req, res) => {
+  try {
+    const productId = req.params.id;
+
+    const {
+      name,
+      price,
+      sale,
+      price_sale,
+      discription,
+      inventory_quantity,
+      view,
+      status,
+      images // ảnh mới từ client (đã xoá bớt ảnh cũ nào không cần)
+    } = req.body;
+
+    // 1. Lấy danh sách ảnh cũ từ DB
+    const [rows] = await pool.query('SELECT images FROM product WHERE id = ?', [productId]);
+    const oldImages = rows[0]?.images ? rows[0].images.split(',') : [];
+
+    // 2. Tạo mảng ảnh còn giữ lại (từ client gửi lên)
+    const updatedImages = images ? images.split(',') : [];
+
+    // 3. Xoá ảnh nào không còn giữ lại
+    const imagesToDelete = oldImages.filter(oldImg => !updatedImages.includes(oldImg));
+
+    imagesToDelete.forEach(imgUrl => {
+      const fileName = imgUrl.split('/').pop(); // lấy tên file
+      const filePath = path.join(__dirname, '../../public/images', fileName);
+      fs.unlink(filePath, (err) => {
+        if (err) console.error(`Không thể xoá ảnh ${fileName}:`, err.message);
+        else console.log(`Đã xoá ảnh: ${fileName}`);
+      });
+    });
+
+    // 4. Thêm ảnh mới nếu có
+    if (req.files && req.files.length > 0) {
+      const newImageUrls = req.files.map(file => `${baseUrl}/public/images/${file.filename}`);
+      updatedImages.push(...newImageUrls);
+    }
+
+    // 5. Cập nhật lại DB
+    const sql = `
+      UPDATE product
+      SET name = ?, price = ?, sale = ?, price_sale = ?, discription = ?,
+          inventory_quantity = ?, view = ?, status = ?, images = ?
+      WHERE id = ?
+    `;
+
+    const values = [
+      name,
+      price,
+      sale,
+      price_sale,
+      discription,
+      inventory_quantity,
+      view,
+      status,
+      updatedImages.join(','),
+      productId
+    ];
+
+    await pool.query(sql, values);
+
+    res.json({ message: 'Cập nhật sản phẩm thành công' });
+  } catch (err) {
+    console.error('Lỗi cập nhật sản phẩm:', err);
+    res.status(500).json({ error: 'Lỗi server khi cập nhật sản phẩm' });
+  }
+});
+
 
 module.exports = router;

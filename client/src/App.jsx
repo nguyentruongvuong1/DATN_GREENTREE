@@ -34,8 +34,11 @@ import AdminReviews from "./pages/Admin/Adminreviews";
 import AdminBanner from "./pages/Admin/Adminbanner";
 import AdminUser from "./pages/Admin/Adminuser";
 import AdminOrder from "./pages/Admin/AdminOrder";
-import FormThemSanPham from "./components/Admin/AdminAddPr";
-
+import FormThemSanPham from "./components/Admin/AdminPr/AdminAddPr";
+import UpdatePr from "./components/Admin/AdminPr/AdminUpdatePr";
+import AdminLevel from "./pages/Admin/AdminLevel";
+import Addlevel from "./components/Admin/AdminLevel/Addlevel";
+import Updatelevel from "./components/Admin/AdminLevel/Update";
 
 import ProtectAdmin from "./ProtectAdmin";
 
@@ -83,7 +86,8 @@ function App() {
           <Route path="banner" element={<AdminBanner />} />
           <Route path="account" element={<AdminUser />} />
           <Route path="order" element={<AdminOrder />} />
-          <Route path="addsp" element={<FormThemSanPham />} />
+          <Route path="level" element={<AdminLevel />} />
+
         </Route>
       </Routes>
     </BrowserRouter>

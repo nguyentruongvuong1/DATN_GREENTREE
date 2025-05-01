@@ -77,6 +77,13 @@ const AdminMenu = () => {
             <span className="title">Banner</span>
           </Link>
         </li>
+
+        <li className={location.pathname === "/admin/level" ? "hovered" : ""}>
+          <Link to="/admin/level">
+            <span className="icon"><MdImage size={24}  /></span>
+            <span className="title">Bậc</span>
+          </Link>
+        </li>
       </ul>
     </div>
   );

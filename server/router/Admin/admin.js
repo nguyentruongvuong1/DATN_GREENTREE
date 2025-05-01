@@ -9,6 +9,7 @@ const baseUrl = process.env.BASE_URL; // Lấy từ .env
 const {adminAuth} = require('../auth')
 
 
+
 // API VOUCHER------------------------------------------------------------------------------------------------------------------------------------------
 // API lấy danh sách voucher
 router.get("/vouchers", adminAuth, async (req, res) => {
@@ -302,7 +303,7 @@ router.get('/users',adminAuth, async (req, res) => {
   const offset = (page - 1) * limit;
 
   try {
-    const [users] = await pool.execute(`SELECT * FROM user ORDER BY level DESC, create_date DESC LIMIT ? OFFSET ?`, [limit, offset]);
+    const [users] = await pool.execute(`SELECT * FROM user ORDER BY  create_date DESC LIMIT ? OFFSET ?`, [limit, offset]);
     const [count] = await pool.execute(`SELECT COUNT(*) AS total FROM user`);
     res.json({ users, total: count[0].total });
   } catch (err) {
@@ -654,6 +655,69 @@ router.get('/dashboard/revenue/day/details',adminAuth, async (req, res) => {
     res.status(500).json({ message: "Lỗi server", error: error.message });
   }
 });
+
+
+// API Level
+router.get('/level', adminAuth, async (req, res) =>{
+  try{
+    const [result] = await pool.query(`SELECT * FROM level ORDER BY total_buy DESC`);
+    res.json(result)
+  }catch(error){
+    console.error("Lỗi laays level:", error);
+  }
+})
+
+router.post('/level',adminAuth, async (req, res) =>{
+  const {rank, total_buy, discount_value} = req.body;
+
+  try{
+    const [result] = await pool.query(`INSERT INTO level (rank, total_buy, discount_value) VALUES (?, ?, ?)`,[rank, total_buy, discount_value]);
+    if (result.affectedRows > 0) {
+      res.json({ message: 'Thêm bậc thành công' });
+    } else {
+      res.status(400).json({ message: 'Không thể thêm bậc' });
+    }
+
+  }catch(error){
+    res.status(500).json({ message: 'Lỗi thêm bậc', error: error.message });
+  }
+
+})
+
+router.get('/level/:id', adminAuth, async (req, res) =>{
+  const {id} = req.params;
+  try{
+    const [result] = await pool.query(`SELECT * FROM level WHERE id = ?`, [id]);
+    res.json(result[0])
+  }catch(error){
+    console.error("Lỗi laays level:", error);
+  }
+})
+
+router.put('/level/:id', adminAuth, async (req,res) =>{
+  const {id} = req.params;
+  const {rank, total_buy, discount_value} = req.body;
+   try{
+      await pool.query(`UPDATE level SET rank = ?, total_buy = ?, discount_value = ? WHERE id = ? `, [rank, total_buy, discount_value, id]);
+      res.json('Cập nhật bậc thành công')
+   }catch(error){
+    res.status(500).json({ message: 'Lỗi sửa bậc', error: error.message });
+  }
+})
+
+router.delete('/level/:id',adminAuth, async(req,res) =>{
+  const {id} = req.params;
+  try{
+    const [result] = await pool.query(`DELETE FROM level WHERE id = ? `,[id])
+    if(result.affectedRows > 0){
+      res.json('Xóa bậc thành công')
+    }else{
+      res.json('Xóa bậc thất bại')
+    }
+  }catch(error){
+    res.json('Xóa bậc thất bại', error)
+  }
+} )
 
 
 module.exports = router;

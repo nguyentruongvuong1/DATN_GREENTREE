@@ -14,12 +14,8 @@ export default function Userprofile() {
   const isChecked = useSelector((state) => state.auth.isChecked);
   const dispatch = useDispatch();
   const [userData, setUserData] = useState(null);
-  const level = {
-    0: "Đồng",
-    1: "Bạc",
-    2: 'Vàng',
-    3: 'Kim cương'
-  }
+  const [level, setlevel] = useState(null)
+
 
   const [formData, setformData] = useState(
     {
@@ -50,6 +46,22 @@ export default function Userprofile() {
     };
     fetchUser();
   }, [user?.id]);
+
+  useEffect(() => {
+      const fetchLevel = async () =>{
+        try{
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/user/rank/${user?.id}`);
+          const [result] = await res.json()
+          setlevel(result)
+          
+        }catch(error){
+          console.log("Lỗi lấy bậc của tài khoản", error)
+        }
+      }
+      if (user?.id) {
+        fetchLevel();
+      }
+  },[user?.id])
 
   const infochange = (e) =>{
     const {name, value} = e.target;
@@ -142,7 +154,7 @@ export default function Userprofile() {
             {userData?.username}
           </h3>
           <p className={styles["user-email"]}>{userData?.email}</p>
-          <p className={styles["user-email"]}>Tài khoản bậc: {level[userData?.level]}</p>
+          <p className={styles["user-email"]}>Tài khoản bậc: {level?.rank}</p>
         </div>
 
         <div className={styles.menu}>

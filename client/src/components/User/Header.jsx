@@ -190,7 +190,7 @@ const Header = () => {
             <MobileMenu />
               <Link to={"/"}>
                 {" "}
-                <img src={"/images/logoo.png"} alt="Logo" />{" "}
+                <img height={"84px"} src={"/images/imagelogo.png"} alt="Logo" />{" "}
               </Link>
             </div>
             <div className={styles.tendanhmuc}>

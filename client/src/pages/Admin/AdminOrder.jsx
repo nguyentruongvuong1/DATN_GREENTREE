@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Menu, Search, Eye } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
 import "../../styles/Admin/styleadmin.css";
