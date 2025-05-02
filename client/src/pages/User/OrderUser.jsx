@@ -329,7 +329,7 @@ export default function OrderUser() {
         <td className={styles["product-table-td"]}>
           <button
             className={styles["btn-review"]}
-            onClick={() => navigate(`/chi_tiet_san_pham/${product.id}`)}
+            onClick={() => navigate(`/chi_tiet_san_pham/${product.id}#reviews`)}
           >
             Đánh giá
           </button>

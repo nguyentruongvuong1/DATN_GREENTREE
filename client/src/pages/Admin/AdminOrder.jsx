@@ -6,7 +6,8 @@ import "../../styles/Admin/styleadmin.css";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import { useSelector } from "react-redux";
-
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPrint } from "@fortawesome/free-solid-svg-icons";
 
 export default function AdminOrder() {
   const getStatusName = (status) => {
@@ -29,60 +30,95 @@ export default function AdminOrder() {
   const [itemsPerPage] = useState(8);
   const [totalOrder, setTotalOrder] = useState(0);
   const [model, setmodel] = useState(false);
+  const [orderStatus, setOrderStatus] = useState("");
 
-  const [order_detail, setorder_detail] = useState([]);
+  const [orderInfo, setOrderInfo] = useState(null);
+  const [orderItems, setOrderItems] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
 
   const [allOdr, setallOdr] = useState([]); // Tất cả đơn hàng để tìm kiếm
   const [search, setsearch] = useState(""); // Trạng thái tìm kiếm
   const [odrfilter, ganodrfilter] = useState([]); // Trạng thái tìm kiếm
-  const token = useSelector((state) => state.auth.token)
+  const token = useSelector((state) => state.auth.token);
 
+  const statusMap = {
+    1: "Chờ xác nhận",
+    2: "Đã xác nhận",
+    3: "Đang giao hàng",
+    4: "Đã nhận hàng",
+  };
 
-  const fecth_Ordetail = async (order_id) => {
+  const fetchOrderDetail = async (order_id) => {
     try {
-      const otp = {
-        headers: {
-          "Content-Type": 'application/json',
-          'Authorization': 'Bearer ' + token
-        }
-      }
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/admin/order_detail/${order_id}`, otp
+        `${import.meta.env.VITE_API_URL}/user/orderdetail_user/${order_id}`
       );
-      const data = await res.json(); // Thêm await
-      setorder_detail(Array.isArray(data) ? data : []); // Đảm bảo luôn là mảng
+      if (!res.ok) {
+        throw new Error("Lỗi khi tải thông tin đơn hàng");
+      }
+      const data = await res.json();
+      setOrderInfo(data.order);
+      setOrderItems(data.items);
+
+      const total = data.items.reduce((sum, item) => sum + item.total, 0);
+      setTotalPrice(total);
+
       setmodel(true);
     } catch (error) {
-      console.error("Lỗi khi lấy chi tiết đơn hàng:", error);
-      setorder_detail([]);
-      setmodel(false);
+      console.error("Lỗi khi tải thông tin đơn hàng:", error);
     }
   };
 
-  
+  const handlePrint = () => {
+    window.print();
+  };
 
   useEffect(() => {
     const fetchOrder = async () => {
       try {
         const otp = {
           headers: {
-            "Content-Type": 'application/json',
-            'Authorization': 'Bearer ' + token
-          }
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+        };
+
+        let url = `${import.meta.env.VITE_API_URL}/admin/order?page=${currentPage}&limit=${itemsPerPage}`;
+        if (orderStatus) {
+          url += `&order_status=${orderStatus}`;
         }
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_URL
-          }/admin/order?page=${currentPage}&limit=${itemsPerPage}`, otp
-        );
-        setOrder(response.data.order || response.data);
-        setTotalOrder(response.data.total || response.data.length);
-        setallOdr(response.data.order || response.data); // gán allOrder với dữ liệu đơn hàng
+      const response = await axios.get(url, otp);
+      setOrder(response.data.order || response.data);
+      setTotalOrder(response.data.total || response.data.length);
+
+
       } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu bình luận:", error);
+        console.error("Lỗi khi lấy dữ liệu đơn hàng:", error);
       }
     };
     fetchOrder();
-  }, [currentPage, itemsPerPage, token]);
+  }, [currentPage, itemsPerPage, token, orderStatus]);
+
+  useEffect(() =>{
+    const fetchallOrder = async () =>{
+      try{
+        
+          const otp = {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + token,
+            },
+          };
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/allorder`, otp);
+        const data = await res.json();
+        setallOdr(data.order || data);
+
+      }catch (error) {
+        console.error("Lỗi khi lấy dữ liệu đơn hàng:", error);
+      }
+    }
+    fetchallOrder()
+  },[token])
 
   useEffect(() => {
     if (search === "") {
@@ -103,14 +139,15 @@ export default function AdminOrder() {
     try {
       const otp = {
         headers: {
-          "Content-Type": 'application/json',
-          'Authorization': 'Bearer ' + token
-        }
-      }
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      };
       const res = await axios.put(
-        `${import.meta.env.VITE_API_URL}/admin/order_status/${orderId}`, 
-        { order_status: newStatus }
-        ,otp);
+        `${import.meta.env.VITE_API_URL}/admin/order_status/${orderId}`,
+        { order_status: newStatus },
+        otp
+      );
 
       // Cập nhật UI ngay lập tức
       setOrder((prev) =>
@@ -134,13 +171,14 @@ export default function AdminOrder() {
     try {
       const otp = {
         headers: {
-          "Content-Type": 'application/json',
-          'Authorization': 'Bearer ' + token
-        }
-      }
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      };
       const res = await axios.put(
-        `${import.meta.env.VITE_API_URL}/admin/transaction_status`, 
-        { id: orderId, new_transaction_status: newTransactionStatus },otp
+        `${import.meta.env.VITE_API_URL}/admin/transaction_status`,
+        { id: orderId, new_transaction_status: newTransactionStatus },
+        otp
       );
 
       // Cập nhật lại UI trạng thái thanh toán
@@ -188,6 +226,18 @@ export default function AdminOrder() {
         <div className="recentOrders">
           <div className="cardHeader">
             <h2>Quản Lý Đơn Hàng</h2>
+          </div>
+          <div className="sxpr">
+          <select 
+            value={orderStatus}
+            onChange={(e) => setOrderStatus(e.target.value)}
+          >
+            <option value="">Tất cả trạng thái</option>
+            <option value="1">Chờ xác nhận</option>
+            <option value="2">Đã xác nhận</option>
+            <option value="3">Đang giao</option>
+            <option value="4">Giao hàng thành công</option>
+          </select>
           </div>
           <table className="comment-table">
             <thead>
@@ -262,7 +312,7 @@ export default function AdminOrder() {
                     </select>
                   </td>
                   <td>
-                    <button onClick={() => fecth_Ordetail(or.id)}>Xem</button>
+                    <button onClick={() => fetchOrderDetail(or.id)}>Xem</button>
                   </td>
                 </tr>
               ))}
@@ -297,33 +347,151 @@ export default function AdminOrder() {
         </div>
 
         {model && (
-          <div className="modal-wrapper">
-            <table className="table_ordertail">
-              <thead>
-                <tr>
-                  <th>Max DH</th>
-                  <th>Mã SP</th>
-                  <th>Tên SP</th>
-                  <th>Số lượng</th>
-                  <th>Đơn giá</th>
-                  <th>Thành tiền</th>
-                  <th>Ngày tạo</th>
-                </tr>
-              </thead>
-              <tbody>
-                {order_detail.map((order_d, index) => (
-                  <tr key={index}>
-                    <td>{order_d.order_id}</td>
-                    <td>{order_d.pr_id}</td>
-                    <td>{order_d.product_name}</td>
-                    <td>{order_d.quantity}</td>
-                    <td>{order_d.price}</td>
-                    <td>{order_d.total}</td>
-                    <td>{moment(order_d.create_at).format("DD-MM-YYYY")}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="modal-overlay" onClick={() => setmodel(false)}>
+            <div className="modal-container-order">
+              <div className="invoiceContainer">
+                <div className="invoiceHeader">
+                  <div className="logo">
+                    <h1>GREEN TREE SHOP</h1>
+                  </div>
+                  <div className="invoiceInfo">
+                    <h2>CHI TIẾT ĐƠN HÀNG</h2>
+                    <p>
+                      Mã đơn hàng: <span>{orderInfo?.id}</span>
+                    </p>
+                    <p>
+                      Ngày đặt:{" "}
+                      <span>
+                        {moment(orderInfo?.create_at).format("DD-MM-YYYY")}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+
+                <div className="customerInfo">
+                  <div className="shippingInfo">
+                    <h3>Thông tin giao hàng</h3>
+                    <p>
+                      <strong>Họ tên:</strong> <span>{orderInfo?.name}</span>
+                    </p>
+                    <p>
+                      <strong>Địa chỉ:</strong>{" "}
+                      <span>{orderInfo?.address}</span>
+                    </p>
+                    <p>
+                      <strong>SĐT:</strong> <span>{orderInfo?.phone}</span>
+                    </p>
+                    {/* <p><strong>Email:</strong> <span>{orderInfo.email}</span></p> */}
+                    <p>
+                      <strong>Ghi chú:</strong>{" "}
+                      <span>
+                        {orderInfo?.note.length > 0
+                          ? orderInfo?.note
+                          : "Không có ghi chú"}
+                      </span>
+                    </p>
+                  </div>
+                  <div className="paymentInfo">
+                    <h3>Phương thức thanh toán</h3>
+                    <p>
+                      <strong>Hình thức:</strong>{" "}
+                      <span>
+                        {orderInfo?.payment_method === 1
+                          ? "Thanh toán khi nhận hàng"
+                          : " Thanh toán VNPAYS"}
+                      </span>
+                    </p>
+                    <p>
+                      <strong>Trạng thái:</strong>{" "}
+                      <span>
+                        {statusMap[orderInfo?.order_status] || "Không xác định"}
+                      </span>
+                    </p>
+
+                    <p>
+                      <strong>Thanh toán:</strong>{" "}
+                      <span>
+                        {orderInfo.transaction_status === 1
+                          ? "Chưa thanh toán"
+                          : "Đã thanh toán"}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+
+                <div className="orderDetails">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>STT</th>
+                        <th>Sản phẩm</th>
+                        <th>Đơn giá</th>
+                        <th>Số lượng</th>
+                        <th>Thành tiền</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {orderItems.map((item, index) => (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>{item.product_name}</td>
+                          <td>{Number(item.price).toLocaleString("vi")}</td>
+                          <td>{item.quantity}</td>
+                          <td>{Number(item.total).toLocaleString("vi")}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      {/* <tr>
+                                     <td colSpan="4" className=textRight}>
+                                       Tạm tính:
+                                     </td>
+                                     <td></td>
+                                   </tr>
+                                   <tr>
+                                     <td colSpan="4" className=textRight}>
+                                       Phí vận chuyển:
+                                     </td>
+                                     <td></td>
+                                   </tr>
+                                   <tr>
+                                     <td colSpan="4" className=textRight}>
+                                       Giảm giá:
+                                     </td>
+                                     <td>-</td>
+                                   </tr> */}
+                      <tr className="totalRow">
+                        <td colSpan="4" className="textRight">
+                          Tổng cộng:
+                        </td>
+                        <td>{Number(totalPrice).toLocaleString("vi")} VNĐ</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+
+                <div className="invoiceFooter">
+                  <div className="thankYou">
+                    <p>
+                      Cảm ơn quý khách đã mua hàng tại{" "}
+                      <strong>GREEN TREE SHOP</strong>!
+                    </p>
+                    <p>
+                      Mọi thắc mắc xin liên hệ hotline:{" "}
+                      <strong>0364185395</strong>
+                    </p>
+                    <p>
+                      Email: <strong>greentreshop@gmail.com</strong>
+                    </p>
+                  </div>
+                  <div className="actions">
+                    <button onClick={handlePrint} className="btn">
+                      <FontAwesomeIcon icon={faPrint} /> In hóa đơn
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>

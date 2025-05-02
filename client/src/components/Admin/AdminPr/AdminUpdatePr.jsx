@@ -49,6 +49,7 @@ export default function UpdatePr({ id }) {
         );
 
         const data = response.data;
+        console.log(data.status)
         setUpdatePr({
           name: data.name || "",
           images: data.images || "",
@@ -58,7 +59,7 @@ export default function UpdatePr({ id }) {
           discription: data.discription || "",
           inventory_quantity: data.inventory_quantity || 0,
           view: data.view || 0,
-          status: data.status || 1,
+          status: data.status ?? 1,
         });
 
         if (data.images) {
@@ -205,6 +206,10 @@ export default function UpdatePr({ id }) {
 
       if (response.data) {
         message.success(response.data.message || "Cập nhật sản phẩm thành công");
+        setTimeout(() =>{
+          window.location.reload()
+
+        }, 1000)
       }
     } catch (error) {
       console.error("Lỗi khi cập nhật sản phẩm:", error);

@@ -725,3 +725,29 @@
       }
     
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .invoiceContainer, .invoiceContainer * {
+    visibility: visible;
+  }
+
+
+ 
+  .invoiceContainer {
+    
+      width: 100%; /* Bạn có thể điều chỉnh % theo ý muốn */
+      background: white;
+      padding: 20px;
+  }
+
+  /* Ẩn nút in khi in */
+  .actions {
+    display: none;
+  }
+
+
+}
