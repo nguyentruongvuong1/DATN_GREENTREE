@@ -123,9 +123,8 @@ const AdminProduct = () => {
                 <th>Giá</th>
                 <th>Giảm giá</th>
                 <th>Giá sau giảm</th>
-                <th>Mô tả</th>
                 <th>Số lượng</th>
-                <th>Lượt xem</th>
+                <th>Trạng thái</th>
                 <th>Ngày tạo</th>
                 <th>Thao tác</th>
               </tr>
@@ -151,14 +150,8 @@ const AdminProduct = () => {
                     <td>{Number(product.price).toLocaleString('vi')}</td>
                     <td>{Number(product.sale).toLocaleString('vi')}%</td>
                     <td>{Number(product.price_sale).toLocaleString('vi')}</td>
-
-                    <td>
-                      {product.discription?.length > 30
-                        ? product.discription.slice(0, 30) + "..."
-                        : product.discription}
-                    </td>
                     <td>{product.inventory_quantity}</td>
-                    <td>{product.view}</td>
+                    <td>{product.status === 0 ? "Ẩn" : "Hiện"}</td>
                     <td>{moment(product.create_date).format("DD-MM-YYYY")}</td>
                     <td>
                       <button

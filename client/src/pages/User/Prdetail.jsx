@@ -1,7 +1,7 @@
 import styles from"../../styles/User/prdetail.module.css";
 import React from "react";
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import { themPr } from "../../CartSlice";
 import { useDispatch, useSelector } from "react-redux";
 import "@ant-design/v5-patch-for-react-19";
@@ -26,6 +26,22 @@ export default function Prdetail() {
   const [cate, setcate] = useState([]);
   const [Reviews, setReviews] = useState([]);
   const [totalStar, settotalStar] = useState(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    
+    const timeout = setTimeout(() => {
+      const hash = location.hash;
+      if (hash) {
+        const element = document.querySelector(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    }, 500); 
+
+    return () => clearTimeout(timeout);
+  }, [location]);
 
   useEffect(() => {
     dispatch(checkLogin());
@@ -158,6 +174,8 @@ export default function Prdetail() {
       console.error("Lỗi khi toggle yêu thích:", error);
     }
   };
+
+ 
 
   const Maxquantity = pr ? pr.inventory_quantity : 0;
 
@@ -363,7 +381,7 @@ export default function Prdetail() {
         </div>
       </div>
 
-      <div className={styles.bgwhite}>
+      <div id="reviews" className={styles.bgwhite}>
         <div className={styles.container_comment}>
           <div className={styles["product-title"]}>
             Đánh giá về <span>{pr.name}</span>

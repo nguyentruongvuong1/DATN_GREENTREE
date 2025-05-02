@@ -35,13 +35,33 @@ const AdminVoucher = () => {
         );
         setVouchers(response.data.vouchers || response.data);
         setTotalVouchers(response.data.total || response.data.length);
-        setallVc(response.data.vouchers || response.data); // gán allVc với dữ liệu voucher
       } catch (error) {
         console.error("Lỗi khi tải voucher:", error);
       }
     };
     fetchVouchers();
-  }, [currentPage, itemsPerPage]);
+  }, [currentPage, itemsPerPage, token]);
+
+
+  useEffect(() => {
+    const fetchallVouchers = async () => {
+      try {
+        const otp = {
+          headers: {
+            "Content-Type": 'application/json',
+            'Authorization': 'Bearer ' + token
+        }
+        }
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/admin/allvouchers`, otp
+        );
+        setallVc(response.data.vouchers || response.data);
+      } catch (error) {
+        console.error("Lỗi khi tải voucher:", error);
+      }
+    };
+    fetchallVouchers();
+  }, [token]);
 
   const onchangeSearch = (e) => {
     setsearch(e.target.value)

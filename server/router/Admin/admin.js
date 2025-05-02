@@ -50,7 +50,15 @@ router.get("/vouchers", adminAuth, async (req, res) => {
   }
 });
 
-
+router.get("/allvouchers",  async (req, res) => {
+  try {
+    const [vouchers] = await pool.query(`SELECT * FROM voucher`);
+    res.json(vouchers);
+  } catch (err) {
+    console.error("Lỗi lấy tất cả voucher:", err);
+    res.status(500).json({ message: "Lỗi lấy tất cả voucher", error: err.message });
+  }
+})
 
 // API cập nhật voucher
 router.put('/voucher/:id',adminAuth,async (req, res) => {
@@ -345,16 +353,33 @@ router.put('/user/:id',adminAuth, async (req, res) => {
 });
 
 // Admin order
-router.get('/order',adminAuth, async function (req, res) {
+router.get('/order', adminAuth, async function (req, res) {
   try {
-    const { page = 1, limit = 8 } = req.query;
+    const { page = 1, limit = 8, order_status } = req.query;
     const offset = (page - 1) * limit;
 
-    const [results] = await pool.query(`
-          SELECT * FROM \`order\` ORDER BY order_status ASC, create_at DESC LIMIT ? OFFSET ?;
-      `, [parseInt(limit), parseInt(offset)]);
+    let query = `SELECT * FROM \`order\` `;
+    let countQuery = `SELECT COUNT(*) AS total FROM \`order\``;
+    const conditions = [];
+    const params = [];
 
-    const [[{ total }]] = await pool.query(`SELECT COUNT(*) AS total FROM \`order\` `);
+    // Chỉ thêm điều kiện lọc nếu FE có truyền order_status
+    if (order_status !== undefined) {
+      conditions.push(`order_status = ?`);
+      params.push(parseInt(order_status));
+    }
+
+    if (conditions.length > 0) {
+      const whereClause = ' WHERE ' + conditions.join(' AND ');
+      query += whereClause;
+      countQuery += whereClause;
+    }
+
+    query += ` ORDER BY create_at DESC LIMIT ? OFFSET ?`;
+    params.push(parseInt(limit), parseInt(offset));
+
+    const [results] = await pool.query(query, params);
+    const [[{ total }]] = await pool.query(countQuery, params.slice(0, conditions.length));
 
     res.json({ order: results, total });
   } catch (err) {
@@ -363,23 +388,52 @@ router.get('/order',adminAuth, async function (req, res) {
   }
 });
 
-// Lấy chi tiết đơn hàng
-router.get('/order_detail/:order_id',adminAuth, async (req, res) => {
-  const { order_id } = req.params;
-  try {
-    const [result] = await pool.query(`
-      SELECT 
-        od.*, 
-        p.name AS product_name
-      FROM 
-        order_detail od
-      JOIN 
-        product p ON od.pr_id = p.id
-      WHERE 
-        od.order_id = ?
-    `, [order_id]);
+router.get(`/allorder`, adminAuth, async (req, res) =>{
+  try{
+    const [result] = await pool.query(`SELECT * FROM \`order\` `)
+    res.json(result) 
+  }catch(error){
+    res.json(`Loi lay order`, error)
+  }
+} )
 
-    res.json(result);
+// Lấy chi tiết đơn hàng
+router.get("/order_detail/:order_id", async (req, res) => {
+  const order_id = req.params.order_id;
+
+  try {
+    // Truy vấn thông tin đơn hàng
+    const [orderRows] = await pool.query(
+      `SELECT *FROM \`order\` WHERE id = ?`,
+      [order_id]
+    );
+
+    if (orderRows.length === 0) {
+      return res.status(404).json({ message: "Không tìm thấy đơn hàng" });
+    }
+
+    // Truy vấn chi tiết sản phẩm trong đơn hàng
+    const [detailRows] = await pool.query(
+      `SELECT 
+                od.id, 
+                od.order_id, 
+                od.pr_id, 
+                p.name AS product_name, 
+                od.quantity, 
+                od.price, 
+                od.total, 
+                od.create_at
+             FROM order_detail od
+             JOIN product p ON od.pr_id = p.id
+             WHERE od.order_id = ?`,
+      [order_id]
+    );
+
+    // Gửi về frontend theo định dạng:
+    res.json({
+      order: orderRows[0], // Thông tin đơn hàng
+      items: detailRows, // Danh sách sản phẩm
+    });
   } catch (error) {
     console.error("Lỗi truy vấn:", error);
     res.status(500).json({ message: "Lỗi server" });
