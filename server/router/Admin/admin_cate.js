@@ -24,17 +24,37 @@ router.get('/cate', adminAuth, async function (req, res, next) {
 // API xóa cate
 router.delete('/cate/:id', adminAuth, async (req, res) => {
     const { id } = req.params;
-    const sql = "DELETE FROM cate WHERE id = ?";
 
     try {
-        const [result] = await pool.query(sql, [id]); // Dùng query vẫn hoạt động
+        // Lấy thông tin danh mục để biết đường dẫn ảnh
+        const [rows] = await pool.query("SELECT * FROM cate WHERE id = ?", [id]);
+        if (rows.length === 0) {
+            return res.status(404).json({ message: "Cate không tồn tại!" });
+        }
+
+        const imagePath = rows[0].image;
+
+        // Xóa danh mục
+        const [result] = await pool.query("DELETE FROM cate WHERE id = ?", [id]);
+
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: "Cate không tồn tại!" });
         }
+
+        // Nếu có ảnh thì xóa file vật lý
+        if (imagePath) {
+            const fullPath = path.join(__dirname, '../../public/images', path.basename(imagePath));
+            fs.unlink(fullPath, (err) => {
+                if (err) {
+                    console.warn("Không thể xóa ảnh cate:", err.message);
+                }
+            });
+        }
+
         res.json({ message: "Xóa cate thành công!" });
     } catch (err) {
         console.error("Lỗi xóa cate:", err);
-        return res.status(500).json({ message: "Lỗi server", error: err });
+        return res.status(500).json({ message: "Lỗi server", error: err.message });
     }
 });
 
@@ -316,17 +336,37 @@ router.get('/typecate', adminAuth, async function (req, res) {
 // API xóa typecate
 router.delete('/typecate/:id', adminAuth, async (req, res) => {
     const { id } = req.params;
-    const sql = "DELETE FROM type_cate WHERE id = ?";
 
     try {
-        const [result] = await pool.query(sql, [id]);
+        // Lấy ảnh nếu có
+        const [rows] = await pool.query("SELECT * FROM type_cate WHERE id = ?", [id]);
+        if (rows.length === 0) {
+            return res.status(404).json({ message: "Type Cate không tồn tại!" });
+        }
+
+        const imagePath = rows[0].image; // hoặc icon/thumbnail tùy cột bạn dùng
+
+        // Xóa khỏi DB
+        const [result] = await pool.query("DELETE FROM type_cate WHERE id = ?", [id]);
+
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: "Type Cate không tồn tại!" });
         }
+
+        // Nếu có ảnh thì xóa file vật lý
+        if (imagePath) {
+            const fullPath = path.join(__dirname, '../../public/images', path.basename(imagePath));
+            fs.unlink(fullPath, (err) => {
+                if (err) {
+                    console.warn("Không thể xóa ảnh type_cate:", err.message);
+                }
+            });
+        }
+
         res.json({ message: "Xóa Type Cate thành công!" });
     } catch (err) {
         console.error("Lỗi xóa Type Cate:", err);
-        return res.status(500).json({ message: "Lỗi server", error: err });
+        return res.status(500).json({ message: "Lỗi server", error: err.message });
     }
 });
 

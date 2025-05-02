@@ -123,7 +123,7 @@ const AdminDashboard = () => {
           <div>
             <div>
               <div className="numbers">{Number(revenueDay).toLocaleString('vi')} VND</div>
-              <div className="cardName">Doanh Thu Theo Ngày</div>
+              <div className="cardName">Doanh Thu Trong Ngày</div>
             </div>
           </div>
           <div className="iconBx">
@@ -133,7 +133,7 @@ const AdminDashboard = () => {
         <div className="card">
           <div>
             <div className="numbers">{Number(revenueWeek).toLocaleString('vi')} VND</div>
-            <div className="cardName">Doanh Thu Theo Tuần</div>
+            <div className="cardName">Doanh Thu Trong Tuần</div>
           </div>
           <div className="iconBx">
             <ion-icon name="cart-outline"></ion-icon>
@@ -142,7 +142,7 @@ const AdminDashboard = () => {
         <div className="card">
           <div>
             <div className="numbers">{Number(revenueMonth).toLocaleString('vi')} VND</div>
-            <div className="cardName">Doanh Thu Theo Tháng</div>
+            <div className="cardName">Doanh Thu Trong Tháng</div>
           </div>
           <div className="iconBx">
             <ion-icon name="people-outline"></ion-icon>
@@ -195,9 +195,39 @@ const AdminDashboard = () => {
         </div>
       </div>
       <div className="graphBox">
+  {/* Biểu đồ */}
+  <div className="box">
+    <Bieudo />
+  </div>
 
-        <Bieudo />
+  {/* Card dọc bên phải */}
+  <div className="card-column">
+    <div className="card">
+      <div>
+        <div className="numbers">{Number(revenueDay).toLocaleString('vi')} VND</div>
+        <div className="cardName">Doanh Thu Trong Ngày</div>
       </div>
+      
+    </div>
+
+    <div className="card">
+      <div>
+        <div className="numbers">{Number(revenueDay).toLocaleString('vi')} VND</div>
+        <div className="cardName">Sản Phẩm Sắp Hết</div>
+      </div>
+      
+    </div>
+
+    <div className="card">
+      <div>
+        <div className="numbers">{Number(revenueDay).toLocaleString('vi')} VND</div>
+        <div className="cardName">Sản Phẩm Tồn Kho</div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
 
       <div className="details">
         <div className="recentOrders">

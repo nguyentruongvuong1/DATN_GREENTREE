@@ -276,15 +276,29 @@ router.delete('/banner/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
+    // Lấy thông tin banner trước khi xóa
     const [rows] = await pool.query("SELECT * FROM banner WHERE id = ?", [id]);
     if (rows.length === 0) {
       return res.status(404).json({ message: "Banner không tồn tại!" });
     }
 
+    const imagePath = rows[0].image;
+    
+    // Xóa banner trong database
     const sql = "DELETE FROM banner WHERE id = ?";
     const [result] = await pool.query(sql, [id]);
 
     if (result.affectedRows > 0) {
+      // Sau khi xóa trong DB, tiếp tục xóa file vật lý
+      if (imagePath) {
+        const fullImagePath = path.join(__dirname, '../../public/images', path.basename(imagePath));
+        fs.unlink(fullImagePath, (err) => {
+          if (err) {
+            console.warn("Không thể xóa ảnh:", err.message);
+          }
+        });
+      }
+
       res.json({ message: "Xóa banner thành công!" });
     } else {
       res.status(500).json({ message: "Không thể xóa banner!" });

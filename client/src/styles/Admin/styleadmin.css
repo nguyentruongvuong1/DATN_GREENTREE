@@ -344,13 +344,14 @@ body {
     color: var(--white);
 }
 
+
 /* charts */
 .graphBox {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    /* width: 1500px; */
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 15px;
+    gap: 40px;
   }
   
   
@@ -368,9 +369,56 @@ body {
   
   .graphBox .box canvas {
     width: 100% !important;
-    height: 500px !important;  
+    height: 400px !important;  
+  }
+  /* graphBox card */
+/* Cột chứa các card */
+.card-column {
+    display: flex;
+    flex-direction: column;
+    gap: 37px;
+
   }
   
+  /* Card */
+  .graphBox .card {
+    background: var(--white);
+    padding: 60px;
+    border-radius: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+  
+  .graphBox .card:hover {
+    background: var(--blue);
+    transform: translateY(-5px);
+  }
+  
+  .graphBox .card:hover .numbers,
+  .graphBox .card:hover .cardName,
+  .graphBox .card:hover .iconBx {
+    color: var(--white);
+  }
+  
+  .graphBox .card .numbers {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: var(--blue);
+  }
+  
+  .graphBox .card .cardName {
+    font-size: 1em;
+    color: var(--black2);
+    margin-top: 5px;
+  }
+  
+  .graphBox .card .iconBx {
+    font-size: 2.5em;
+    color: var(--black2);
+  }
+
   /* charts */
 
 

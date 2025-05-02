@@ -2,6 +2,8 @@ import "chart.js/auto";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
+import { useSelector } from "react-redux";
+
 
 const Bieudo = () => {
   const now = new Date();
@@ -13,13 +15,22 @@ const Bieudo = () => {
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
   const [availableYears, setAvailableYears] = useState([]);
   const [yearLabels, setYearLabels] = useState([]);
+    const token = useSelector((state) => state.auth.token)
+  
 
 
   // Gọi API lấy danh sách năm có dữ liệu
   useEffect(() => {
     const fetchYears = async () => {
       try {
-        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/admin/dashboard/revenue/years`);
+        const otp = {
+          method: 'GET',
+          headers: {
+            "Content-Type": 'application/json',
+            'Authorization': 'Bearer ' + token
+          }
+        }
+        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/admin/dashboard/revenue/years`, otp);
         setAvailableYears(data.years || []);
         if (!data.years.includes(selectedYear)) {
           setSelectedYear(data.years[0] || now.getFullYear());
@@ -35,23 +46,30 @@ const Bieudo = () => {
   useEffect(() => {
     const fetchRevenue = async () => {
       try {
+        const otp = {
+          method: 'GET',
+          headers: {
+            "Content-Type": 'application/json',
+            'Authorization': 'Bearer ' + token
+          }
+        }
         setLoading(true);
 
         switch (chartType) {
           case "day": {
             const { data } = await axios.get(
-              `${import.meta.env.VITE_API_URL}/admin/dashboard/revenue/daily/${selectedMonth}?year=${selectedYear}`
+              `${import.meta.env.VITE_API_URL}/admin/dashboard/revenue/daily/${selectedMonth}?year=${selectedYear}`, otp
             );
             setDataChart(data.revenuePerDay || []);
             break;
           }
           case "month": {
-            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/admin/dashboard/revenue/monthly`);
+            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/admin/dashboard/revenue/monthly`, otp);
             setDataChart(data.revenuePerMonth || []);
             break;
           }
           case "year": {
-            const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/dashboard/revenue/yearly`);
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/dashboard/revenue/yearly`, otp);
             const yearData = await response.json();
           
             if (Array.isArray(yearData.revenuePerYear)) {
