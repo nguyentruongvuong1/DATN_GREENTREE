@@ -13,6 +13,13 @@ export default function Payment() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const voucher = useSelector((state) => state.cart.voucher)
+  const [level, setlevel] = useState(null)
+
+  // Laays rank cuar taif khoanr
+  useEffect(() =>{
+     fetch(`${import.meta.env.VITE_API_URL}/user/rank/${user?.id}`)
+     .then(res => res.json()).then(data => setlevel(data[0]))
+  },[ user?.id])
 
   useEffect(() => {
      if (cartItems.length === 0) {
@@ -45,7 +52,19 @@ export default function Payment() {
     return acc + price * item.so_luong;
   }, 0);
 
-  const shippingFee = 50000;
+  let shippingFee = 50000;
+
+  if (level?.rank === "Đồng") {
+    shippingFee = shippingFee * (1 - level?.discount_value / 100);
+  } else if (level?.rank === "Bạc") {
+    shippingFee = shippingFee * (1 - level?.discount_value / 100);
+  } else if (level?.rank === "Vàng") {
+    shippingFee = shippingFee * (1 - level?.discount_value / 100);
+
+  } else if (level?.rank === "Kim cương") {
+    shippingFee = shippingFee * (1 - level?.discount_value / 100);
+  }
+
   let discountvalue = 0;
   const subtotal = total + shippingFee;
 
@@ -124,6 +143,7 @@ const grandTotal = Math.max(subtotal - discountvalue, 0);
           paymentMethod === "online_payment" ? generateTransactionCode() : null,
         customer_info: formData,
         total_amount: grandTotal,
+        shippingFee: shippingFee,
         items: cartItems.map((item) => ({
           pr_id: item.id,
           quantity: item.so_luong,

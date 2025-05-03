@@ -23,6 +23,7 @@ export default function OrderUser() {
   const [showModal, setShowModal] = useState(false);
   const [orderInfo, setOrderInfo] = useState(null);
   const [orderItems, setOrderItems] = useState([]);
+  const [level, setlevel] = useState(null)
   const navigate = useNavigate();
 
   // Paginate
@@ -79,6 +80,22 @@ export default function OrderUser() {
   }, [user?.id]);
 
   useEffect(() => {
+    const fetchLevel = async () =>{
+      try{
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/user/rank/${user?.id}`);
+        const [result] = await res.json()
+        setlevel(result)
+        
+      }catch(error){
+        console.log("Lỗi lấy bậc của tài khoản", error)
+      }
+    }
+    if (user?.id) {
+      fetchLevel();
+    }
+},[user?.id])
+
+  useEffect(() => {
     fetch(
       `${import.meta.env.VITE_API_URL}/user/order_user/${
         user?.id
@@ -116,7 +133,7 @@ export default function OrderUser() {
     window.print();
   };
 
-  const shippingFee = 50000;
+  let shippingFee = orderInfo?.shippingFee;
 
   const total = orderItems.reduce((acc, item) => {
     const price = item.total;
@@ -159,6 +176,39 @@ export default function OrderUser() {
     }
   };
 
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+    try{
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/user/upload-avatar/${user.id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+
+      if (res.data?.avatar) {
+        message.success('Cập nhật ảnh đại diện thành công!');
+        setUserData((prev) => ({
+          ...prev,
+          avatar: res.data.avatar,
+        }));
+      }else{
+        message.error('Cập nhật ảnh đại diện thất bại!');
+      }
+
+    }catch (error) {
+    console.error('Lỗi upload avatar:', error);
+    message.error('Đã xảy ra lỗi khi cập nhật ảnh đại diện.');
+  }
+  };
+
   if (!isChecked) {
     // Nếu chưa kiểm tra đăng nhập xong thì chưa render gì cả
     return null; // hoặc có thể là spinner
@@ -170,50 +220,59 @@ export default function OrderUser() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.sidebar}>
-        <div className={styles["profile-header"]}>
-          <img
-            src={userData?.avatar || "/default-avatar.png"}
-            alt="User Avatar"
-            className={styles.avatar}
-          />
-          <h3 className={styles.username}>
-            {userData?.username || "Người dùng"}
-          </h3>
-          <p className={styles["user-email"]}>{user?.email}</p>
-        </div>
-
-        <div className={styles.menu}>
-          <button className={styles["menu-item"]}>
-            <Link to={"/info"}>Thông tin tài khoản</Link>
-          </button>
-          <button className={styles["menu-item"]}>
-            <Link to={"/info_changepass"}>Đổi mật khẩu </Link>
-          </button>
-          <button className={styles["menu-item"]}>
-            <Link to={"/info_order"}>Đơn hàng </Link>
-          </button>
-          <button
-            onClick={() => {
-              const hoi = confirm(
-                "Bạn có chắc chắn muốn đăng xuất tài khoản không?"
-              );
-              if (hoi) {
-                dispatch(thoat());
-                message.success("Đăng xuất thành công!");
-                setTimeout(() => {
-                  window.location.href = "/";
-                }, 1000);
-              } else {
-                return;
-              }
-            }}
-            className={styles["menu-item"]}
-          >
-            Đăng xuất
-          </button>
-        </div>
-      </div>
+        <div className={styles.sidebar}>
+              <div className={styles["profile-header"]}>
+                <img
+                  src={userData?.avatar}
+                  alt="User Avatar"
+                  className={styles.avatar}
+                  onClick={() => document.getElementById('avatarInput').click()}  // Khi nhấn vào ảnh sẽ mở input
+      
+                />
+                <input
+                  type="file"
+                  id="avatarInput"
+                  style={{ display: 'none' }}
+                  onChange={handleAvatarChange}  // Khi chọn ảnh mới sẽ gọi hàm này
+                />
+                <h3 className={styles.username}>
+                  {userData?.username}
+                </h3>
+                <p className={styles["user-email"]}>{userData?.email}</p>
+                <p className={styles["user-email"]}>Tài khoản bậc: {level?.rank}</p>
+              </div>
+      
+              <div className={styles.menu}>
+                <button className={styles["menu-item"]}>
+                  <Link to={"/info"}>Thông tin tài khoản</Link>
+                </button>
+                <button className={styles["menu-item"]}>
+                  <Link to={"/info_changepass"}>Đổi mật khẩu </Link>
+                </button>
+                <button className={styles["menu-item"]}>
+                  <Link to={"/info_order"}>Đơn hàng </Link>
+                </button>
+                <button
+                  onClick={() => {
+                    const hoi = confirm(
+                      "Bạn có chắc chắn muốn đăng xuất tài khoản không?"
+                    );
+                    if (hoi) {
+                      dispatch(thoat());
+                      message.success("Đăng xuất thành công!");
+                      setTimeout(() => {
+                        window.location.href = "/";
+                      }, 1000);
+                    } else {
+                      return;
+                    }
+                  }}
+                  className={styles["menu-item"]}
+                >
+                  Đăng xuất
+                </button>
+              </div>
+            </div>
 
       {order.length === 0 ? (
         <div className={styles.content}>

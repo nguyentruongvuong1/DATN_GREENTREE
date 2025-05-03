@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
 
 
 // Hàm gửi email xác nhận
-async function sendOrderConfirmationEmail(email, orderId, orderDetails, Codevoucher, discount_type, discount_value) {
+async function sendOrderConfirmationEmail(email, orderId, orderDetails, shippingFee, Codevoucher, discount_type, discount_value) {
   try {
     // Tính tổng số tiền từ danh sách sản phẩm
     const total = orderDetails.reduce((sum, item) => sum + item.total, 0);
@@ -34,7 +34,7 @@ async function sendOrderConfirmationEmail(email, orderId, orderDetails, Codevouc
       `;
     });
 
-    const shippingFee = 50000;
+    
 
     let discountvalue = 0;
     const subtotal = total + shippingFee;
@@ -79,19 +79,19 @@ async function sendOrderConfirmationEmail(email, orderId, orderDetails, Codevouc
 
               <tr>
                 <td colspan="3" style="text-align: right; padding: 8px; font-weight: bold;">Phí vận chuyển:</td>
-                <td style="padding: 8px; font-weight: bold;">${shippingFee.toLocaleString()} VND</td>
+                <td style="padding: 8px; font-weight: bold;">${Number(shippingFee || 0).toLocaleString('vi')} VND</td>
               </tr>
 
-              ${ Codevoucher ? `
+              ${ discount_value && Codevoucher ? `
                 <tr>
                   <td colspan="3" style="text-align: right; padding: 8px; font-weight: bold;">Mã giảm giá:</td>
                   <td style="padding: 8px; font-weight: bold;">${Codevoucher}</td>
                 </tr>` : '' }
 
-                ${ discountvalue > 0 ? `
+                ${ discount_value && discountvalue > 0 ? `
                   <tr>
                     <td colspan="3" style="text-align: right; padding: 8px; font-weight: bold;">Giảm:</td>
-                    <td style="padding: 8px; font-weight: bold;">-${discountvalue.toLocaleString()} VND</td>
+                    <td style="padding: 8px; font-weight: bold;">-${Number(discountvalue || 0).toLocaleString('vi-VN')} VND</td>
                   </tr>` : '' }
                   
 
@@ -150,14 +150,15 @@ router.post("/checkout", async (req, res) => {
       transaction_code,
       items,
       total_amount,
+      shippingFee
     } = req.body;
 
     if (payment_method === 1) {
       // 1. Tạo đơn hàng chính
       const [orderResult] = await connection.query(
         `INSERT INTO \`order\` 
-    (id, user_id, voucher_id, name, phone, address, note, order_status, transaction_status, payment_method, total_amount) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    (id, user_id, voucher_id, name, phone, address, note, order_status, transaction_status, payment_method, total_amount, shippingFee) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           id,
           user_id,
@@ -169,7 +170,8 @@ router.post("/checkout", async (req, res) => {
           1,
           transaction_status,
           payment_method,
-          total_amount
+          total_amount,
+          shippingFee
         ]
       );
 
@@ -229,7 +231,7 @@ router.post("/checkout", async (req, res) => {
 
   // Thêm gửi email xác nhận
   const [orderInfo] = await connection.query(
-    `SELECT u.email, o.id
+    `SELECT u.email, o.id, o.shippingFee
      FROM \`order\` o 
      LEFT JOIN user u ON o.user_id = u.id 
      WHERE o.id = ?`,
@@ -259,6 +261,7 @@ router.post("/checkout", async (req, res) => {
       orderInfo[0].email,
       id,
       orderItems,
+      orderInfo[0].shippingFee,
       ordervoucher[0]?.code || null,
       ordervoucher[0]?.discount_type || null,
       ordervoucher[0]?.discount_value || 0
@@ -279,8 +282,8 @@ router.post("/checkout", async (req, res) => {
         // 1. Tạo đơn hàng chính
         const [orderResult] = await connection.query(
           `INSERT INTO \`order\` 
-            (id, user_id, name, phone, address, note, voucher_id, order_status, transaction_status, transaction_code, payment_method, total_amount) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            (id, user_id, name, phone, address, note, voucher_id, order_status, transaction_status, transaction_code, payment_method, total_amount, shippingFee) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             id,
             user_id,
@@ -293,7 +296,8 @@ router.post("/checkout", async (req, res) => {
             0, 
             transaction_code,
             payment_method,
-            total_amount
+            total_amount,
+            shippingFee
           ]
         );
 
@@ -476,7 +480,7 @@ router.get("/check_payment", async (req, res) => {
 
       // Thêm gửi email xác nhận
       const [orderInfoemail] = await connection.query(
-        `SELECT u.email, o.id
+        `SELECT u.email, o.id, o.shippingFee
          FROM \`order\` o 
          LEFT JOIN user u ON o.user_id = u.id 
          WHERE o.id = ?`,
@@ -505,6 +509,7 @@ router.get("/check_payment", async (req, res) => {
           orderInfoemail[0].email,
           orderId,
           orderItems,
+          orderInfoemail[0].shippingFee,
           ordervoucher[0]?.code || null,
           ordervoucher[0]?.discount_type || null,
           ordervoucher[0]?.discount_value || 0

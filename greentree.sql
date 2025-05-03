@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 03, 2025 lúc 09:47 AM
+-- Thời gian đã tạo: Th5 03, 2025 lúc 10:54 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -142,6 +142,7 @@ CREATE TABLE `order` (
   `transaction_code` varchar(250) NOT NULL,
   `payment_method` tinyint(4) NOT NULL,
   `total_amount` int(10) NOT NULL,
+  `shippingFee` int(11) NOT NULL,
   `create_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -149,71 +150,83 @@ CREATE TABLE `order` (
 -- Đang đổ dữ liệu cho bảng `order`
 --
 
-INSERT INTO `order` (`id`, `user_id`, `name`, `phone`, `address`, `note`, `voucher_id`, `order_status`, `transaction_status`, `transaction_code`, `payment_method`, `total_amount`, `create_at`) VALUES
-('GTS-1744903813374-629', 2, 'test', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 310000, '2025-04-17 22:30:13'),
-('GTS-1745032912091-546', 2, 'test', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 260000, '2025-04-19 10:21:52'),
-('GTS-1745042513948-519', 27, 'vuongadmin', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 950000, '2025-04-19 13:01:53'),
-('GTS-1745044123773-93', 27, 'vuongadmin', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 10930000, '2025-04-19 13:28:43'),
-('GTS-1745044617101-746', 27, 'vuongadmin', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 90000, '2025-04-19 13:36:57'),
-('GTS-1745334005198-54', 27, 'vuongadmin', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 178000, '2025-04-22 22:00:05'),
-('GTS-1745334021581-265', 27, 'vuongadmin', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 178000, '2025-04-22 22:00:21'),
-('GTS-1745334038853-95', 27, 'vuongadmin', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 220000, '2025-04-22 22:00:38'),
-('GTS-1745416183101-147', 29, 'Tran Ba Ho', 364185395, '13 CÔng viên phần mền quang trung', 'Gọi điện cho em rồi hẳn giao nhé', NULL, 4, 2, '', 1, 270000, '2025-04-23 20:49:43'),
-('GTS-1745416226040-114', 29, 'Tran Ba Ho', 364185395, '13 CÔng viên phần mền quang trung', '', NULL, 4, 2, 'GTSCODE-1745416226040-415', 2, 398000, '2025-04-23 20:50:26'),
-('GTS-1745416967499-369', 30, 'Lê Nguyễn Hoàng Oanh', 987234631, '80 Hoàng Hoa Thám F13, Tân Bình', 'Giao hỏa tốc hôm nay', NULL, 4, 2, 'GTSCODE-1745416967499-871', 2, 1155000, '2024-12-15 21:02:47'),
-('GTS-1745417946165-468', 30, 'Lê Nguyễn Hoàng Oanh', 987234631, '80 Hoàng Hoa Thám F13, Tân Bình', 'Alo trước khi giao giúp tôi', NULL, 4, 2, 'GTSCODE-1745417946165-50', 2, 1158000, '2024-12-16 21:19:06'),
-('GTS-1745418526564-300', 31, 'Đinh Hữu Huy', 902486301, 'Đường số `17, An Lạc A', '', NULL, 4, 2, '', 1, 390000, '2024-12-24 21:28:46'),
-('GTS-1745418701334-268', 31, 'Đinh Hữu Huy', 902486301, 'Đường số `17, An Lạc A', 'giao 12h trưa', NULL, 4, 2, '', 1, 275000, '2024-12-22 21:31:41'),
-('GTS-1745419413684-195', 31, 'Đinh Hữu Huy', 902486301, 'Đường số `17, An Lạc A', '3 ngày nữa hãy giao', NULL, 4, 2, 'GTSCODE-1745419413684-273', 2, 2100000, '2024-12-20 21:43:33'),
-('GTS-1745419520172-871', 31, 'Đinh Hữu Huy', 902486301, 'Đường số `17, An Lạc A', '', NULL, 4, 2, 'GTSCODE-1745419520172-62', 2, 230000, '2024-12-12 21:45:20'),
-('GTS-1745419736118-375', 30, 'Lê Nguyễn Hoàng Oanh', 987234631, '80 Hoàng Hoa Thám F13, Tân Bình', 'giao gấp trong ngày', NULL, 4, 2, '', 1, 600000, '2024-12-16 19:48:56'),
-('GTS-1745419824231-425', 30, 'Lê Nguyễn Hoàng Oanh', 0, '80 Hoàng Hoa Thám F13, Tân Bình', '', NULL, 4, 2, '', 1, 2900000, '2024-12-14 21:50:24'),
-('GTS-1745420440738-95', 32, 'Nguyễn Phan Yến Nhi', 909234123, '415 Tên Lửa, Bình tân', 'giao sớm trước 5h chiều', NULL, 4, 2, '', 1, 1200000, '2024-12-10 22:00:40'),
-('GTS-1745420526942-145', 32, 'Nguyễn Phan Yến Nhi', 909234123, '415 Tên Lửa, Bình tân', '', NULL, 4, 2, '', 1, 1260000, '2024-12-07 22:02:06'),
-('GTS-1745420588745-741', 32, 'Nguyễn Phan Yến Nhi', 909234123, '415 Tên Lửa, Bình tân', '', NULL, 4, 2, 'GTSCODE-1745420588745-190', 2, 218000, '2024-12-25 22:03:08'),
-('GTS-1745420871633-221', 32, 'Nguyễn Phan Yến Nhi', 909234123, '415 Tên Lửa, Bình tân', 'giao về nhà lúc 5h chiều', NULL, 4, 2, 'GTSCODE-1745420871633-671', 2, 185000, '2024-12-26 22:07:51'),
-('GTS-1745456104410-147', 33, 'Nguyễn Đức Thuận', 973245126, '78, Hoa Lan, Phú nhuận', 'giao hỏa tốc 30p giúp tôi', NULL, 4, 2, '', 1, 2110000, '2025-01-03 07:55:04'),
-('GTS-1745456177434-30', 33, 'Nguyễn Đức Thuận', 973245126, '78, Hoa Lan, Phú nhuận', '', NULL, 4, 2, '', 1, 340000, '2025-01-14 07:56:17'),
-('GTS-1745456295633-662', 33, 'Nguyễn Đức Thuận', 973245126, '78, Hoa Lan, Phú nhuận', 'Giao ngày thứ 7 giúp tôi', NULL, 4, 2, 'GTSCODE-1745456295633-521', 2, 1406000, '2025-01-19 07:58:15'),
-('GTS-1745456606165-362', 33, 'Nguyễn Đức Thuận', 973245126, '78, Hoa Lan, Phú nhuận', '', NULL, 4, 2, 'GTSCODE-1745456606165-157', 2, 2226000, '2025-01-22 08:03:26'),
-('GTS-1745457051781-657', 34, 'Phạm Nguyên Ngọc', 945123234, '123, An Dương Vương, Q8', 'giao thứ 6 giúp mình', NULL, 4, 2, '', 1, 27350000, '2025-01-24 08:10:51'),
-('GTS-1745457361220-661', 34, 'Phạm Nguyên Ngọc', 945123234, '123, An Dương Vương, Q8', '', NULL, 4, 2, '', 1, 2581000, '2025-01-27 08:16:01'),
-('GTS-1745457488492-281', 34, 'Phạm Nguyên Ngọc', 945123234, '123, An Dương Vương, Q8', 'gọi trước khi giao 30p', NULL, 4, 2, 'GTSCODE-1745457488492-701', 2, 3870000, '2025-01-26 08:18:08'),
-('GTS-1745457701996-392', 34, 'Phạm Nguyên Ngọc', 945123234, '123, An Dương Vương, Q8', '', NULL, 4, 2, 'GTSCODE-1745457701996-456', 2, 1310000, '2025-01-17 08:21:42'),
-('GTS-1745459322612-169', 35, 'Vương Quỳnh Giang', 987123678, '113, Tân Hải, f13, tân bình', 'giao lúc 17h ', NULL, 4, 2, '', 1, 4748000, '2025-02-04 08:48:42'),
-('GTS-1745459377625-877', 35, 'Vương Quỳnh Giang', 987123678, '113, Tân Hải, f13, tân bình', '', NULL, 4, 2, '', 1, 2470000, '2025-02-12 08:49:37'),
-('GTS-1745461494266-316', 35, 'Vương Quỳnh Giang', 987123678, '113, Tân Hải, f13, tân bình', 'giao buổi tối 20h', NULL, 4, 2, 'GTSCODE-1745461494266-325', 2, 1406000, '2025-02-20 09:24:54'),
-('GTS-1745461628349-14', 35, 'Vương Quỳnh Giang', 987123678, '113, Tân Hải, f13, tân bình', '', NULL, 4, 2, 'GTSCODE-1745461628349-855', 2, 1260000, '2025-02-27 09:27:08'),
-('GTS-1745466320933-909', 36, 'Bùi Minh Trung', 912345672, '390 Kinh Dương Vương, An Lạc', 'Giao hàng nhớ gọi trước', NULL, 4, 2, '', 1, 160000, '2025-02-03 10:45:20'),
-('GTS-1745466384533-481', 36, 'Bùi Minh Trung', 912345672, '390 Kinh Dương Vương, An Lạc', '', NULL, 4, 2, '', 1, 5090000, '2025-02-16 10:46:24'),
-('GTS-1745466506484-130', 36, 'Bùi Minh Trung', 912345672, '390 Kinh Dương Vương, An Lạc', 'Chuyển khoản trước cọc 50%', NULL, 4, 2, 'GTSCODE-1745466506484-403', 2, 5315000, '2025-02-08 10:48:26'),
-('GTS-1745466864008-943', 36, 'Bùi Minh Trung', 912345672, '390 Kinh Dương Vương, An Lạc', '', NULL, 4, 2, 'GTSCODE-1745466864008-468', 2, 590000, '2025-02-19 10:54:24'),
-('GTS-1745467664758-716', 37, 'Lê Trần Hồng Nhi', 945389987, 'An Phú Đông, Q12', 'Giao hàng trước 15h giúp tôi', NULL, 4, 2, '', 1, 666000, '2025-03-24 11:07:44'),
-('GTS-1745467722698-966', 37, 'Lê Trần Hồng Nhi', 945389987, 'An Phú Đông, Q12', '', NULL, 4, 2, '', 1, 11150000, '2025-03-17 11:08:42'),
-('GTS-1745467854831-306', 37, 'Lê Trần Hồng Nhi', 945389987, 'An Phú Đông, Q12', 'Cọc trước 50% tiền hàng', NULL, 4, 2, 'GTSCODE-1745467854831-25', 2, 3700000, '2025-03-10 11:10:54'),
-('GTS-1745468027142-916', 37, 'Lê Trần Hồng Nhi', 945389987, 'An Phú Đông, Q12', '', NULL, 4, 2, 'GTSCODE-1745468027142-555', 2, 8350000, '2025-03-14 11:13:47'),
-('GTS-1745468740377-686', 38, 'Nguyễn Hoàng Quyên', 976565623, 'Nguyễn Kiệm, F3, Phú nhuận 0', 'giao gần công viên gia định', NULL, 4, 2, '', 1, 1170000, '2025-03-21 11:25:40'),
-('GTS-1745468791077-834', 38, 'Nguyễn Hoàng Quyên', 976565623, 'Nguyễn Kiệm, F3, Phú nhuận ', '', NULL, 4, 2, '', 1, 1340000, '2025-03-11 11:26:31'),
-('GTS-1745468878820-236', 38, 'Nguyễn Hoàng Quyên', 976565623, 'Nguyễn Kiệm, F3, Phú nhuận ', 'cọc full tiền hàng', NULL, 4, 2, 'GTSCODE-1745468878820-266', 2, 2080000, '2025-03-27 11:27:58'),
-('GTS-1745469157704-728', 38, 'Nguyễn Hoàng Quyên', 976565623, 'Nguyễn Kiệm, F3, Phú nhuận ', '', NULL, 4, 2, 'GTSCODE-1745469157704-998', 2, 2780000, '2025-03-31 11:32:37'),
-('GTS-1745469944643-627', 39, 'Trần Duy Hòa', 937673345, 'ấp 17, Long trung, Cai lậy, Tiền Giang', 'giao sáng thứ 2 tuần sau', NULL, 4, 2, '', 1, 3450000, '2025-04-20 11:45:44'),
-('GTS-1745470003079-775', 39, 'Trần Duy Hòa', 937673345, 'ấp 17, Long trung, Cai lậy, Tiền Giang', '', NULL, 4, 2, '', 1, 6950000, '2025-04-19 11:46:43'),
-('GTS-1745470109438-445', 39, 'Trần Duy Hòa', 937673345, 'ấp 17, Long trung, Cai lậy, Tiền Giang', 'Chuyển khoản 50% tiền hàng', NULL, 4, 2, 'GTSCODE-1745470109438-917', 2, 965000, '2025-04-16 11:48:29'),
-('GTS-1745470217035-960', 39, 'Trần Duy Hòa', 937673345, 'ấp 17, Long trung, Cai lậy, Tiền Giang', '', NULL, 4, 2, 'GTSCODE-1745470217035-581', 2, 1700000, '2025-04-08 11:50:17'),
-('GTS-1745470928062-669', 40, 'Trần Huy Bình', 938761216, 'Vĩnh Kim, Châu Thành, Tiền Giang', 'alo trước khi giao nhé', NULL, 4, 2, '', 1, 10670000, '2025-04-26 12:02:08'),
-('GTS-1745471226228-580', 40, 'Trần Huy Bình', 938761216, 'Vĩnh Kim, Châu Thành, Tiền Giang', '', NULL, 4, 2, '', 1, 4450000, '2025-04-02 12:07:06'),
-('GTS-1745471299820-146', 40, 'Trần Huy Bình', 938761216, 'Vĩnh Kim, Châu Thành, Tiền Giang', 'Chuyên cọc 50% tiền đơn hàng', NULL, 4, 2, 'GTSCODE-1745471299820-492', 2, 2370000, '2025-04-29 12:08:19'),
-('GTS-1745471410272-974', 40, 'Trần Huy Bình', 938761216, 'Vĩnh Kim, Châu Thành, Tiền Giang', '', NULL, 4, 2, 'GTSCODE-1745471410272-579', 2, 3650000, '2025-04-13 12:10:10'),
-('GTS-1745474764496-76', 27, 'vuongadmin', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 950000, '2025-04-24 13:06:04'),
-('GTS-1745474972447-516', 37, 'Lê Trần Hồng Nhi', 945389987, 'An Phú Đông, Q12', '', NULL, 4, 2, 'GTSCODE-1745474972447-721', 2, 178000, '2025-04-24 13:09:32'),
-('GTS-1745817293353-590', 29, 'Tran Ba Ho', 364185395, '13 CÔng viên phần mền quang trung', '', NULL, 4, 2, '', 1, 838000, '2025-04-28 12:14:53'),
-('GTS-1746150191026-208', 21, 'admin', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 950000, '2025-05-02 08:43:11'),
-('GTS-1746192273076-994', 27, 'vuongadmin123', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 510000, '2025-05-02 20:24:33'),
-('GTS-1746252694038-290', 27, 'vuongadmin123', 364185395, '135 Dông Bắc', '', 10, 1, 1, '', 1, 300000, '2025-05-03 13:11:34'),
-('GTS-1746256889756-13', 27, 'vuongadmin123', 364185395, '135 Dông Bắc', '', NULL, 1, 1, '', 1, 950000, '2025-05-03 14:21:29'),
-('GTS-1746257887452-893', 27, 'vuongadmin123', 364185395, '135 Dông Bắc', '', 1, 1, 2, 'GTSCODE-1746257887452-184', 2, 200000, '2025-05-03 14:38:07'),
-('GTS-1746258273669-390', 27, 'vuongadmin123', 364185395, '135 Dông Bắc', '', NULL, 1, 1, '', 1, 77000, '2025-05-03 14:44:33'),
-('GTS-1746258372267-96', 27, 'vuongadmin123', 364185395, '135 Dông Bắc', '', NULL, 1, 1, '', 1, 330000, '2025-05-03 14:46:12');
+INSERT INTO `order` (`id`, `user_id`, `name`, `phone`, `address`, `note`, `voucher_id`, `order_status`, `transaction_status`, `transaction_code`, `payment_method`, `total_amount`, `shippingFee`, `create_at`) VALUES
+('GTS-1744903813374-629', 2, 'test', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 310000, 0, '2025-04-17 22:30:13'),
+('GTS-1745032912091-546', 2, 'test', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 260000, 0, '2025-04-19 10:21:52'),
+('GTS-1745042513948-519', 27, 'vuongadmin', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 950000, 0, '2025-04-19 13:01:53'),
+('GTS-1745044123773-93', 27, 'vuongadmin', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 10930000, 0, '2025-04-19 13:28:43'),
+('GTS-1745044617101-746', 27, 'vuongadmin', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 90000, 0, '2025-04-19 13:36:57'),
+('GTS-1745334005198-54', 27, 'vuongadmin', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 178000, 0, '2025-04-22 22:00:05'),
+('GTS-1745334021581-265', 27, 'vuongadmin', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 178000, 0, '2025-04-22 22:00:21'),
+('GTS-1745334038853-95', 27, 'vuongadmin', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 220000, 0, '2025-04-22 22:00:38'),
+('GTS-1745416183101-147', 29, 'Tran Ba Ho', 364185395, '13 CÔng viên phần mền quang trung', 'Gọi điện cho em rồi hẳn giao nhé', NULL, 4, 2, '', 1, 270000, 0, '2025-04-23 20:49:43'),
+('GTS-1745416226040-114', 29, 'Tran Ba Ho', 364185395, '13 CÔng viên phần mền quang trung', '', NULL, 4, 2, 'GTSCODE-1745416226040-415', 2, 398000, 0, '2025-04-23 20:50:26'),
+('GTS-1745416967499-369', 30, 'Lê Nguyễn Hoàng Oanh', 987234631, '80 Hoàng Hoa Thám F13, Tân Bình', 'Giao hỏa tốc hôm nay', NULL, 4, 2, 'GTSCODE-1745416967499-871', 2, 1155000, 0, '2024-12-15 21:02:47'),
+('GTS-1745417946165-468', 30, 'Lê Nguyễn Hoàng Oanh', 987234631, '80 Hoàng Hoa Thám F13, Tân Bình', 'Alo trước khi giao giúp tôi', NULL, 4, 2, 'GTSCODE-1745417946165-50', 2, 1158000, 0, '2024-12-16 21:19:06'),
+('GTS-1745418526564-300', 31, 'Đinh Hữu Huy', 902486301, 'Đường số `17, An Lạc A', '', NULL, 4, 2, '', 1, 390000, 0, '2024-12-24 21:28:46'),
+('GTS-1745418701334-268', 31, 'Đinh Hữu Huy', 902486301, 'Đường số `17, An Lạc A', 'giao 12h trưa', NULL, 4, 2, '', 1, 275000, 0, '2024-12-22 21:31:41'),
+('GTS-1745419413684-195', 31, 'Đinh Hữu Huy', 902486301, 'Đường số `17, An Lạc A', '3 ngày nữa hãy giao', NULL, 4, 2, 'GTSCODE-1745419413684-273', 2, 2100000, 0, '2024-12-20 21:43:33'),
+('GTS-1745419520172-871', 31, 'Đinh Hữu Huy', 902486301, 'Đường số `17, An Lạc A', '', NULL, 4, 2, 'GTSCODE-1745419520172-62', 2, 230000, 0, '2024-12-12 21:45:20'),
+('GTS-1745419736118-375', 30, 'Lê Nguyễn Hoàng Oanh', 987234631, '80 Hoàng Hoa Thám F13, Tân Bình', 'giao gấp trong ngày', NULL, 4, 2, '', 1, 600000, 0, '2024-12-16 19:48:56'),
+('GTS-1745419824231-425', 30, 'Lê Nguyễn Hoàng Oanh', 0, '80 Hoàng Hoa Thám F13, Tân Bình', '', NULL, 4, 2, '', 1, 2900000, 0, '2024-12-14 21:50:24'),
+('GTS-1745420440738-95', 32, 'Nguyễn Phan Yến Nhi', 909234123, '415 Tên Lửa, Bình tân', 'giao sớm trước 5h chiều', NULL, 4, 2, '', 1, 1200000, 0, '2024-12-10 22:00:40'),
+('GTS-1745420526942-145', 32, 'Nguyễn Phan Yến Nhi', 909234123, '415 Tên Lửa, Bình tân', '', NULL, 4, 2, '', 1, 1260000, 0, '2024-12-07 22:02:06'),
+('GTS-1745420588745-741', 32, 'Nguyễn Phan Yến Nhi', 909234123, '415 Tên Lửa, Bình tân', '', NULL, 4, 2, 'GTSCODE-1745420588745-190', 2, 218000, 0, '2024-12-25 22:03:08'),
+('GTS-1745420871633-221', 32, 'Nguyễn Phan Yến Nhi', 909234123, '415 Tên Lửa, Bình tân', 'giao về nhà lúc 5h chiều', NULL, 4, 2, 'GTSCODE-1745420871633-671', 2, 185000, 0, '2024-12-26 22:07:51'),
+('GTS-1745456104410-147', 33, 'Nguyễn Đức Thuận', 973245126, '78, Hoa Lan, Phú nhuận', 'giao hỏa tốc 30p giúp tôi', NULL, 4, 2, '', 1, 2110000, 0, '2025-01-03 07:55:04'),
+('GTS-1745456177434-30', 33, 'Nguyễn Đức Thuận', 973245126, '78, Hoa Lan, Phú nhuận', '', NULL, 4, 2, '', 1, 340000, 0, '2025-01-14 07:56:17'),
+('GTS-1745456295633-662', 33, 'Nguyễn Đức Thuận', 973245126, '78, Hoa Lan, Phú nhuận', 'Giao ngày thứ 7 giúp tôi', NULL, 4, 2, 'GTSCODE-1745456295633-521', 2, 1406000, 0, '2025-01-19 07:58:15'),
+('GTS-1745456606165-362', 33, 'Nguyễn Đức Thuận', 973245126, '78, Hoa Lan, Phú nhuận', '', NULL, 4, 2, 'GTSCODE-1745456606165-157', 2, 2226000, 0, '2025-01-22 08:03:26'),
+('GTS-1745457051781-657', 34, 'Phạm Nguyên Ngọc', 945123234, '123, An Dương Vương, Q8', 'giao thứ 6 giúp mình', NULL, 4, 2, '', 1, 27350000, 0, '2025-01-24 08:10:51'),
+('GTS-1745457361220-661', 34, 'Phạm Nguyên Ngọc', 945123234, '123, An Dương Vương, Q8', '', NULL, 4, 2, '', 1, 2581000, 0, '2025-01-27 08:16:01'),
+('GTS-1745457488492-281', 34, 'Phạm Nguyên Ngọc', 945123234, '123, An Dương Vương, Q8', 'gọi trước khi giao 30p', NULL, 4, 2, 'GTSCODE-1745457488492-701', 2, 3870000, 0, '2025-01-26 08:18:08'),
+('GTS-1745457701996-392', 34, 'Phạm Nguyên Ngọc', 945123234, '123, An Dương Vương, Q8', '', NULL, 4, 2, 'GTSCODE-1745457701996-456', 2, 1310000, 0, '2025-01-17 08:21:42'),
+('GTS-1745459322612-169', 35, 'Vương Quỳnh Giang', 987123678, '113, Tân Hải, f13, tân bình', 'giao lúc 17h ', NULL, 4, 2, '', 1, 4748000, 0, '2025-02-04 08:48:42'),
+('GTS-1745459377625-877', 35, 'Vương Quỳnh Giang', 987123678, '113, Tân Hải, f13, tân bình', '', NULL, 4, 2, '', 1, 2470000, 0, '2025-02-12 08:49:37'),
+('GTS-1745461494266-316', 35, 'Vương Quỳnh Giang', 987123678, '113, Tân Hải, f13, tân bình', 'giao buổi tối 20h', NULL, 4, 2, 'GTSCODE-1745461494266-325', 2, 1406000, 0, '2025-02-20 09:24:54'),
+('GTS-1745461628349-14', 35, 'Vương Quỳnh Giang', 987123678, '113, Tân Hải, f13, tân bình', '', NULL, 4, 2, 'GTSCODE-1745461628349-855', 2, 1260000, 0, '2025-02-27 09:27:08'),
+('GTS-1745466320933-909', 36, 'Bùi Minh Trung', 912345672, '390 Kinh Dương Vương, An Lạc', 'Giao hàng nhớ gọi trước', NULL, 4, 2, '', 1, 160000, 0, '2025-02-03 10:45:20'),
+('GTS-1745466384533-481', 36, 'Bùi Minh Trung', 912345672, '390 Kinh Dương Vương, An Lạc', '', NULL, 4, 2, '', 1, 5090000, 0, '2025-02-16 10:46:24'),
+('GTS-1745466506484-130', 36, 'Bùi Minh Trung', 912345672, '390 Kinh Dương Vương, An Lạc', 'Chuyển khoản trước cọc 50%', NULL, 4, 2, 'GTSCODE-1745466506484-403', 2, 5315000, 0, '2025-02-08 10:48:26'),
+('GTS-1745466864008-943', 36, 'Bùi Minh Trung', 912345672, '390 Kinh Dương Vương, An Lạc', '', NULL, 4, 2, 'GTSCODE-1745466864008-468', 2, 590000, 0, '2025-02-19 10:54:24'),
+('GTS-1745467664758-716', 37, 'Lê Trần Hồng Nhi', 945389987, 'An Phú Đông, Q12', 'Giao hàng trước 15h giúp tôi', NULL, 4, 2, '', 1, 666000, 0, '2025-03-24 11:07:44'),
+('GTS-1745467722698-966', 37, 'Lê Trần Hồng Nhi', 945389987, 'An Phú Đông, Q12', '', NULL, 4, 2, '', 1, 11150000, 0, '2025-03-17 11:08:42'),
+('GTS-1745467854831-306', 37, 'Lê Trần Hồng Nhi', 945389987, 'An Phú Đông, Q12', 'Cọc trước 50% tiền hàng', NULL, 4, 2, 'GTSCODE-1745467854831-25', 2, 3700000, 0, '2025-03-10 11:10:54'),
+('GTS-1745468027142-916', 37, 'Lê Trần Hồng Nhi', 945389987, 'An Phú Đông, Q12', '', NULL, 4, 2, 'GTSCODE-1745468027142-555', 2, 8350000, 0, '2025-03-14 11:13:47'),
+('GTS-1745468740377-686', 38, 'Nguyễn Hoàng Quyên', 976565623, 'Nguyễn Kiệm, F3, Phú nhuận 0', 'giao gần công viên gia định', NULL, 4, 2, '', 1, 1170000, 0, '2025-03-21 11:25:40'),
+('GTS-1745468791077-834', 38, 'Nguyễn Hoàng Quyên', 976565623, 'Nguyễn Kiệm, F3, Phú nhuận ', '', NULL, 4, 2, '', 1, 1340000, 0, '2025-03-11 11:26:31'),
+('GTS-1745468878820-236', 38, 'Nguyễn Hoàng Quyên', 976565623, 'Nguyễn Kiệm, F3, Phú nhuận ', 'cọc full tiền hàng', NULL, 4, 2, 'GTSCODE-1745468878820-266', 2, 2080000, 0, '2025-03-27 11:27:58'),
+('GTS-1745469157704-728', 38, 'Nguyễn Hoàng Quyên', 976565623, 'Nguyễn Kiệm, F3, Phú nhuận ', '', NULL, 4, 2, 'GTSCODE-1745469157704-998', 2, 2780000, 0, '2025-03-31 11:32:37'),
+('GTS-1745469944643-627', 39, 'Trần Duy Hòa', 937673345, 'ấp 17, Long trung, Cai lậy, Tiền Giang', 'giao sáng thứ 2 tuần sau', NULL, 4, 2, '', 1, 3450000, 0, '2025-04-20 11:45:44'),
+('GTS-1745470003079-775', 39, 'Trần Duy Hòa', 937673345, 'ấp 17, Long trung, Cai lậy, Tiền Giang', '', NULL, 4, 2, '', 1, 6950000, 0, '2025-04-19 11:46:43'),
+('GTS-1745470109438-445', 39, 'Trần Duy Hòa', 937673345, 'ấp 17, Long trung, Cai lậy, Tiền Giang', 'Chuyển khoản 50% tiền hàng', NULL, 4, 2, 'GTSCODE-1745470109438-917', 2, 965000, 0, '2025-04-16 11:48:29'),
+('GTS-1745470217035-960', 39, 'Trần Duy Hòa', 937673345, 'ấp 17, Long trung, Cai lậy, Tiền Giang', '', NULL, 4, 2, 'GTSCODE-1745470217035-581', 2, 1700000, 0, '2025-04-08 11:50:17'),
+('GTS-1745470928062-669', 40, 'Trần Huy Bình', 938761216, 'Vĩnh Kim, Châu Thành, Tiền Giang', 'alo trước khi giao nhé', NULL, 4, 2, '', 1, 10670000, 0, '2025-04-26 12:02:08'),
+('GTS-1745471226228-580', 40, 'Trần Huy Bình', 938761216, 'Vĩnh Kim, Châu Thành, Tiền Giang', '', NULL, 4, 2, '', 1, 4450000, 0, '2025-04-02 12:07:06'),
+('GTS-1745471299820-146', 40, 'Trần Huy Bình', 938761216, 'Vĩnh Kim, Châu Thành, Tiền Giang', 'Chuyên cọc 50% tiền đơn hàng', NULL, 4, 2, 'GTSCODE-1745471299820-492', 2, 2370000, 0, '2025-04-29 12:08:19'),
+('GTS-1745471410272-974', 40, 'Trần Huy Bình', 938761216, 'Vĩnh Kim, Châu Thành, Tiền Giang', '', NULL, 4, 2, 'GTSCODE-1745471410272-579', 2, 3650000, 0, '2025-04-13 12:10:10'),
+('GTS-1745474764496-76', 27, 'vuongadmin', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 950000, 0, '2025-04-24 13:06:04'),
+('GTS-1745474972447-516', 37, 'Lê Trần Hồng Nhi', 945389987, 'An Phú Đông, Q12', '', NULL, 4, 2, 'GTSCODE-1745474972447-721', 2, 178000, 0, '2025-04-24 13:09:32'),
+('GTS-1745817293353-590', 29, 'Tran Ba Ho', 364185395, '13 CÔng viên phần mền quang trung', '', NULL, 4, 2, '', 1, 838000, 0, '2025-04-28 12:14:53'),
+('GTS-1746150191026-208', 21, 'admin', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 950000, 0, '2025-05-02 08:43:11'),
+('GTS-1746192273076-994', 27, 'vuongadmin123', 364185395, '135 Dông Bắc', '', NULL, 4, 2, '', 1, 510000, 0, '2025-05-02 20:24:33'),
+('GTS-1746252694038-290', 27, 'vuongadmin123', 364185395, '135 Dông Bắc', '', 10, 1, 1, '', 1, 300000, 0, '2025-05-03 13:11:34'),
+('GTS-1746256889756-13', 27, 'vuongadmin123', 364185395, '135 Dông Bắc', '', NULL, 1, 1, '', 1, 950000, 0, '2025-05-03 14:21:29'),
+('GTS-1746257887452-893', 27, 'vuongadmin123', 364185395, '135 Dông Bắc', '', 1, 1, 2, 'GTSCODE-1746257887452-184', 2, 200000, 0, '2025-05-03 14:38:07'),
+('GTS-1746258273669-390', 27, 'vuongadmin123', 364185395, '135 Dông Bắc', '', NULL, 1, 1, '', 1, 77000, 0, '2025-05-03 14:44:33'),
+('GTS-1746258372267-96', 27, 'vuongadmin123', 364185395, '135 Dông Bắc', '', NULL, 1, 1, '', 1, 330000, 0, '2025-05-03 14:46:12'),
+('GTS-1746259772131-477', 27, 'vuongdz', 364185395, '135 Dông Bắc', '', NULL, 1, 1, '', 1, 220000, 0, '2025-05-03 15:09:32'),
+('GTS-1746260941538-83', 38, 'Nguyễn Hoàng Quyên', 976565623, 'Nguyễn Kiệm, F3, Phú nhuận', '', NULL, 1, 1, '', 1, 195000, 25000, '2025-05-03 15:29:01'),
+('GTS-1746261068994-229', 38, 'Nguyễn Hoàng Quyên', 976565623, 'Nguyễn Kiệm, F3, Phú nhuận', '', NULL, 1, 2, 'GTSCODE-1746261068994-63', 2, 65000, 25000, '2025-05-03 15:31:09'),
+('GTS-1746261486313-889', 38, 'Nguyễn Hoàng Quyên', 976565623, 'Nguyễn Kiệm, F3, Phú nhuận', '', NULL, 1, 1, '', 1, 52000, 25000, '2025-05-03 15:38:06'),
+('GTS-1746261673186-264', 41, 'vuong123', 364185395, '135 Dông Bắc', '', NULL, 1, 1, '', 1, 270000, 50000, '2025-05-03 15:41:13'),
+('GTS-1746261906201-861', 41, 'vuong123', 364185395, '135 Dông Bắc', '', NULL, 1, 1, '', 1, 178000, 50000, '2025-05-03 15:45:06'),
+('GTS-1746262027706-73', 41, 'vuong123', 364185395, '135 Dông Bắc', '', NULL, 1, 1, '', 1, 134000, 50000, '2025-05-03 15:47:07'),
+('GTS-1746262079129-318', 41, 'vuong123', 364185395, '135 Dông Bắc', '', NULL, 1, 1, '', 1, 178000, 50000, '2025-05-03 15:47:59'),
+('GTS-1746262168724-93', 41, 'vuong123', 364185395, '135 Dông Bắc', '', NULL, 1, 1, '', 1, 178000, 50000, '2025-05-03 15:49:28'),
+('GTS-1746262274945-112', 41, 'vuong123', 364185395, '135 Dông Bắc', '', NULL, 1, 1, '', 1, 220000, 50000, '2025-05-03 15:51:14'),
+('GTS-1746262324859-368', 41, 'vuong123', 364185395, '135 Dông Bắc', '', NULL, 1, 2, 'GTSCODE-1746262324859-490', 2, 220000, 50000, '2025-05-03 15:52:04'),
+('GTS-1746262433417-859', 27, 'vuongdz', 364185395, '135 Dông Bắc', '', NULL, 1, 1, '', 1, 680000, 0, '2025-05-03 15:53:53');
 
 -- --------------------------------------------------------
 
@@ -352,7 +365,19 @@ INSERT INTO `order_detail` (`id`, `order_id`, `pr_id`, `quantity`, `price`, `tot
 (233, 'GTS-1746256889756-13', 201, 1, 220000, 220000, '2025-05-03 14:21:29'),
 (234, 'GTS-1746257887452-893', 252, 1, 200000, 200000, '2025-05-03 14:38:07'),
 (235, 'GTS-1746258273669-390', 294, 1, 27000, 27000, '2025-05-03 14:44:33'),
-(236, 'GTS-1746258372267-96', 24, 1, 280000, 280000, '2025-05-03 14:46:12');
+(236, 'GTS-1746258372267-96', 24, 1, 280000, 280000, '2025-05-03 14:46:12'),
+(237, 'GTS-1746259772131-477', 201, 1, 220000, 220000, '2025-05-03 15:09:32'),
+(238, 'GTS-1746260941538-83', 290, 1, 170000, 170000, '2025-05-03 15:29:01'),
+(239, 'GTS-1746261068994-229', 237, 1, 40000, 40000, '2025-05-03 15:31:09'),
+(240, 'GTS-1746261486313-889', 294, 1, 27000, 27000, '2025-05-03 15:38:06'),
+(241, 'GTS-1746261673186-264', 201, 1, 220000, 220000, '2025-05-03 15:41:13'),
+(243, 'GTS-1746261906201-861', 12, 1, 128000, 128000, '2025-05-03 15:45:06'),
+(245, 'GTS-1746262027706-73', 9, 1, 84000, 84000, '2025-05-03 15:47:07'),
+(246, 'GTS-1746262079129-318', 12, 1, 128000, 128000, '2025-05-03 15:47:59'),
+(247, 'GTS-1746262168724-93', 12, 1, 128000, 128000, '2025-05-03 15:49:28'),
+(248, 'GTS-1746262274945-112', 290, 1, 170000, 170000, '2025-05-03 15:51:14'),
+(249, 'GTS-1746262324859-368', 290, 1, 170000, 170000, '2025-05-03 15:52:04'),
+(250, 'GTS-1746262433417-859', 203, 1, 680000, 680000, '2025-05-03 15:53:53');
 
 -- --------------------------------------------------------
 
@@ -366,6 +391,13 @@ CREATE TABLE `otp_codes` (
   `otp_code` varchar(6) NOT NULL,
   `expires_at` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `otp_codes`
+--
+
+INSERT INTO `otp_codes` (`id`, `email`, `otp_code`, `expires_at`) VALUES
+(90, 'vuongntps29902@gmail.com', '341629', '2025-05-03 15:42:31');
 
 -- --------------------------------------------------------
 
@@ -395,10 +427,10 @@ CREATE TABLE `product` (
 INSERT INTO `product` (`id`, `cate_id`, `name`, `price`, `sale`, `price_sale`, `images`, `discription`, `inventory_quantity`, `view`, `create_date`, `status`) VALUES
 (6, 1, 'Cây tùng bồng lai tiểu cảnh chậu sứ thổ cẩm TUBO005\r\n', 500000, 10, 450000, 'https://mowgarden.com/wp-content/uploads/2024/03/tung-bong-lai-chu-su-de-ban-mowgarden-768x768.jpg,\n\nhttps://mowgarden.com/wp-content/uploads/2024/03/tung-bong-lai-chu-su-de-ban-mowgarden-01-125x125.jpg\n', 'Cây Tùng Bông Lai là một loài cây mang vẻ đẹp trang nhã, với tán lá dầy xanh mướt trông giống như những đám mây và có kích thước nhỏ gọn nên rất thích hợp để bàn làm việc. Chúng là loài cây dễ trồng nên không cần phải tốn công chăm sóc, tuy nhiên cần đặt tại nơi có nhiều ánh sáng.\r\n*Giá bao gồm chậu, đĩa lót và sỏi rải mặt\r\n\r\nTÊN KHOA HỌC	Podocarpus macrophyllus\r\nTÊN THÔNG THƯỜNG	Cây tùng bồng lai\r\nQUY CÁCH SẢN PHẨM	• Kích thước chậu: 20x20cm (DxC)\r\n• Chiều cao tổng: 50 cm\r\n• Độ rộng tán: 30 cm\r\nĐỘ KHÓ	Trung bình\r\nYÊU CẦU ÁNH SÁNG	Nắng trực tiếp / nắng tán xạ\r\nNHU CẦU NƯỚC	Tưới nước 1-2 lần/tuần', 100, 2, '2025-03-06 13:34:00', 1),
 (8, 1, 'Cây kim ngân ba thân để bàn chậu sứ gấu BearBrick LONI040\n', 280000, 10, 252000, 'https://mowgarden.com/wp-content/uploads/2023/07/cay-kim-ngan-3-than-mowgarden.jpg', 'Cây Kim Ngân là loại cây cảnh trong nhà được trồng phổ biến trên khắp thế giới, nó có sức ảnh hưởng tới mức mà hầu như ai cũng tin rằng khi trồng có thể mang lại nhiều may mắn trong cuộc sống, công việc hoặc làm ăn.\r\n\r\nTÊN KHOA HỌC	Pachira aquatica\r\nTÊN GỌI KHÁC	Cây kim ngân\r\nQUY CÁCH SẢN PHẨM	• Kích thước chậu: 12×8 (DxC)\r\n• Chiều cao tổng: 25cm\r\nĐỘ KHÓ	Dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Ánh sáng tán xạ / Nắng trực tiếp / Chịu râm mát\r\nNHU CẦU NƯỚC	Tưới nước 2 – 3 lần/tuần', 100, 0, '2025-03-06 14:27:11', 1),
-(9, 1, 'Cây trầu bà đế vương xanh chậu mặt cool ‘Imperial Green’ chậu sứ PHIG006\r\n', 120000, 30, 84000, 'https://mowgarden.com/wp-content/uploads/2023/07/cay-trau-ba-de-vuong-xanh-mowgarden-125x125.jpg,\r\n\r\nhttps://mowgarden.com/wp-content/uploads/2023/03/12-cay-trau-ba-de-vuong-xanh-de-ban-chau-su-trang-2-125x125.jpg\r\n', 'Trầu Bà Đế Vương Xanh (Philodendron Imperial Green) là một giống cây rất ưu chuộng để trồng với ý nghĩa phong thủy mà nó mang lại. Nên đặt cây tại các vị trí như trong phòng khách, phòng làm việc, văn phòng hoặc sảnh ra vào cơ quan.\r\n\r\nTÊN KHOA HỌC	Philodendron Imperial Green\r\nTÊN GỌI KHÁC	Trầu bà đế vương xanh\r\nKÍCH THƯỚC CÂY	• Kích thước chậu: 18x14cm (DxC)\r\n• Chiều cao tổng: 25 – 35 cm\r\nĐỘ KHÓ	Rất dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Nắng tán xạ\r\nNHU CẦU NƯỚC	Tưới nước 3 – 5 lần/tháng', 99, 1, '2025-03-06 14:35:29', 1),
+(9, 1, 'Cây trầu bà đế vương xanh chậu mặt cool ‘Imperial Green’ chậu sứ PHIG006\r\n', 120000, 30, 84000, 'https://mowgarden.com/wp-content/uploads/2023/07/cay-trau-ba-de-vuong-xanh-mowgarden-125x125.jpg,\r\n\r\nhttps://mowgarden.com/wp-content/uploads/2023/03/12-cay-trau-ba-de-vuong-xanh-de-ban-chau-su-trang-2-125x125.jpg\r\n', 'Trầu Bà Đế Vương Xanh (Philodendron Imperial Green) là một giống cây rất ưu chuộng để trồng với ý nghĩa phong thủy mà nó mang lại. Nên đặt cây tại các vị trí như trong phòng khách, phòng làm việc, văn phòng hoặc sảnh ra vào cơ quan.\r\n\r\nTÊN KHOA HỌC	Philodendron Imperial Green\r\nTÊN GỌI KHÁC	Trầu bà đế vương xanh\r\nKÍCH THƯỚC CÂY	• Kích thước chậu: 18x14cm (DxC)\r\n• Chiều cao tổng: 25 – 35 cm\r\nĐỘ KHÓ	Rất dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Nắng tán xạ\r\nNHU CẦU NƯỚC	Tưới nước 3 – 5 lần/tháng', 98, 1, '2025-03-06 14:35:29', 1),
 (10, 1, 'Cây cỏ lan chi để bàn chậu sứ mặt cười SPI004 ', 120000, 30, 84000, 'https://mowgarden.com/wp-content/uploads/2023/07/co-lan-chi-de-ban-mowgaden-125x125.jpg\r\n', 'Cỏ Lan Chi (hay còn gọi là Cỏ Nhện) là loại cây rất dễ sống với điều kiện khí hậu nóng tại Việt Nam. Đặc biệt, nó nằm trong top các loại cây lọc không khí rất hiệu quả, có thể đặt trong phòng ngủ giúp bạn có giấc ngủ trong lành hơn.\n\nTÊN KHOA HỌC	Chlorophytum laxum\nTÊN GỌI KHÁC	Cây cỏ lan chi / cây dây nhện\nKÍCH THƯỚC CÂY	Chiều cao 30 cm\nĐỘ KHÓ	Rất dễ chăm sóc\nYÊU CẦU ÁNH SÁNG	Nắng tán xạ / Chịu râm mát\nNHU CẦU NƯỚC	Tưới nước 2 – 3 lần/tuần', 99, 1, '2025-03-06 14:35:29', 1),
 (11, 1, 'Cây trầu bà đế vương đỏ để bàn ‘Red Rojo’ chậu sứ PHIR008\r\n', 320000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2023/07/trau-ba-de-vuong-do-de-ban-mowgarden.jpg\r\n', 'Thân dạng thảo lớn, trong tự nhiên cây có thể leo được, nhưng đa số khi trồng chậu thì thân vươn thẳng chắc chắn, cao khoảng dưới 1m5.\r\n\r\nTÊN KHOA HỌC	Philodendron Imperial Red\r\nTÊN THÔNG THƯỜNG	Trầu bà đế vương đỏ\r\nQUY CÁCH SẢN PHẨM	• Kích thước chậu: 12x12cm (DxC)\r\n• Chiều cao tổng: 30 cm\r\n• Độ rộng tán: 25 cm\r\nĐỘ KHÓ	Dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Nắng tán xạ, chịu được nắng trực tiếp\r\nNHU CẦU NƯỚC	Tưới nước 2 – 3 lần/tuần', 100, 0, '2025-03-06 14:40:55', 1),
-(12, 1, 'Cây lưỡi hổ Bantel Sensation chậu ươm STBS001\r\n', 160000, 20, 128000, 'https://mowgarden.com/wp-content/uploads/2023/04/cay-luoi-ho-bengar-1-768x768.jpg,\r\nhttps://mowgarden.com/wp-content/uploads/2023/04/cay-luoi-ho-bengar-2-125x125.jpg', 'Lưỡi hổ Thái xanh mini là dòng lưỡi hổ nhỏ để bàn, có chiều cao tối đa khoảng 20cm, không có nhiều vằn như những loại lưỡi hổ khác, nhưng nó lại sở hữu bộ lá màu xanh đậm ấn tượng, mang lại nét ‘cứng cáp’ tự nhiên cho không gian. Chúng rất thích hợp để trên bàn làm việc, kệ trang trí hoặc làm quà tặng.\r\n\r\nTÊN KHOA HỌC	Sansevieria ‘hahnii’ Black Gold\r\nTÊN GỌI KHÁC	Cây lưỡi hổ Thái xanh\r\nQUY CÁCH SẢN PHẨM	• Chiều cao: 30 – 45 cm\r\nĐỘ KHÓ	Dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Ánh sáng tán xạ / Chịu bóng râm tốt\r\nNHU CẦU NƯỚC	Thay nước 2 – 3 lần/tháng', 87, 340, '2025-03-06 14:40:55', 1),
+(12, 1, 'Cây lưỡi hổ Bantel Sensation chậu ươm STBS001\r\n', 160000, 20, 128000, 'https://mowgarden.com/wp-content/uploads/2023/04/cay-luoi-ho-bengar-1-768x768.jpg,\r\nhttps://mowgarden.com/wp-content/uploads/2023/04/cay-luoi-ho-bengar-2-125x125.jpg', 'Lưỡi hổ Thái xanh mini là dòng lưỡi hổ nhỏ để bàn, có chiều cao tối đa khoảng 20cm, không có nhiều vằn như những loại lưỡi hổ khác, nhưng nó lại sở hữu bộ lá màu xanh đậm ấn tượng, mang lại nét ‘cứng cáp’ tự nhiên cho không gian. Chúng rất thích hợp để trên bàn làm việc, kệ trang trí hoặc làm quà tặng.\r\n\r\nTÊN KHOA HỌC	Sansevieria ‘hahnii’ Black Gold\r\nTÊN GỌI KHÁC	Cây lưỡi hổ Thái xanh\r\nQUY CÁCH SẢN PHẨM	• Chiều cao: 30 – 45 cm\r\nĐỘ KHÓ	Dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Ánh sáng tán xạ / Chịu bóng râm tốt\r\nNHU CẦU NƯỚC	Thay nước 2 – 3 lần/tháng', 84, 340, '2025-03-06 14:40:55', 1),
 (13, 1, 'Cây hạnh phúc để sàn 2 tầng lớn chậu đá mài RADE033\r\n', 1200000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2023/04/cay-hanh-phuc-2-tang-chau-da-mai-tron-1-768x768.jpg,\r\n\r\nhttps://mowgarden.com/wp-content/uploads/2022/10/cay-hanh-phuc-adermachera-Sinica-768x768.jpg\r\n', 'Cây hạnh phúc là dòng cây cảnh đẹp, sức sống khỏe mạnh, dễ chăm sóc. Trên cây có những tán lá xanh tươi, mượt mà thể hiện cho sự hi vọng và niềm tin mạnh mẽ. Với ý nghĩa mang lại may mắn và hạnh phúc nên cây thường được chọn để làm cây trưng trong nhà hoặc làm quà tặng.\r\n\r\nTÊN KHOA HỌC	Radermachera Sinica\r\nTÊN THÔNG THƯỜNG	Cây hạnh phúc\r\nQUY CÁCH SẢN PHẨM	• Kích thước chậu: 30x34cm (DxC)\r\n• Chiều cao tổng: 150cm\r\nĐỘ KHÓ	Dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Nắng tán xạ, chịu được nắng trực tiếp\r\nNHU CẦU NƯỚC	Tưới nước 2 – 3 lần/tuần', 100, 0, '2025-03-06 14:47:49', 1),
 (14, 1, 'Cây trầu bà cột chậu xi măng trụ vuông CTBC007\r\n', 1100000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2023/04/cay-trau-ba-cot-chau-xi-mang-van-soc-ngang-1-768x768.jpg', 'Có tác dụng thanh lọc không khí trong nhà mà còn chứa đựng ý nghĩa phong thủy rất tốt, mang dáng vẻ thanh lịch và sang trọng.\r\n\r\nTÊN KHOA HỌC	Epipremnum aureum\r\nTÊN THÔNG THƯỜNG	Trầu bà xanh\r\nQUY CÁCH SẢN PHẨM	• Chiều cao 130 – 140 cm\r\n• Kích thước chậu: 30x58cm (DxC)\r\nĐỘ KHÓ	Dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Nắng tán xạ, chịu được nắng trực tiếp\r\nNHU CẦU NƯỚC	Tưới nước 3 – 4 lần/tuần', 100, 86, '2025-03-06 14:47:49', 1),
 (15, 1, 'Cây hồng môn cỡ nhỏ chậu sứ trắng ANTH010', 240000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2023/04/cay-hong-mon-de-ban-chau-su-1-768x768.jpg,\r\n\r\nhttps://mowgarden.com/wp-content/uploads/2023/04/cay-hong-mon-de-ban-chau-su-2-125x125.jpg\r\n', 'Cây hồng môn được biết tới là một loại cây cảnh mang lại điều tốt lành, có thể giúp điều hòa khí phong thủy trong nhà, có khả năng thu hút những dòng khí tích cực và làm tiêu bớt dòng khí tiêu cực cho môi trường xung quanh, trồng cây hồng môn trong nhà sẽ giúp không gian sống trở nên hài hòa và bình yên hơn.\r\n\r\nTÊN KHOA HỌC	Anthurium andreanum\r\nTÊN GỌI KHÁC	Cây hồng môn\r\nQUY CÁCH SẢN PHẨM	• Kích thước chậu: 14×11.5 cm (DxC)\r\n• Chiều cao tổng: 30 – 40cm\r\nĐỘ KHÓ	Dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Nắng tán xạ / Chịu râm mát\r\nNHU CẦU NƯỚC	Tưới nước 2 – 3 lần/lần', 96, 0, '2025-03-07 03:29:27', 1),
@@ -544,8 +576,8 @@ INSERT INTO `product` (`id`, `cate_id`, `name`, `price`, `sale`, `price_sale`, `
 (197, 3, 'Chậu đất nung trụ trơn không họa tiết DANU005', 110000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2022/08/chau-dat-nung-khong-hoa-tiet-1-768x768.jpg', '\r\nCHẤT LIỆU	Đất nung\r\nHỌA TIẾT	Tường gạch\r\nKÍCH THƯỚC	 25cm (ngang) – 25cm (cao)\r\nMÀU SẮC	Nâu đất\r\n*Ghi chú: Sản phẩm là hàng thủ công mỹ nghệ nên không thể hoàn hảo tuyệt đối, thông số kích thước có thể sai sót 5% đến 10%', 100, 0, '2025-03-20 15:08:37', 1),
 (198, 1, 'Cây ngũ gia bì cẩm thạch nhỏ chậu ươm SCHE020', 100000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2023/04/cay-ngu-gia-bi-cam-thach-768x768.jpg,\r\nhttps://mowgarden.com/wp-content/uploads/2023/04/cay-ngu-gia-bi-cam-thach-2-125x125.jpg', 'Ngũ gia bì là loại cây mang lại tài vận, thịnh vượng và may mắn, trồng trong nhà sẽ mang đến một không gian thư thái, trong lành cho gia đình.\r\n\r\nTÊN KHOA HỌC	Scheffera Octophylla\r\nTÊN THÔNG THƯỜNG	Ngũ gia bì cẩm thạch\r\nQUY CÁCH SẢN PHẨM	Chiều cao tổng: 40 cm\r\nĐỘ KHÓ	Dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Nắng tán xạ, chịu được nắng trực tiếp\r\nNHU CẦU NƯỚC	Tưới nước 2 – 3 lần/tuần', 0, 0, '0000-00-00 00:00:00', 1),
 (200, 1, 'Cây bàng Singapore mini để bàn chậu sứ LYRA048', 180000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2023/03/7-cay-bang-singapore-nho-de-ban-chau-su-1-768x768.jpg,\r\nhttps://mowgarden.com/wp-content/uploads/2023/03/7-cay-bang-singapore-nho-de-ban-chau-su-2-125x125.jpg', 'Cây Bàng Singapore Lớn có thể dễ dàng nhận ra ở những góc quán cafe, bàn làm việc công. Với những chiếc lá căng bóng hình đàn vĩ cầm rất lớn, nhiều gân là hình chân chim nổi bật.\r\n\r\nTÊN KHOA HỌC	Ficus lyrata\r\nTÊN GỌI KHÁC	Bàng Singapore / Sung tỳ bà\r\nKÍCH THƯỚC CÂY	• Kích thước chậu: 12×12 cm (DxC)\r\n• Chiều cao tổng: 25 – 30 cm\r\nĐỘ KHÓ	Dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Nắng trực tiếp / Ánh sáng tán xạ\r\nNHU CẦU NƯỚC	Tưới nước 2 – 3 lần/tuần', 94, 327, '2025-03-24 03:20:00', 1),
-(201, 1, 'Cây ngũ gia bì để bàn chậu sứ thổ cẩm SCHE019', 220000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2023/03/cay-ngu-gia-bi-chau-su-hoa-tiet-trang-tri.jpg', 'Ngũ gia bì là loại cây mang lại tài vận, thịnh vượng và may mắn, trồng trong nhà sẽ mang đến một không gian thư thái, trong lành cho gia đình.\r\n\r\nTÊN KHOA HỌC	Scheffera Octophylla\r\nTÊN THÔNG THƯỜNG	Ngũ gia bì\r\nQUY CÁCH SẢN PHẨM	• Kích thước chậu: 20×18 cm (DxC)\r\n• Chiều cao tổng: 40-50 cm\r\nĐỘ KHÓ	Dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Nắng tán xạ, chịu được nắng trực tiếp\r\nNHU CẦU NƯỚC	Tưới nước 2 – 3 lần/tuần', 66, 639, '2025-03-24 03:24:31', 1),
-(203, 1, 'Cây bàng Singapore 2 thân chậu đá mài LYRA047', 680000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2023/03/cay-bang-singapore-chau-da-mai-tru-tron-1a-768x768.jpg', 'Cây Bàng Singapore Lớn có thể dễ dàng nhận ra ở những góc quán cafe, bàn làm việc công. Với những chiếc lá căng bóng hình đàn vĩ cầm rất lớn, nhiều gân là hình chân chim nổi bật.\r\n\r\nTÊN KHOA HỌC	Ficus lyrata\r\nTÊN GỌI KHÁC	Bàng Singapore / Sung tỳ bà\r\nKÍCH THƯỚC CÂY	• Kích thước chậu: 37×37 cm (DxC)\r\n• Chiều cao tổng: 100 – 120 cm\r\nĐỘ KHÓ	Dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Nắng trực tiếp / Ánh sáng tán xạ\r\nNHU CẦU NƯỚC	Tưới nước 2 – 3 lần/tuần', 67, 685, '2025-03-24 03:27:59', 1),
+(201, 1, 'Cây ngũ gia bì để bàn chậu sứ thổ cẩm SCHE019', 220000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2023/03/cay-ngu-gia-bi-chau-su-hoa-tiet-trang-tri.jpg', 'Ngũ gia bì là loại cây mang lại tài vận, thịnh vượng và may mắn, trồng trong nhà sẽ mang đến một không gian thư thái, trong lành cho gia đình.\r\n\r\nTÊN KHOA HỌC	Scheffera Octophylla\r\nTÊN THÔNG THƯỜNG	Ngũ gia bì\r\nQUY CÁCH SẢN PHẨM	• Kích thước chậu: 20×18 cm (DxC)\r\n• Chiều cao tổng: 40-50 cm\r\nĐỘ KHÓ	Dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Nắng tán xạ, chịu được nắng trực tiếp\r\nNHU CẦU NƯỚC	Tưới nước 2 – 3 lần/tuần', 64, 639, '2025-03-24 03:24:31', 1),
+(203, 1, 'Cây bàng Singapore 2 thân chậu đá mài LYRA047', 680000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2023/03/cay-bang-singapore-chau-da-mai-tru-tron-1a-768x768.jpg', 'Cây Bàng Singapore Lớn có thể dễ dàng nhận ra ở những góc quán cafe, bàn làm việc công. Với những chiếc lá căng bóng hình đàn vĩ cầm rất lớn, nhiều gân là hình chân chim nổi bật.\r\n\r\nTÊN KHOA HỌC	Ficus lyrata\r\nTÊN GỌI KHÁC	Bàng Singapore / Sung tỳ bà\r\nKÍCH THƯỚC CÂY	• Kích thước chậu: 37×37 cm (DxC)\r\n• Chiều cao tổng: 100 – 120 cm\r\nĐỘ KHÓ	Dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Nắng trực tiếp / Ánh sáng tán xạ\r\nNHU CẦU NƯỚC	Tưới nước 2 – 3 lần/tuần', 66, 685, '2025-03-24 03:27:59', 1),
 (204, 1, 'Cây thường xuân cẩm thạch chậu nhựa HEDE002', 160000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2023/03/cay-thuong-xuan-cam-thach-chau-uom-768x768.jpg', 'Thường xuân là loài cây dây leo, chúng có thể sống trong nhà rất tốt và sinh trưởng khỏe mạnh vào mùa mát mẻ. Những cành dài buông rủ của chúng là gợi ý tuyệt vời trên bục cửa sổ, trên kệ sách hoặc treo lên cao. Chúng có sức sống khá bền bỉ nên điều kiện chăm sóc cũng không quá phức tạp.\r\n\r\nTÊN TIẾNG ANH	English Ivy / Hedera Helix\r\nTÊN THÔNG THƯỜNG	Cây thường xuân cẩm thạch\r\nQUY CÁCH SẢN PHẨM	Chậu ươm 10×10\r\nĐỘ KHÓ	Trung bình\r\nYÊU CẦU ÁNH SÁNG	Ít nắng, trồng nơi râm mát\r\nNHU CẦU NƯỚC	Tưới nước 4 – 5 lần/tuần', 97, 12, '2025-03-24 03:44:29', 1),
 (206, 1, 'Cây Ổ Rồng treo tường Staghorn Fern STAG002', 380000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2022/08/cay-o-rong-treo-tuong-768x768.jpg\r\n', 'Cây Ổ Rồng được dùng để làm đẹp khoảng không ở khu vườn. Loài cây không thể thiếu cho những ai muốn tạo nên một khu rừng nhiệt đới thực thụ.\r\n\r\nTÊN KHOA HỌC	Platycerium grande\r\nTÊN THÔNG THƯỜNG	Cây Ổ Rồng\r\nQUY CÁCH SẢN PHẨM	Lá dài 10 – 15cm\r\nĐỘ KHÓ	Dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Nắng tán xạ, ánh nắng gián tiếp\r\nNHU CẦU NƯỚC	Ít nước, 2 – 3 lần/tuần', 100, 32, '2025-03-24 03:48:38', 1),
 (207, 1, 'Cây Lan Tim Nhí/ Cây Khúc Thủy – Cao 10cm', 105000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2021/04/lan_tim_3_1024x1024-692x800.jpg', '', 97, 123, '2025-03-24 03:51:03', 1),
@@ -575,7 +607,7 @@ INSERT INTO `product` (`id`, `cate_id`, `name`, `price`, `sale`, `price_sale`, `
 (234, 2, 'Cây bưởi da xanh chậu ươm FRUI001', 250000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2022/09/cay-buoi-da-xanh-nho-768x768.jpg,\r\nhttps://mowgarden.com/wp-content/uploads/2022/09/cay-buoi-da-xanh-co-trai-125x125.jpg', 'Cây bưởi da xanh loại cây có múi được trồng rất phổ biến tại nước ta, thích hợp trồng nơi có nhiều ánh sáng và thoáng mát như sân vườn để tạo bóng mát và để lấy trái. Cây cần được tưới nước thường xuyên để luôn xanh tốt.\r\n\r\nTÊN GỌI KHÁC	Cây bưởi da xanh\r\nKÍCH THƯỚC CÂY	Chiều cao 60 – 80 cm\r\nĐỘ KHÓ	Rất dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Nắng trực tiếp\r\nNHU CẦU NƯỚC	Tưới nước 1 lần/ngày', 100, 127, '2025-03-24 05:17:45', 1),
 (235, 2, 'Cỏ Nhung Nhật', 50000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2021/04/co-nhung-nhat-768x768.jpg,\r\nhttps://mowgarden.com/wp-content/uploads/2021/04/co-nhung-nhat-gia-re-125x125.jpg,\r\nhttps://mowgarden.com/wp-content/uploads/2021/04/co-nhung-nhat-gia-re-3-125x125.jpg,\r\nhtt', 'Cỏ nhung Nhật là loại cỏ thảm thường được sử dụng cho sân vườn biệt thự, sân vận động, công viên, khu vui chơi,… Loại cỏ này có đặc điểm lá rất mềm mịn, tuy nhỏ nhưng gây kích ứng, rất thân thiện với con người.\r\n\r\nTÊN KHOA HỌC	Zoysia japonoca\r\nTÊN GỌI KHÁC	Cỏ nhung Nhật / Cỏ thảm\r\nQUY CÁCH SẢN PHẨM	100×100 cm (một mét vuông)\r\nĐỘ KHÓ	Dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Ngoài trời\r\nNHU CẦU NƯỚC	Tưới nước mỗi ngày', 100, 94, '2025-03-24 05:19:22', 1),
 (236, 2, 'Cây bạch trinh biển chậu ươm nhỏ HYME001', 15000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2021/04/cay-bach-trinh-bien-1-768x768.jpg', 'Cây bạch trinh biển là loài cây có sức sống mạnh liệt, liên tục phát triển nhánh mới, ra hoa trắng xinh quanh năm và sống lâu năm nên thường được chọn để trồng tạo cảnh quan xanh mát.\r\n\r\nTÊN KHOA HỌC	Hymenocallis littoralis\r\nTÊN THÔNG THƯỜNG	Cây bạch trinh biển\r\nQUY CÁCH SẢN PHẨM	Chiều cao 10 – 15 cm\r\nĐỘ KHÓ	Rất dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Nắng tán xạ\r\nNHU CẦU NƯỚC	Ít nước, 2 – 3 lần/tuần', 65, 227, '2025-03-24 05:21:24', 1),
-(237, 2, 'Cây mai chỉ thiên nhỏ chậu ươm WRIG001', 40000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2021/04/cay-mai-chi-thien-chau-nho-768x768.jpg', 'Cây thường xuân có bộ lá xanh tươi tốt, hình dáng ấn tượng giúp mang lại không gian xanh mát. Đây là dòng cây dễ chăm đang là “trend” được nhiều người lựa chọn trồng trang trí vườn rất đẹp.\r\n\r\nTÊN TIẾNG ANH	Wrighta antidysenterica\r\nTÊN THÔNG THƯỜNG	Cây mai chỉ thiên\r\nKÍCH THƯỚC CÂY	Chiều cao 40cm\r\nĐỘ KHÓ	Dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Nhiều ánh sáng / Nắng trực tiếp\r\nNHU CẦU NƯỚC	Nhiều nước, 1 lần/ngày', 84, 688, '2025-03-24 05:22:47', 1),
+(237, 2, 'Cây mai chỉ thiên nhỏ chậu ươm WRIG001', 40000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2021/04/cay-mai-chi-thien-chau-nho-768x768.jpg', 'Cây thường xuân có bộ lá xanh tươi tốt, hình dáng ấn tượng giúp mang lại không gian xanh mát. Đây là dòng cây dễ chăm đang là “trend” được nhiều người lựa chọn trồng trang trí vườn rất đẹp.\r\n\r\nTÊN TIẾNG ANH	Wrighta antidysenterica\r\nTÊN THÔNG THƯỜNG	Cây mai chỉ thiên\r\nKÍCH THƯỚC CÂY	Chiều cao 40cm\r\nĐỘ KHÓ	Dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Nhiều ánh sáng / Nắng trực tiếp\r\nNHU CẦU NƯỚC	Nhiều nước, 1 lần/ngày', 83, 688, '2025-03-24 05:22:47', 1),
 (238, 2, 'Cây Cúc Tần Ấn Độ Vernonia elliptica', 35000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2021/04/cay-cuc-tan-an-do-Vernonia-elliptica-1-2.jpg,\r\nhttps://mowgarden.com/wp-content/uploads/2021/04/cay-cuc-tan-an-do-Vernonia-elliptica-2-1-125x125.jpg,\r\nhttps://mowgarden.com/wp-content/uploads/2021/04/c', 'Cúc Tần Ấn Độ là loại cây dây leo thân mềm có sức sống mạnh mẽ, phát triển nhanh và ít sâu bệnh. Rất thích hợp để trồng tạo cảnh quan trên ban công, sân thượng, cao tầng… Với tác dụng như tấm màn che tự nhiên, tô điểm cho ngôi nhà thêm xanh tươi, mát mẻ và trong lành hơn.\r\n\r\nTÊN KHOA HỌC	Vernonia elliptica\r\nTÊN GỌI KHÁC	Cúc tần ấn độ\r\nKÍCH THƯỚC CÂY	• Cỡ nhỏ: Cao 30 – 40 cm\r\n• Cỡ trung: Cao 40 – 60 cm\r\n• Cỡ lớn: Cao 100 – 120 cm\r\nĐỘ KHÓ	Rất dễ chăm sóc\r\nYÊU CẦU ÁNH SÁNG	Nắng trực tiếp\r\nNHU CẦU NƯỚC	Tưới nước mỗi ngày', 100, 113, '2025-03-24 05:24:07', 1),
 (239, 3, 'Chậu Xi Măng Đá Mài Trụ Vuông Vát Đáy', 460000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2022/02/chau-xi-mang-da-mai-vuong-dung-vat-day-1-768x768.jpg,\r\nhttps://mowgarden.com/wp-content/uploads/2022/02/chau-xi-mang-da-mai-vuong-dung-vat-day-2-125x125.jpg,\r\nhttps://mowgarden.com/wp-content/uploads/2', 'CHẤT LIỆU	Xi măng, đá cẩm thạch\r\nGIA CỐ	Tấm lưới thủy tinh\r\nQUY CÁCH SẢN PHẨM (RxC)	• 28×45 (cm)\r\n• 32×55 (cm)\r\n• 36×45 (cm)\r\n• 36×65 (cm)\r\n• 43×65 (cm)\r\nMÀU SẮC	• Trắng\r\n• Đen\r\n• Xám', 98, 88, '2025-03-24 05:30:13', 1),
 (240, 3, 'Chậu Xi Măng Đá Mài Hình Vuông Trụ', 370000, 0, 0, 'https://mowgarden.com/wp-content/uploads/2022/02/chau-xi-mang-da-mai-vuong-ong-1-768x768.jpg,\r\nhttps://mowgarden.com/wp-content/uploads/2022/02/chau-xi-mang-da-mai-vuong-ong-2-125x125.jpg,\r\nhttps://mowgarden.com/wp-content/uploads/2022/02/chau-xi-man', 'CHẤT LIỆU	Xi măng, đá cẩm thạch\r\nGIA CỐ	Tấm lưới thủy tinh\r\nQUY CÁCH SẢN PHẨM (RxC)	• 25×50 (cm)\r\n• 30×50 (cm)\r\n• 30×60 (cm)\r\n• 35×50 (cm)\r\n• 35×70 (cm)\r\n• 40×80 (cm)\r\nMÀU SẮC	• Trắng\r\n• Đen\r\n• Xám', 97, 64, '2025-03-24 05:34:03', 1),
@@ -617,12 +649,12 @@ INSERT INTO `product` (`id`, `cate_id`, `name`, `price`, `sale`, `price_sale`, `
 (287, 4, 'Bình tưới cây áp suất 1.25 lít Gardena 11120-20\r\n', 858000, 0, 0, 'https://dolamvuon.vn/Upload/anh-san-pham/binh-tuoi-cay-ap-suat/11120/binh-tuoi-cay-ap-suat-125-lit-gardena-11120-20-5.jpg', 'Thương hiệu: Gardena\r\nXuất xứ: Trung Quốc\r\nDung tích: 1.25 lít\r\nChất liệu: Nhựa HDPE cao cấp\r\nĐầu tưới điều chỉnh lên xuống\r\nVạch trắng báo mực nước\r\nKiểu phun: Áp suất phun sương và tia thẳng\r\nMã vạch: 4078500051132\r\nTrọng lượng: 680g\r\nKích thước: 145 x 150 x 290 mm\r\nBảo hành: 12 tháng', 99, 3, '2025-04-05 06:32:23', 1),
 (288, 4, 'Bình tưới cây áp suất 5 lít Gardena 11130-20', 1750000, 0, 0, 'https://dolamvuon.vn/Upload/anh-san-pham/binh-tuoi-cay-ap-suat/11130/binh-tuoi-cay-ap-suat-5-lit-gardena-11130-20-9.jpg', 'Thương hiệu: Gardena\r\nXuất xứ: Trung Quốc\r\nDung tích: 5 lít\r\nChất liệu: Nhựa HDPE cao cấp\r\nVạch trắng báo mực nước\r\nKiểu phun: Áp suất phun sương và tia thẳng\r\nMã vạch: 4078500051156\r\nTrọng lượng: 1200g\r\nKích thước: 228 x 182 x 510 mm\r\nBảo hành: 12 tháng', 95, 26, '2025-04-05 06:32:23', 1),
 (289, 4, 'Bình tưới cây 5 lít chạy pin Gardena 11136-20', 3200000, 0, 0, 'https://dolamvuon.vn/Upload/anh-san-pham/binh-tuoi-cay-ap-suat/11136/binh-tuoi-cay-5-lit-chay-pin-gardena-11136-20-1.jpg', 'Thương hiệu: Gardena\r\nXuất xứ: Trung Quốc\r\nDung tích: 5 lít\r\nPin 4.2V / 2.0 Ah\r\nChế độ phun sương: 2 tiếng\r\nChế độ phun tia thẳng: 1 tiếng\r\nChất liệu: Nhựa HDPE cao cấp\r\nCần tưới có thể thay đổi chiều dài\r\nĐầu tưới gập lên xuống được\r\nVạch trắng báo mực nước\r\nMã vạch: 4078500052481\r\nTrọng lượng: 2090g\r\nKích thước: 230 x 250 x 530 mm\r\nBảo hành: 12 tháng', 100, 76, '2025-04-05 06:34:01', 1),
-(290, 4, 'Vòi tưới cây cổ điển Gardena 18300-50\r\n', 170000, 0, 0, 'https://dolamvuon.vn/Upload/anh-san-pham/voi-tuoi-cay/18300/voi-tuoi-cay-co-dien-gardena-18300-50-8.jpg', 'Thương hiệu: Gardena\r\nXuất xứ: Đức\r\nHai chế độ phun xòe và tia thẳng\r\nMàu sắc: Đen,cam\r\nĐiều chỉnh: vặn trên đầu vòi\r\nMã vạch:4078500010658\r\nKích thước: 35 x 35 x 137 mm\r\nTrọng lượng: 560g\r\nBảo hành: 12 tháng', 87, 233, '2025-04-05 06:36:22', 1),
+(290, 4, 'Vòi tưới cây cổ điển Gardena 18300-50\r\n', 170000, 0, 0, 'https://dolamvuon.vn/Upload/anh-san-pham/voi-tuoi-cay/18300/voi-tuoi-cay-co-dien-gardena-18300-50-8.jpg', 'Thương hiệu: Gardena\r\nXuất xứ: Đức\r\nHai chế độ phun xòe và tia thẳng\r\nMàu sắc: Đen,cam\r\nĐiều chỉnh: vặn trên đầu vòi\r\nMã vạch:4078500010658\r\nKích thước: 35 x 35 x 137 mm\r\nTrọng lượng: 560g\r\nBảo hành: 12 tháng', 84, 233, '2025-04-05 06:36:22', 1),
 (291, 4, 'Vòi tưới cây 2 chức năng Gardena 18303-20\r\n', 405000, 0, 0, 'https://dolamvuon.vn/Upload/anh-san-pham/voi-tuoi-cay/18303/voi-tuoi-cay-2-chuc-nang-gardena-18303-20-8.jpg', 'Xuất xứ: Đức\r\nKiểu phun: 2 chức năng\r\nMàu sắc: Đen, xám, cam, xanh\r\nChất liệu: Nhựa HPDE cao cấp\r\nĐiều chỉnh: Vặn trên đầu vòi\r\nĐiều chỉnh lưu lượng nước\r\nCò bóp khóa mở nước\r\nMã vạch: 4078500024280\r\nKích thước: 35 x 35 x 137 mm\r\nTrọng lượng: 560g\r\nBảo hành: 12 tháng', 96, 27, '2025-04-05 06:36:52', 1),
 (292, 4, 'Vòi tưới cây phun loe Gardena 18311-20\r\n', 450000, 0, 0, 'https://dolamvuon.vn/Upload/anh-san-pham/voi-tuoi-cay/18311/voi-tuoi-cay-phun-loe-gardena-18311-20-10.jpg', 'Thương hiệu: Gardena\r\nXuất xứ: Đức\r\nMột chế độ phun loe\r\nMàu sắc: Xám,cam\r\nĐiều chỉnh: tắt mở cò bó\r\nNút cam vặn lưu lượng nước\r\nMã vạch:4078500010795\r\nKích thước: 215 x 200 x 58 mm\r\nTrọng lượng: 169g\r\nBảo hành: 12 tháng', 98, 34, '2025-04-05 06:37:32', 1),
 (293, 4, 'Vòi tưới cây 4 chức năng Gardena 18304-20\r\n', 700000, 0, 0, 'https://dolamvuon.vn/Upload/anh-san-pham/voi-tuoi-cay/18304/voi-tuoi-cay-4-chuc-nang-gardena-18304-20-7.jpg', 'Thương hiệu: Gardena\r\nXuất xứ: Đức\r\nKiểu phun: 4 chức năng\r\nĐiều chỉnh: vặn trên đầu vòi\r\nĐiều chỉnh lưu lượng nước\r\nCò bóp khóa mở nước\r\nMàu sắc: Ghi, đen, cam\r\nMã vạch: 4078500044561\r\nKích thước: 195 x 220 x 45 mm\r\nTrọng lượng: 200g\r\nBảo hành: 12 tháng', 98, 33, '2025-04-05 06:37:32', 1);
 INSERT INTO `product` (`id`, `cate_id`, `name`, `price`, `sale`, `price_sale`, `images`, `discription`, `inventory_quantity`, `view`, `create_date`, `status`) VALUES
-(294, 4, 'Bánh dầu đậu phộng LAVAMIX dạng bột đã qua xử lý - Gói 1kg', 27000, 0, 0, 'https://product.hstatic.net/1000269461/product/banh-dau-dau-phong-1kg_b496f7d5563343548a3030abad2b4dfa_large.jpg', 'Bánh dầu hay phân bánh dầu đã là phụ phẩm có được từ ngành ép dầu đậu phộng. Sản phẩm sau đó được xử lý kĩ bằng công nghệ tiên tiến để tạo ra sản phẩm phân bánh dầu chất lượng nhất. Sản phẩm phân bánh dầu đã qua xử lý cung cấp hàm lượng chất hữu cơ lên đến 40%, khoáng và các vitamin cần thiết cho sự phát triển của cây trồng.', 9, 28, '2025-04-05 07:08:22', 1);
+(294, 4, 'Bánh dầu đậu phộng LAVAMIX dạng bột đã qua xử lý - Gói 1kg', 27000, 0, 0, 'https://product.hstatic.net/1000269461/product/banh-dau-dau-phong-1kg_b496f7d5563343548a3030abad2b4dfa_large.jpg', 'Bánh dầu hay phân bánh dầu đã là phụ phẩm có được từ ngành ép dầu đậu phộng. Sản phẩm sau đó được xử lý kĩ bằng công nghệ tiên tiến để tạo ra sản phẩm phân bánh dầu chất lượng nhất. Sản phẩm phân bánh dầu đã qua xử lý cung cấp hàm lượng chất hữu cơ lên đến 40%, khoáng và các vitamin cần thiết cho sự phát triển của cây trồng.', 8, 28, '2025-04-05 07:08:22', 1);
 
 -- --------------------------------------------------------
 
@@ -1120,7 +1152,7 @@ INSERT INTO `user` (`id`, `username`, `password`, `phone`, `email`, `address`, `
 (2, 'test', '$2b$10$EsoR3GvdxnMOB98XRbEwGesL.Jfq1Lid3gGrsGFwzXG5EHXW1uJgG', 123213, 'test@gmail.com', '', 4, 570000, '/images/user_circle.webp	', 1, 1, '0000-00-00 00:00:00'),
 (8, 'dang', '$2b$10$P/jsc83n91UtCTzJH3PBo.6p7L.PKWZDl/8dlNJXBKGprs5YZOn4a', 213123213, 'dangpdhps28240@fpt.edu.vn', '', 0, 0, '/images/user_circle.webp', 1, 1, '0000-00-00 00:00:00'),
 (21, 'admin', '$2b$10$xXxJUi7OdqAT8whodxsS3eEHVj1JA47oWTAF73HeAKBoTLTp6ujxi', 364185395, 'admin@gmail.com', '', 2, 950000, 'http://localhost:3000/public/images/04-2025_Usecase1.png', 0, 1, '2025-04-09 13:58:50'),
-(27, 'vuongadmin123', '$2b$10$S00oHhKvaznWOvaQAhpUfOcBEfGkwzq9zES0ktgW9zL4iqIgycyoS', 364185395, 'vuongweb04@gmail.com', '135 Dông Bắc', 33, 16261000, 'http://localhost:3000/public/images/05-2025_anh.jpg', 1, 1, '2025-04-18 12:39:09'),
+(27, 'vuongdz', '$2b$10$S00oHhKvaznWOvaQAhpUfOcBEfGkwzq9zES0ktgW9zL4iqIgycyoS', 364185395, 'vuongweb04@gmail.com', '135 Dông Bắc', 35, 17161000, 'http://localhost:3000/public/images/05-2025_anh.jpg', 1, 1, '2025-04-18 12:39:09'),
 (29, 'Tran Ba Ho', '$2b$10$8IOFPIY/I3xn.Wmo.mgwiO3GYO5aSR3ouT0UnkxCAI1ws42Q4QRGi', 364185395, 'tranbaho@gmail.com', '13 CÔng viên phần mền quang trung', 7, 1506000, '/images/user_circle.webp', 1, 1, '2025-04-23 20:45:22'),
 (30, 'Lê Nguyễn Hoàng Oanh', '$2b$10$vFjgh0AJx5gik3c6HY73cunqhu8zzLogR9iyPUYcejuBGSSCJinQa', 987234631, 'oanhle150896@gmail.com', '80 Hoàng Hoa Thám F13, Tân Bình', 8, 5813000, '/images/user_circle.webp', 1, 1, '2025-04-23 21:00:00'),
 (31, 'Đinh Hữu Huy', '$2b$10$A0bshrzBmapQIcSAXFVB2.6qQvpXmgzRGYUdkI8kIIQLE9Cx7T80u', 902486301, 'huyrealdepzai199x@gmail.com', 'Đường số `17, An Lạc A', 8, 2995000, '/images/user_circle.webp', 1, 1, '2025-04-23 21:24:08'),
@@ -1130,9 +1162,10 @@ INSERT INTO `user` (`id`, `username`, `password`, `phone`, `email`, `address`, `
 (35, 'Vương Quỳnh Giang', '$2b$10$zZRBVbaX89fBD9KvU6OXgOF7qh2rvVZgmw/natrobararl80pCI7W', 987123678, 'gianggiang2k1@gmail.com', '113, Tân Hải, f13, tân bình', 14, 9884000, '/images/user_circle.webp', 1, 1, '2025-04-24 08:39:01'),
 (36, 'Bùi Minh Trung', '$2b$10$0g57wVr500ZPrzlpT1hh1ubE1b/MQPgIhpZiCmgVzICeYTnFFbFf6', 912345672, 'trungtete2123@gmail.com', '390 Kinh Dương Vương, An Lạc', 20, 11155000, '/images/user_circle.webp', 1, 1, '2025-04-24 10:42:17'),
 (37, 'Lê Trần Hồng Nhi', '$2b$10$hMt1pOBz5DhP1Ev54n//s.ZuKfw07p6P7hYnyjdsuG/jLj6zzFx9m', 945389987, 'hongnhi123@gmail.com', 'An Phú Đông, Q12', 15, 24044000, '/images/user_circle.webp', 1, 1, '2025-04-24 11:03:48'),
-(38, 'Nguyễn Hoàng Quyên', '$2b$10$tJhQL29BdtydUj1e0Y7XTOlrQodH7HsmSCy.rZmjEQ3DcxXWeuzIG', 976565623, 'quinquin24@gmail.com', 'Nguyễn Kiệm, F3, Phú nhuận', 22, 7370000, '/images/user_circle.webp', 1, 1, '2025-04-24 11:22:25'),
+(38, 'Nguyễn Hoàng Quyên', '$2b$10$tJhQL29BdtydUj1e0Y7XTOlrQodH7HsmSCy.rZmjEQ3DcxXWeuzIG', 976565623, 'quinquin24@gmail.com', 'Nguyễn Kiệm, F3, Phú nhuận', 25, 7682000, '/images/user_circle.webp', 1, 1, '2025-04-24 11:22:25'),
 (39, 'Trần Duy Hòa', '$2b$10$oel3o6WWe3lVdXoWKChw7uDWxVmQ.CkoF8HenYk6QjIj8OabNJ5Ku', 937673345, 'vinhan5504@gmail.com', 'ấp 17, Long trung, Cai lậy, Tiền Giang', 31, 13065000, '/images/user_circle.webp', 1, 1, '2025-04-24 11:42:24'),
-(40, 'Trần Huy Bình', '$2b$10$Sg04.ip5ieU.3VOgrf7/J.Cd1bHaFPocfTemyDOVw.0pgG73idbqG', 938761216, 'binhtran28@gmail.com', 'Vĩnh Kim, Châu Thành, Tiền Giang', 23, 21140000, '/images/user_circle.webp', 1, 1, '2025-04-24 11:58:59');
+(40, 'Trần Huy Bình', '$2b$10$Sg04.ip5ieU.3VOgrf7/J.Cd1bHaFPocfTemyDOVw.0pgG73idbqG', 938761216, 'binhtran28@gmail.com', 'Vĩnh Kim, Châu Thành, Tiền Giang', 23, 21140000, '/images/user_circle.webp', 1, 1, '2025-04-24 11:58:59'),
+(41, 'vuong123', '$2b$10$j9yFjnfEOgkjUKt90RAD3.kbWx3R89NsBUvyn2euWD.86cGjAa5F2', 364185395, 'vuongntps29902@fpt.edu.vn', '', 7, 1378000, '/images/user_circle.webp', 1, 1, '2025-05-03 15:40:44');
 
 -- --------------------------------------------------------
 
@@ -1294,13 +1327,13 @@ ALTER TABLE `level`
 -- AUTO_INCREMENT cho bảng `order_detail`
 --
 ALTER TABLE `order_detail`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=237;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=251;
 
 --
 -- AUTO_INCREMENT cho bảng `otp_codes`
 --
 ALTER TABLE `otp_codes`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=90;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=92;
 
 --
 -- AUTO_INCREMENT cho bảng `product`
@@ -1336,7 +1369,7 @@ ALTER TABLE `type_cate`
 -- AUTO_INCREMENT cho bảng `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT cho bảng `voucher`

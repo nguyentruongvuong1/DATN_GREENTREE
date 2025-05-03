@@ -209,17 +209,6 @@ export default function Userprofile() {
             </div>
 
             <div className={styles["form-group"]}>
-              <label>Email (sẽ không thay đổi được)</label>
-              <input
-                type="email"
-                id="email"
-                className={styles["form-control"]}
-                value={userData.email}
-                readOnly
-              />
-            </div>
-
-            <div className={styles["form-group"]}>
               <label>Số điện thoại</label>
               <input
                 type="tel"

@@ -18,15 +18,26 @@ export default function Cart() {
   const user = useSelector((state) => state.auth.user);
   const voucher = useSelector((state) => state.cart.voucher);
   const [modal, contextHolder] = Modal.useModal();
+  const [level, setlevel] = useState(null)
 
+  // Laays rank cuar taif khoanr
+  useEffect(() =>{
+     fetch(`${import.meta.env.VITE_API_URL}/user/rank/${user?.id}`)
+     .then(res => res.json()).then(data => setlevel(data[0]))
+  },[ user?.id])
+  
   let shippingFee = 50000;
-  if (user?.level === 0) {
-    shippingFee = 50000;
-  } else if (user?.level === 1) {
-    shippingFee = 25000;
-  } else if (user?.level === 2) {
-    shippingFee = 10000;
-  } else if (user?.level === 3) shippingFee = 0;
+
+  if (level?.rank === "Đồng") {
+    shippingFee = shippingFee * (1 - level?.discount_value / 100);
+  } else if (level?.rank === "Bạc") {
+    shippingFee = shippingFee * (1 - level?.discount_value / 100);
+  } else if (level?.rank === "Vàng") {
+    shippingFee = shippingFee * (1 - level?.discount_value / 100);
+
+  } else if (level?.rank === "Kim cương") {
+    shippingFee = shippingFee * (1 - level?.discount_value / 100);
+  }
 
   // Tính tổng tiền
   const Tongtien = useCallback(() =>
