@@ -78,7 +78,9 @@ router.get("/orderdetail_user/:order_id", async (req, res) => {
   try {
     // Truy vấn thông tin đơn hàng
     const [orderRows] = await pool.query(
-      `SELECT *FROM \`order\` WHERE id = ?`,
+      `SELECT o.*,
+      v.code, v.discount_type, v.discount_value, v.start_date, v.end_date
+      FROM \`order\` o LEFT JOIN voucher v ON o.voucher_id = v.id WHERE o.id = ?`,
       [order_id]
     );
 

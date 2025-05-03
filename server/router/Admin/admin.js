@@ -126,13 +126,13 @@ router.delete('/voucher/:id', adminAuth, async (req, res) => {
 // API thêm voucher
 router.post('/voucher', adminAuth, async (req, res) => {
   const { code, discount_type, discount_value, quantity, start_date, end_date, status } = req.body;
-
+  console.log(code, discount_type, discount_value, quantity, start_date, end_date, status)
   // Kiểm tra dữ liệu đầu vào
   if (!code || !discount_type || discount_value == null || quantity == null || start_date == null || !end_date || status == null) {
     return res.status(400).json({ message: "Thiếu dữ liệu đầu vào!" });
   }
 
-  const sql = "INSERT INTO voucher (code, discount_type, discount_value, quantity, end_date, status) VALUES (?, ?, ?, ?, ?, ?)";
+  const sql = "INSERT INTO voucher (code, discount_type, discount_value, quantity, start_date, end_date, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
   try {
     // Kiểm tra trùng code

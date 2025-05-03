@@ -13,15 +13,16 @@ export default function Payment() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const voucher = useSelector((state) => state.cart.voucher)
+
   useEffect(() => {
      if (cartItems.length === 0) {
       message.error("Giỏ hàng trống, vui lòng thêm sản phẩm trước khi thanh toán");
       navigate('/');
       return;
     }else if (!user?.id) {
-      message.error("Vui lòng đăng nhập trước khi thanh toán");
-      navigate('/dangnhap');
-      return;
+        message.error("Vui lòng đăng nhập trước khi thanh toán");
+        navigate('/dangnhap');
+        return;
 
     } 
   }, [user, cartItems, navigate]);
@@ -46,14 +47,16 @@ export default function Payment() {
 
   const shippingFee = 50000;
   let discountvalue = 0;
+  const subtotal = total + shippingFee;
 
-  if(voucher && voucher.discount_type ==='fixed'){
-    discountvalue = voucher.discount_value || 0;
-  }else if(voucher && voucher.discount_type === 'percent'){
-    discountvalue = total * ((voucher.discount_value || 0) / 100)
-  };
+  
+if (voucher && voucher.discount_type === 'fixed') {
+  discountvalue = voucher.discount_value || 0;
+} else if (voucher && voucher.discount_type === 'percent') {
+  discountvalue = subtotal * ((voucher.discount_value || 0) / 100);
+}
 
-  const grandTotal = Math.max(total + shippingFee - discountvalue, 0);
+const grandTotal = Math.max(subtotal - discountvalue, 0);
   
 
 

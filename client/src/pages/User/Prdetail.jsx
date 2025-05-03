@@ -284,10 +284,6 @@ export default function Prdetail() {
               {" "}
               <strong>Mã sản phẩm:</strong> {pr.id}{" "}
             </div>
-            <div className={styles.masp}>
-              {" "}
-              <strong>Lượt xem:</strong> {pr.view}{" "}
-            </div>
             {pr.price_sale > 0 ? (
               <div>
                 <div className={styles.gia}>

@@ -23,14 +23,12 @@ export default function OrderUser() {
   const [showModal, setShowModal] = useState(false);
   const [orderInfo, setOrderInfo] = useState(null);
   const [orderItems, setOrderItems] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // Paginate
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
   const [totalOrder, setTotalorder] = useState(0);
-
 
   const Canccel_order = async (orderId, userId) => {
     try {
@@ -104,10 +102,6 @@ export default function OrderUser() {
       const data = await res.json();
       setOrderInfo(data.order);
       setOrderItems(data.items);
-
-      const total = data.items.reduce((sum, item) => sum + item.total, 0);
-      setTotalPrice(total);
-
       setShowModal(true);
     } catch (error) {
       console.error("Lỗi khi tải thông tin đơn hàng:", error);
@@ -122,6 +116,24 @@ export default function OrderUser() {
     window.print();
   };
 
+  const shippingFee = 50000;
+
+  const total = orderItems.reduce((acc, item) => {
+    const price = item.total;
+    return acc + price;
+  }, 0);
+
+  let discountvalue = 0;
+  const subtotal = total + shippingFee;
+
+  if (orderInfo?.discount_type === "fixed") {
+    discountvalue = orderInfo.discount_value || 0;
+  } else if (orderInfo?.discount_type === "percent") {
+    discountvalue = subtotal * ((orderInfo?.discount_value || 0) / 100);
+  }
+
+  const grandTotal = Math.max(subtotal - discountvalue, 0);
+
   const closeModal = () => {
     setShowModal(false);
   };
@@ -131,20 +143,21 @@ export default function OrderUser() {
   };
 
   // Đánh giá sản phẩm
-  const [showpr, setshowpr] = useState(false)
-  const [pr, setpr] = useState([])
+  const [showpr, setshowpr] = useState(false);
+  const [pr, setpr] = useState([]);
 
-    const FetchPr = async (order_id) =>{
-          try{
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/user/orderdetail_pr/${order_id}`);
-            const result = await res.json();
-            setpr(result)
-            setshowpr(true)
-          }catch (error) {
-            console.error("Lỗi khi tải thông tin đơn hàng:", error);
-          }
-    } 
-
+  const FetchPr = async (order_id) => {
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/user/orderdetail_pr/${order_id}`
+      );
+      const result = await res.json();
+      setpr(result);
+      setshowpr(true);
+    } catch (error) {
+      console.error("Lỗi khi tải thông tin đơn hàng:", error);
+    }
+  };
 
   if (!isChecked) {
     // Nếu chưa kiểm tra đăng nhập xong thì chưa render gì cả
@@ -256,15 +269,16 @@ export default function OrderUser() {
                           </button>
                         )}
 
-                        {or.order_status === 4 && or.transaction_status === 2 &&(
-                          <button
-                            onClick={() => FetchPr(or.id)}
-                            className={styles.btn_danhgia}
-                          >
-                            {" "}
-                            Đánh giá và mua lại 
-                          </button>
-                        )}
+                        {or.order_status === 4 &&
+                          or.transaction_status === 2 && (
+                            <button
+                              onClick={() => FetchPr(or.id)}
+                              className={styles.btn_danhgia}
+                            >
+                              {" "}
+                              Đánh giá và mua lại
+                            </button>
+                          )}
                       </td>
                     </tr>
                   ))}
@@ -305,57 +319,60 @@ export default function OrderUser() {
         </div>
       )}
 
-      {showpr &&(
+      {showpr && (
         <div className={styles.modal} onClick={() => showPr()}>
-        <div
-          className={styles["modal-content"]}
-        >
-          <table className={styles["product-table"]}>
-  <thead className={styles["product-table-header"]}>
-    <tr>
-      <th className={styles["product-table-th"]}>STT</th>
-      <th className={styles["product-table-th"]}>Tên sản phẩm</th>
-      <th className={styles["product-table-th"]}>Giá</th>
-      <th className={styles["product-table-th"]}>Thao tác</th>
-    </tr>
-  </thead>
+          <div className={styles["modal-content"]}>
+            <table className={styles["product-table"]}>
+              <thead className={styles["product-table-header"]}>
+                <tr>
+                  <th className={styles["product-table-th"]}>STT</th>
+                  <th className={styles["product-table-th"]}>Tên sản phẩm</th>
+                  <th className={styles["product-table-th"]}>Giá</th>
+                  <th className={styles["product-table-th"]}>Thao tác</th>
+                </tr>
+              </thead>
 
-  <tbody className={styles["product-table-body"]}>
-    {pr.map((product, index) => (
-      <tr key={index} className={styles["product-table-row"]}>
-        <td className={styles["product-table-td"]}>{index + 1}</td>
-        <td className={styles["product-table-td"]}>{product.name}</td>
-        <td className={styles["product-table-td"]}>{Number(product.price).toLocaleString('vi')} VNĐ</td>
-        <td className={styles["product-table-td"]}>
-          <button
-            className={styles["btn-review"]}
-            onClick={() => navigate(`/chi_tiet_san_pham/${product.id}#reviews`)}
-          >
-            Đánh giá
-          </button>
-          <button
-            className={styles["btn-rebuy"]}
-            onClick={() => {
-              if (product.quantity === 0) {
-                message.error(
-                  'Sản phẩm đã hết hàng. Nếu bạn muốn mua sản phẩm này hãy liên hệ với chúng tôi để được hỗ trợ.'
-                );
-                return;
-              } else {
-                dispatch(themPr(product));
-                navigate('/giohang');
-              }
-            }}
-          >
-            Mua lại
-          </button>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</table>
-        
-        </div>
+              <tbody className={styles["product-table-body"]}>
+                {pr.map((product, index) => (
+                  <tr key={index} className={styles["product-table-row"]}>
+                    <td className={styles["product-table-td"]}>{index + 1}</td>
+                    <td className={styles["product-table-td"]}>
+                      {product.name}
+                    </td>
+                    <td className={styles["product-table-td"]}>
+                      {Number(product.price).toLocaleString("vi")} VNĐ
+                    </td>
+                    <td className={styles["product-table-td"]}>
+                      <button
+                        className={styles["btn-review"]}
+                        onClick={() =>
+                          navigate(`/chi_tiet_san_pham/${product.id}#reviews`)
+                        }
+                      >
+                        Đánh giá
+                      </button>
+                      <button
+                        className={styles["btn-rebuy"]}
+                        onClick={() => {
+                          if (product.quantity === 0) {
+                            message.error(
+                              "Sản phẩm đã hết hàng. Nếu bạn muốn mua sản phẩm này hãy liên hệ với chúng tôi để được hỗ trợ."
+                            );
+                            return;
+                          } else {
+                            dispatch(themPr(product));
+                            navigate("/giohang");
+                          }
+                        }}
+                      >
+                        Mua lại
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
@@ -396,7 +413,7 @@ export default function OrderUser() {
                   <p>
                     <strong>SĐT:</strong> <span>{orderInfo?.phone}</span>
                   </p>
-                  {/* <p><strong>Email:</strong> <span>{orderInfo.email}</span></p> */}
+                  {/* <p><strong>Email:</strong> <span>{orderInfo?.email}</span></p> */}
                   <p>
                     <strong>Ghi chú:</strong>{" "}
                     <span>
@@ -457,29 +474,44 @@ export default function OrderUser() {
                     ))}
                   </tbody>
                   <tfoot>
-                    {/* <tr>
-                          <td colSpan="4" className={styles.textRight}>
-                            Tạm tính:
-                          </td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td colSpan="4" className={styles.textRight}>
-                            Phí vận chuyển:
-                          </td>
-                          <td></td>
-                        </tr>
-                        <tr>
-                          <td colSpan="4" className={styles.textRight}>
-                            Giảm giá:
-                          </td>
-                          <td>-</td>
-                        </tr> */}
+                    <tr>
+                      <td colSpan="4" className={styles.textRight}>
+                        Tạm tính: 
+                      </td>
+                      <td>{Number(total).toLocaleString("vi")} VNĐ</td>
+                    </tr>
+
+                    <tr>
+                      <td colSpan="4" className={styles.textRight}>
+                        Phí vận chuyển:{" "}
+                        
+                      </td>
+                      <td>{Number(shippingFee).toLocaleString("vi")} VNĐ</td>
+                    </tr>
+
+                    {orderInfo?.code && (
+                      <tr>
+                        <td colSpan="4" className={styles.textRight}>
+                          Mã giảm giá: 
+                        </td>
+                        <td>{orderInfo?.code}</td>
+                      </tr>
+                    )}
+
+                    {orderInfo?.discount_value && (
+                      <tr>
+                        <td colSpan="4" className={styles.textRight}>
+                          Giảm : 
+                        </td>
+                        <td>{orderInfo?.discount_value === 'fixed' ? orderInfo?.discount_value : orderInfo?.discount_value + "%"}</td>
+                      </tr>
+                    )}
+
                     <tr className={styles.totalRow}>
                       <td colSpan="4" className={styles.textRight}>
                         Tổng cộng:
                       </td>
-                      <td>{Number(totalPrice).toLocaleString("vi")} VNĐ</td>
+                      <td>{Number(grandTotal).toLocaleString("vi")} VNĐ</td>
                     </tr>
                   </tfoot>
                 </table>

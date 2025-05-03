@@ -15,11 +15,12 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+
 // Hàm gửi email xác nhận
-async function sendOrderConfirmationEmail(email, orderId, orderDetails) {
+async function sendOrderConfirmationEmail(email, orderId, orderDetails, Codevoucher, discount_type, discount_value) {
   try {
     // Tính tổng số tiền từ danh sách sản phẩm
-    const totalAmount = orderDetails.reduce((sum, item) => sum + item.total, 0);
+    const total = orderDetails.reduce((sum, item) => sum + item.total, 0);
 
     let productsList = '';
     orderDetails.forEach(item => {
@@ -33,12 +34,27 @@ async function sendOrderConfirmationEmail(email, orderId, orderDetails) {
       `;
     });
 
+    const shippingFee = 50000;
+
+    let discountvalue = 0;
+    const subtotal = total + shippingFee;
+  
+    if (discount_type === "fixed") {
+      discountvalue = discount_value || 0;
+    } else if (discount_type === "percent") {
+      discountvalue = subtotal * ((discount_value || 0) / 100);
+    }
+  
+    const grandTotal = Math.max(subtotal - discountvalue, 0);
+
     const mailOptions = {
-      from: '"Cửa hàng của bạn" <your_email@gmail.com>',
+      from: '"GREEN TREE SHOP" <your_email@gmail.com>',
       to: email,
       subject: `Xác nhận đơn hàng #${orderId}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+
+          <h1 style="color: #4CAF50;"> Cửa hàng GREEN TREE SHOP</h1>
           <h2 style="color: #4CAF50;">Cảm ơn bạn đã đặt hàng!</h2>
           <p>Đơn hàng của bạn đã được xác nhận thành công.</p>
           
@@ -57,15 +73,46 @@ async function sendOrderConfirmationEmail(email, orderId, orderDetails) {
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="3" style="text-align: right; padding: 8px; font-weight: bold;">Tổng cộng:</td>
-                <td style="padding: 8px; font-weight: bold;">${totalAmount.toLocaleString()} VND</td>
+                <td colspan="3" style="text-align: right; padding: 8px; font-weight: bold;">Tạm tính:</td>
+                <td style="padding: 8px; font-weight: bold;">${total.toLocaleString()} VND</td>
               </tr>
+
+              <tr>
+                <td colspan="3" style="text-align: right; padding: 8px; font-weight: bold;">Phí vận chuyển:</td>
+                <td style="padding: 8px; font-weight: bold;">${shippingFee.toLocaleString()} VND</td>
+              </tr>
+
+              ${ Codevoucher ? `
+                <tr>
+                  <td colspan="3" style="text-align: right; padding: 8px; font-weight: bold;">Mã giảm giá:</td>
+                  <td style="padding: 8px; font-weight: bold;">${Codevoucher}</td>
+                </tr>` : '' }
+
+                ${ discountvalue > 0 ? `
+                  <tr>
+                    <td colspan="3" style="text-align: right; padding: 8px; font-weight: bold;">Giảm:</td>
+                    <td style="padding: 8px; font-weight: bold;">-${discountvalue.toLocaleString()} VND</td>
+                  </tr>` : '' }
+                  
+
+              <tr>
+                <td colspan="3" style="text-align: right; padding: 8px; font-weight: bold;">Tổng cộng:</td>
+                <td style="padding: 8px; font-weight: bold;">${grandTotal.toLocaleString()} VND</td>
+              </tr>
+
             </tfoot>
           </table>
           
           <p>Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất để xác nhận giao hàng.</p>
           <p>Trân trọng,</p>
-          <p><strong>Đội ngũ cửa hàng của bạn</strong></p>
+          <p><strong>Đội ngũ cửa hàng GREEN TREE SHOP chân thành cảm ơn bận rất nhiều</strong></p>
+          <p>
+                    Mọi thắc mắc xin liên hệ hotline:
+                    <strong>0364185395</strong>
+                  </p>
+                  <p>
+                    Email: <strong>greentreshop@gmail.com</strong>
+                  </p>
         </div>
       `
     };
@@ -180,7 +227,7 @@ router.post("/checkout", async (req, res) => {
 
       await connection.commit();
 
-       // Thêm gửi email xác nhận
+  // Thêm gửi email xác nhận
   const [orderInfo] = await connection.query(
     `SELECT u.email, o.id
      FROM \`order\` o 
@@ -197,11 +244,24 @@ router.post("/checkout", async (req, res) => {
        WHERE od.order_id = ?`,
       [id]
     );
+
+    const [ordervoucher] = await connection.query(
+      `SELECT v.code, v.discount_value, v.discount_type, o.id, o.voucher_id
+       FROM \`order\` o 
+       LEFT JOIN voucher v ON o.voucher_id = v.id 
+       WHERE o.id = ?`,
+      [id]
+    );
+
+
     
     await sendOrderConfirmationEmail(
       orderInfo[0].email,
       id,
-      orderItems
+      orderItems,
+      ordervoucher[0]?.code || null,
+      ordervoucher[0]?.discount_type || null,
+      ordervoucher[0]?.discount_value || 0
     );
   }
 
@@ -431,11 +491,23 @@ router.get("/check_payment", async (req, res) => {
            WHERE od.order_id = ?`,
           [orderId]
         );
+
+        const [ordervoucher] = await connection.query(
+          `SELECT v.code, v.discount_value, v.discount_type, o.id, o.voucher_id
+          FROM \`order\` o 
+          LEFT JOIN voucher v ON o.voucher_id = v.id 
+          WHERE o.id = ?`,
+          [orderId]
+        );
+
         
         await sendOrderConfirmationEmail(
           orderInfoemail[0].email,
           orderId,
-          orderItems
+          orderItems,
+          ordervoucher[0]?.code || null,
+          ordervoucher[0]?.discount_type || null,
+          ordervoucher[0]?.discount_value || 0
         );
       }
 
