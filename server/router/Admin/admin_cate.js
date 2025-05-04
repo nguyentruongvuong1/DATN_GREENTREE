@@ -21,6 +21,8 @@ router.get('/cate', adminAuth, async function (req, res, next) {
     }
 });
 
+
+
 // API xóa cate
 router.delete('/cate/:id', adminAuth, async (req, res) => {
     const { id } = req.params;
@@ -202,6 +204,20 @@ router.get('/characteristic', adminAuth, async function (req, res, next) {
     }
 });
 
+router.get('/allcharacteristic', adminAuth, async (req, res) => {
+    try {
+        const [results] = await pool.execute(`
+            SELECT characteristic.id, cate.name AS cate_name, characteristic.name, characteristic.create_at 
+            FROM characteristic 
+            JOIN cate ON characteristic.cate_id = cate.id
+        `);
+        res.json(results);
+    } catch (err) {
+        console.error('Lỗi truy vấn dữ liệu:', err);
+        res.status(500).json({ error: 'Không thể lấy dữ liệu' });
+    }
+});
+
 // Lấy danh sách characteristic theo cate_id
 router.get('/characteristic/:cate_id', adminAuth, async (req, res) => {
     const { cate_id } = req.params;
@@ -327,6 +343,26 @@ router.get('/typecate', adminAuth, async function (req, res) {
         const [[{ total }]] = await pool.query(`SELECT COUNT(*) AS total FROM type_cate`);
 
         res.json({ typecates: results, total });
+    } catch (err) {
+        console.error('Lỗi truy vấn dữ liệu:', err);
+        res.status(500).json({ error: 'Không thể lấy dữ liệu' });
+    }
+});
+
+router.get('/alltypecate', adminAuth, async (req, res) => {
+    try {
+        const [results] = await pool.execute(`
+            SELECT 
+                type_cate.id, 
+                characteristic.name AS characteristic_name, 
+                type_cate.name, 
+                type_cate.image, 
+                type_cate.create_at, 
+                type_cate.content
+            FROM type_cate
+            JOIN characteristic ON type_cate.characteristic_id = characteristic.id
+        `);
+        res.json(results);
     } catch (err) {
         console.error('Lỗi truy vấn dữ liệu:', err);
         res.status(500).json({ error: 'Không thể lấy dữ liệu' });

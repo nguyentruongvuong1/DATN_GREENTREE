@@ -21,6 +21,13 @@ const AdminDashboard = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const token = useSelector((state) => state.auth.token)
 
+  const [productStats, setProductStats] = useState({ lowStock: 0 });
+  const [lowStockProducts, setLowStockProducts] = useState([]);
+  const [showLowStockModal, setShowLowStockModal] = useState(false);
+  const [showBestSellingModal, setShowBestSellingModal] = useState(false);
+  const [slowMovingProducts, setSlowMovingProducts] = useState([]);
+  const [showSlowMovingModal, setShowSlowMovingModal] = useState(false);
+  const [bestSellingProducts, setBestSellingProducts] = useState([]);
 
 
   useEffect(() => {
@@ -77,13 +84,13 @@ const AdminDashboard = () => {
     const fetchDailyDetails = async () => {
       try {
         const otp = {
-          method : 'GET',
+          method: 'GET',
           headers: {
             "Content-Type": 'application/json',
             'Authorization': 'Bearer ' + token
+          }
         }
-        }
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/dashboard/revenue/day/details`,otp);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/dashboard/revenue/day/details`, otp);
         if (!res.ok) throw new Error("Lỗi khi gọi API doanh thu theo ngày");
         const data = await res.json();
         setDailyOrders(data);
@@ -109,6 +116,35 @@ const AdminDashboard = () => {
     month: '2-digit',
     year: 'numeric'
   });
+
+  useEffect(() => {
+    const fetchProductStats = async () => {
+      try {
+        const otp = {
+          method: 'GET',
+          headers: {
+            "Content-Type": 'application/json',
+            'Authorization': 'Bearer ' + token
+          }
+        }
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/admin/dashboard/product/statistics`, otp);
+        const data = await response.json(); // <-- quan trọng!
+
+        setProductStats({
+          lowStock: data.lowStock.length,
+        });
+        setLowStockProducts(data.lowStock || []);
+        setSlowMovingProducts(data.slowMovingProducts || []);
+        setBestSellingProducts(data.bestSellingProducts || []);
+
+      } catch (error) {
+        console.error('Lỗi khi tải thống kê sản phẩm:', error);
+      }
+    };
+
+    fetchProductStats();
+  }, [token]);
+
 
   return (
     <div className="main">
@@ -195,38 +231,152 @@ const AdminDashboard = () => {
         </div>
       </div>
       <div className="graphBox">
-  {/* Biểu đồ */}
-  <div className="box">
-    <Bieudo />
-  </div>
+        {/* Biểu đồ */}
+        <div className="box">
+          <Bieudo />
+        </div>
 
-  {/* Card dọc bên phải */}
-  <div className="card-column">
-    <div className="card">
-      <div>
-        <div className="numbers">{Number(revenueDay).toLocaleString('vi')} VND</div>
-        <div className="cardName">Doanh Thu Trong Ngày</div>
-      </div>
-      
-    </div>
+        <div className="card-column">
+          <div className="card">
+            <div
+              className="stat-card clickable"
+              onClick={() => setShowLowStockModal(true)}
+            >
+              <div>
+                <div className="numbers">{productStats.lowStock}</div>
+                <div className="cardName">Sản Phẩm Sắp Hết</div>
+              </div>
+            </div>
+          </div>
 
-    <div className="card">
-      <div>
-        <div className="numbers">{Number(revenueDay).toLocaleString('vi')} VND</div>
-        <div className="cardName">Sản Phẩm Sắp Hết</div>
-      </div>
-      
-    </div>
+          <div className="card">
+            <div
+              className="stat-card clickable"
+              onClick={() => setShowBestSellingModal(true)}
+            >
+              <div>
+                <div className="numbers">{bestSellingProducts.length}</div>
+                <div className="cardName">Sản Phẩm Bán Chạy</div>
+              </div>
+            </div>
+          </div>
 
-    <div className="card">
-      <div>
-        <div className="numbers">{Number(revenueDay).toLocaleString('vi')} VND</div>
-        <div className="cardName">Sản Phẩm Tồn Kho</div>
+          <div className="card">
+            <div
+              className="stat-card clickable"
+              onClick={() => setShowSlowMovingModal(true)}
+            >
+              <div>
+                <div className="numbers">{slowMovingProducts.length}</div>
+                <div className="cardName">Sản Phẩm Tồn Kho</div>
+              </div>
+            </div>
+          </div>
+
+          {showSlowMovingModal && (
+            <div className="admin-modal-overlay" onClick={() => setShowSlowMovingModal(false)}>
+              <div className="admin-modal-content" onClick={(e) => e.stopPropagation()}>
+                <button className="admin-modal-close" onClick={() => setShowSlowMovingModal(false)}>✕</button>
+                <h4>Danh sách sản phẩm tồn kho nhiều nhưng bán chậm</h4>
+                {slowMovingProducts.length === 0 ? (
+                  <p>Không có sản phẩm nào phù hợp.</p>
+                ) : (
+                  <div className="admin-slow-card-list">
+                    {slowMovingProducts.map(product => (
+                      <div className="admin-slow-card" key={product.id}>
+                        <img
+                          src={
+                            product.images && product.images.trim() !== ""
+                              ? product.images.split(",")[0].trim()
+                              : "/default-plant.jpg"
+                          }
+                          alt={product.name}
+                          className="admin-slow-image"
+                        />
+
+                        <div className="admin-slow-info">
+                          <h5 className="admin-slow-name">{product.name}</h5>
+                          <p>Mã: {product.id}</p>
+                          <p>Tồn kho: {product.inventory_quantity}</p>
+                          <p>Đã bán: {product.total_sold}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {showLowStockModal && (
+            <div className="admin-modal-overlay" onClick={() => setShowLowStockModal(false)}>
+              <div className="admin-modal-content" onClick={(e) => e.stopPropagation()}>
+                <button className="admin-modal-close" onClick={() => setShowLowStockModal(false)}>✕</button>
+                <h4>Danh sách sản phẩm sắp hết hàng</h4>
+                {lowStockProducts.length === 0 ? (
+                  <p>Không có sản phẩm nào sắp hết.</p>
+                ) : (
+                  <div className="admin-slow-card-list">
+                    {lowStockProducts.map(product => (
+                      <div className="admin-slow-card" key={product.id}>
+                        <img
+                          src={
+                            product.images && product.images.trim() !== ""
+                              ? product.images.split(",")[0].trim()
+                              : "/default-plant.jpg"
+                          }
+                          alt={product.name}
+                          className="admin-slow-image"
+                        />
+                        <div className="admin-slow-info">
+                          <h5 className="admin-slow-name">{product.name}</h5>
+                          <p>Mã: {product.id}</p>
+                          <p>Tồn kho: {product.inventory_quantity}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {showBestSellingModal && (
+            <div className="admin-modal-overlay" onClick={() => setShowBestSellingModal(false)}>
+              <div className="admin-modal-content" onClick={(e) => e.stopPropagation()}>
+                <button className="admin-modal-close" onClick={() => setShowBestSellingModal(false)}>✕</button>
+                <h4>Danh sách sản phẩm bán chạy nhất</h4>
+                {bestSellingProducts.length === 0 ? (
+                  <p>Không có sản phẩm nào được bán.</p>
+                ) : (
+                  <div className="admin-slow-card-list">
+                    {bestSellingProducts.map(product => (
+                      <div className="admin-slow-card" key={product.id}>
+                        <img
+                          src={
+                            product.images && product.images.trim() !== ""
+                              ? product.images.split(",")[0].trim()
+                              : "/default-plant.jpg"
+                          }
+                          alt={product.name}
+                          className="admin-slow-image"
+                        />
+                        <div className="admin-slow-info">
+                          <h5 className="admin-slow-name">{product.name}</h5>
+                          <p>Mã: {product.id}</p>
+                          <p>Đã bán: {product.total_sold}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+
+        </div>
       </div>
-      
-    </div>
-  </div>
-</div>
 
 
       <div className="details">

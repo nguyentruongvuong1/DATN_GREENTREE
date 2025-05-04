@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ReactPaginate from "react-paginate";
 import "../../styles/Admin/styleadmin.css";
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import moment from 'moment'
 
 const AdminBanner = () => {
@@ -21,7 +21,7 @@ const AdminBanner = () => {
 
   useEffect(() => {
     fetchBanners();
-  }, [currentPage]);
+  }, [currentPage, itemsPerPage, token]);
 
   const fetchBanners = async () => {
     try {
@@ -29,17 +29,37 @@ const AdminBanner = () => {
         headers: {
           "Content-Type": 'multipart/form-data',
           'Authorization': 'Bearer ' + token
-      }}
+        }
+      }
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/admin/banners?page=${currentPage}&limit=${itemsPerPage}`,       otp
+        `${import.meta.env.VITE_API_URL}/admin/banners?page=${currentPage}&limit=${itemsPerPage}`, otp
       );
       setBanners(response.data.banners);
       setTotalBanners(response.data.total);
-      setallBn(response.data.banners); // gán allBn với dữ liệu banner
     } catch (error) {
       console.error("Lỗi khi tải banner:", error);
     }
   };
+
+  useEffect(() => {
+    const fetchallBanners = async () => {
+      try {
+        const otp = {
+          headers: {
+            "Content-Type": 'multipart/form-data',
+            'Authorization': 'Bearer ' + token
+          }
+        }
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/admin/banners`, otp
+        );
+        setallBn(response.data.banners); // gán allBn với dữ liệu banner
+      } catch (error) {
+        console.error("Lỗi khi tải banner:", error);
+      }
+    };
+    fetchallBanners();
+  }, [token]);
 
   useEffect(() => {
     if (search === '') {
@@ -73,7 +93,8 @@ const AdminBanner = () => {
         headers: {
           "Content-Type": 'multipart/form-data',
           'Authorization': 'Bearer ' + token
-      }}
+        }
+      }
 
       const form = new FormData();
       form.append("status", formData.status);
@@ -247,11 +268,11 @@ const AdminBanner = () => {
 
                   {formData.image && (
                     <img
-                    src={
-                      formData.image instanceof File
-                        ? URL.createObjectURL(formData.image)
-                        : formData.image 
-                    }
+                      src={
+                        formData.image instanceof File
+                          ? URL.createObjectURL(formData.image)
+                          : formData.image
+                      }
                       alt="Preview"
                       style={{ width: "150px", marginTop: "10px" }}
                     />

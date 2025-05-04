@@ -58,6 +58,20 @@ router.get("/products", async (req, res) => {
   }
 });
 
+router.get('/allproducts', async (req, res) => {
+  try {
+    const [products] = await pool.query(`
+      SELECT p.*, c.name AS category_name
+      FROM product p
+      LEFT JOIN cate c ON p.cate_id = c.id
+    `);
+    res.json(products);
+  } catch (err) {
+    console.error("Lỗi lấy tất cả sản phẩm:", err);
+    res.status(500).json({ message: "Lỗi lấy tất cả sản phẩm", error: err.message });
+  }
+});
+
 //Lấy đặc điểm và loại cây
 router.get('/product_type_cate', async (req, res) => {
 

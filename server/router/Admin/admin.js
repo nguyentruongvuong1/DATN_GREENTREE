@@ -6,7 +6,7 @@ const path = require('path');
 const fs = require('fs');
 require('dotenv').config(); // Đảm bảo dotenv đã được cài đặt và cấu hình
 const baseUrl = process.env.BASE_URL; // Lấy từ .env
-const {adminAuth} = require('../auth')
+const { adminAuth } = require('../auth')
 
 
 
@@ -50,7 +50,7 @@ router.get("/vouchers", adminAuth, async (req, res) => {
   }
 });
 
-router.get("/allvouchers",  async (req, res) => {
+router.get("/allvouchers", adminAuth, async (req, res) => {
   try {
     const [vouchers] = await pool.query(`SELECT * FROM voucher`);
     res.json(vouchers);
@@ -61,7 +61,7 @@ router.get("/allvouchers",  async (req, res) => {
 })
 
 // API cập nhật voucher
-router.put('/voucher/:id',adminAuth,async (req, res) => {
+router.put('/voucher/:id', adminAuth, async (req, res) => {
   const { id } = req.params;
   const {
     code,
@@ -156,7 +156,7 @@ router.post('/voucher', adminAuth, async (req, res) => {
 });
 
 // API REVIEWS------------------------------------------------------------------------------------------------------------------------------------------
-router.get('/reviews',adminAuth, async function (req, res) {
+router.get('/reviews', adminAuth, async function (req, res) {
   try {
     const { page = 1, limit = 8 } = req.query;
     const offset = (page - 1) * limit;
@@ -190,9 +190,36 @@ router.get('/reviews',adminAuth, async function (req, res) {
   }
 });
 
+router.get('/allreviews/', adminAuth, async function (req, res) {
+  try {
+    const [results] = await pool.query(`
+            SELECT 
+            reviews.order_detail_id AS id,
+            user.username AS user_name,
+            product.name AS product_name,
+            order_detail.pr_id,
+            reviews.content,
+            reviews.star,
+            reviews.create_date,
+            reviews.status
+        FROM reviews
+        JOIN order_detail ON reviews.order_detail_id = order_detail.id
+        JOIN product ON order_detail.pr_id = product.id
+        JOIN \`order\` ON order_detail.order_id = \`order\`.id
+        JOIN user ON \`order\`.user_id = user.id 
+        ORDER BY reviews.create_date DESC;
+        `);
+
+    res.json({ comments: results });
+  } catch (err) {
+    console.error('Lỗi truy vấn dữ liệu:', err);
+    res.status(500).json({ error: 'Không thể lấy dữ liệu' });
+  }
+})
+
 // API BANNER------------------------------------------------------------------------------------------------------------------------------------------
 // GET banners with pagination
-router.get("/banners",adminAuth, async (req, res) => {
+router.get("/banners", adminAuth, async (req, res) => {
   const { page = 1, limit = 8 } = req.query;
   const offset = (parseInt(page) - 1) * parseInt(limit);
 
@@ -209,6 +236,15 @@ router.get("/banners",adminAuth, async (req, res) => {
   } catch (err) {
     console.error("Lỗi lấy danh sách banner:", err);
     res.status(500).json({ error: "Không thể lấy danh sách banner" });
+  }
+});
+router.get("/allbanners", adminAuth, async (req, res) => {
+  try {
+    const [banners] = await pool.query(`SELECT * FROM banner`);
+    res.json(banners);
+  } catch (err) {
+    console.error("Lỗi lấy tất cả banner:", err);
+    res.status(500).json({ error: "Không thể lấy tất cả banner" });
   }
 });
 
@@ -291,7 +327,7 @@ router.delete('/banner/:id', async (req, res) => {
     }
 
     const imagePath = rows[0].image;
-    
+
     // Xóa banner trong database
     const sql = "DELETE FROM banner WHERE id = ?";
     const [result] = await pool.query(sql, [id]);
@@ -319,7 +355,7 @@ router.delete('/banner/:id', async (req, res) => {
 
 
 // User API
-router.get('/users',adminAuth, async (req, res) => {
+router.get('/users', adminAuth, async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 8;
   const offset = (page - 1) * limit;
@@ -334,8 +370,17 @@ router.get('/users',adminAuth, async (req, res) => {
   }
 });
 
+router.get('/allusers', adminAuth, async (req, res) => {
+  try {
+    const [users] = await pool.execute(`SELECT * FROM user`);
+    res.json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Lỗi khi lấy danh sách người dùng' });
+  }
+});
 // Cập nhật status người dùng
-router.put('/user/:id',adminAuth, async (req, res) => {
+router.put('/user/:id', adminAuth, async (req, res) => {
   const { id } = req.params;
   const { status } = req.body;
 
@@ -388,14 +433,14 @@ router.get('/order', adminAuth, async function (req, res) {
   }
 });
 
-router.get(`/allorder`, adminAuth, async (req, res) =>{
-  try{
+router.get(`/allorder`, adminAuth, async (req, res) => {
+  try {
     const [result] = await pool.query(`SELECT * FROM \`order\` `)
-    res.json(result) 
-  }catch(error){
+    res.json(result)
+  } catch (error) {
     res.json(`Loi lay order`, error)
   }
-} )
+})
 
 // Lấy chi tiết đơn hàng
 router.get("/order_detail/:order_id", async (req, res) => {
@@ -441,7 +486,7 @@ router.get("/order_detail/:order_id", async (req, res) => {
 });
 
 // Cập nhật trạng thái đơn hàng
-router.put('/order_status/:id',adminAuth, async (req, res) => {
+router.put('/order_status/:id', adminAuth, async (req, res) => {
   const conn = await pool.getConnection();
   try {
     await conn.beginTransaction();
@@ -490,7 +535,7 @@ router.put('/order_status/:id',adminAuth, async (req, res) => {
 });
 
 // Cập nhật trạng thái thanh toán
-router.put('/transaction_status',adminAuth, async (req, res) => {
+router.put('/transaction_status', adminAuth, async (req, res) => {
   const { id, new_transaction_status } = req.body;
   try {
     // Lấy trạng thái
@@ -682,7 +727,7 @@ router.get('/dashboard/revenue/years', async (req, res) => {
 
 //API bảng doanh thu theo ngày
 // API doanh thu theo ngày kèm thông tin người dùng và trạng thái
-router.get('/dashboard/revenue/day/details',adminAuth, async (req, res) => {
+router.get('/dashboard/revenue/day/details', adminAuth, async (req, res) => {
   try {
     const [orders] = await pool.query(`
       SELECT 
@@ -726,66 +771,132 @@ router.get('/dashboard/revenue/day/details',adminAuth, async (req, res) => {
 
 
 // API Level
-router.get('/level', adminAuth, async (req, res) =>{
-  try{
+router.get('/level', adminAuth, async (req, res) => {
+  try {
     const [result] = await pool.query(`SELECT * FROM level ORDER BY total_buy DESC`);
     res.json(result)
-  }catch(error){
+  } catch (error) {
     console.error("Lỗi laays level:", error);
   }
 })
 
-router.post('/level',adminAuth, async (req, res) =>{
-  const {rank, total_buy, discount_value} = req.body;
+router.post('/level', adminAuth, async (req, res) => {
+  const { rank, total_buy, discount_value } = req.body;
 
-  try{
-    const [result] = await pool.query(`INSERT INTO level (rank, total_buy, discount_value) VALUES (?, ?, ?)`,[rank, total_buy, discount_value]);
+  try {
+    const [result] = await pool.query(`INSERT INTO level (rank, total_buy, discount_value) VALUES (?, ?, ?)`, [rank, total_buy, discount_value]);
     if (result.affectedRows > 0) {
       res.json({ message: 'Thêm bậc thành công' });
     } else {
       res.status(400).json({ message: 'Không thể thêm bậc' });
     }
 
-  }catch(error){
+  } catch (error) {
     res.status(500).json({ message: 'Lỗi thêm bậc', error: error.message });
   }
 
 })
 
-router.get('/level/:id', adminAuth, async (req, res) =>{
-  const {id} = req.params;
-  try{
+router.get('/level/:id', adminAuth, async (req, res) => {
+  const { id } = req.params;
+  try {
     const [result] = await pool.query(`SELECT * FROM level WHERE id = ?`, [id]);
     res.json(result[0])
-  }catch(error){
+  } catch (error) {
     console.error("Lỗi laays level:", error);
   }
 })
 
-router.put('/level/:id', adminAuth, async (req,res) =>{
-  const {id} = req.params;
-  const {rank, total_buy, discount_value} = req.body;
-   try{
-      await pool.query(`UPDATE level SET rank = ?, total_buy = ?, discount_value = ? WHERE id = ? `, [rank, total_buy, discount_value, id]);
-      res.json('Cập nhật bậc thành công')
-   }catch(error){
+router.put('/level/:id', adminAuth, async (req, res) => {
+  const { id } = req.params;
+  const { rank, total_buy, discount_value } = req.body;
+  try {
+    await pool.query(`UPDATE level SET rank = ?, total_buy = ?, discount_value = ? WHERE id = ? `, [rank, total_buy, discount_value, id]);
+    res.json('Cập nhật bậc thành công')
+  } catch (error) {
     res.status(500).json({ message: 'Lỗi sửa bậc', error: error.message });
   }
 })
 
-router.delete('/level/:id',adminAuth, async(req,res) =>{
-  const {id} = req.params;
-  try{
-    const [result] = await pool.query(`DELETE FROM level WHERE id = ? `,[id])
-    if(result.affectedRows > 0){
+router.delete('/level/:id', adminAuth, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [result] = await pool.query(`DELETE FROM level WHERE id = ? `, [id])
+    if (result.affectedRows > 0) {
       res.json('Xóa bậc thành công')
-    }else{
+    } else {
       res.json('Xóa bậc thất bại')
     }
-  }catch(error){
+  } catch (error) {
     res.json('Xóa bậc thất bại', error)
   }
-} )
+})
+
+router.get('/dashboard/product/statistics', adminAuth, async (req, res) => {
+  try {
+    // Sản phẩm sắp hết hàng (tồn kho dưới 10)
+    const [lowStock] = await pool.query(`
+      SELECT 
+        id, 
+        name, 
+        images, 
+        inventory_quantity 
+      FROM 
+        product 
+      WHERE 
+        inventory_quantity < 10
+    `);
+
+
+    // Sản phẩm tồn kho nhiều nhưng bán chậm
+    const [slowMovingProducts] = await pool.query(`
+      SELECT 
+          p.id, 
+          p.name, 
+          p.images,
+          p.inventory_quantity, 
+          IFNULL(SUM(od.quantity), 0) AS total_sold
+      FROM 
+          product p
+      LEFT JOIN 
+          order_detail od ON p.id = od.pr_id
+      GROUP BY 
+          p.id, p.name, p.inventory_quantity, p.images
+      HAVING 
+          p.inventory_quantity > 50 AND total_sold < 10
+    `);
+    // Sản phẩm bán chạy: tổng đã bán nhiều nhất
+    const [bestSellingProducts] = await pool.query(`
+      SELECT 
+        p.id, 
+        p.name, 
+        p.images,
+        IFNULL(SUM(od.quantity), 0) AS total_sold
+      FROM 
+        product p
+      LEFT JOIN 
+        order_detail od ON p.id = od.pr_id
+      GROUP BY 
+        p.id, p.name, p.images
+      ORDER BY 
+        total_sold DESC
+      
+    `);
+
+
+    res.json({
+      lowStock,
+      slowMovingProducts,
+      bestSellingProducts
+    });
+
+  } catch (error) {
+    console.error('Lỗi khi lấy thống kê sản phẩm:', error);
+    res.status(500).json({ message: 'Lỗi server', error: error.message });
+  }
+});
+
+
 
 
 module.exports = router;

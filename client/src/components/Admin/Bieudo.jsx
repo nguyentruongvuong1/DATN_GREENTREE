@@ -152,7 +152,7 @@ const Bieudo = () => {
                 datasets: [{
                   label: "Doanh thu (VND)",
                   data: dataChart,
-                  backgroundColor: "rgba(75, 192, 192, 0.6)",
+                  backgroundColor: "rgba(58, 163, 84, 0.6)",
                   borderRadius: 5,
                 }]
               }}
