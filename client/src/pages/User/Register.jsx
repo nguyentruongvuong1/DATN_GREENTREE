@@ -1,6 +1,8 @@
 import React, { useState, useRef } from "react";
 import styles from "../../styles/User/register.module.css";
 import { Link, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEnvelope, faPhone, faLock, faKey, faUser } from "@fortawesome/free-solid-svg-icons";
 import "@ant-design/v5-patch-for-react-19";
 import { message } from "antd";
 export default function Register() {
@@ -122,7 +124,7 @@ export default function Register() {
 
           <form onSubmit={(e) => e.preventDefault()}>
             <div className={styles["input-group"]}>
-              <span className={styles.icon}>👤</span>
+              <span className={styles.icon}><FontAwesomeIcon icon={faUser} /></span>
               <input
                 type="text"
                 placeholder="Họ và tên"
@@ -132,7 +134,7 @@ export default function Register() {
             </div>
 
             <div className={styles["input-group"]}>
-              <span className={styles.icon}>📧</span>
+              <span className={styles.icon}><FontAwesomeIcon icon={faEnvelope} /></span>
               <input
                 type="email"
                 placeholder="Email"
@@ -142,7 +144,7 @@ export default function Register() {
             </div>
 
             <div className={styles["input-group"]}>
-              <span className={styles.icon}>📞</span>
+              <span className={styles.icon}><FontAwesomeIcon icon={faPhone} /></span>
               <input
                 type="tel"
                 placeholder="Số điện thoại"
@@ -152,7 +154,7 @@ export default function Register() {
             </div>
 
             <div className={styles["input-group"]}>
-              <span className={styles.icon}>🔒</span>
+              <span className={styles.icon}><FontAwesomeIcon icon={faLock} /></span>
               <input
                 type="password"
                 placeholder="Mật khẩu (ít nhất 6 ký tự và tối đa 20 ký tự)"
@@ -163,7 +165,7 @@ export default function Register() {
             </div>
 
             <div className={styles["input-group"]}>
-              <span className={styles.icon}>🔑</span>
+              <span className={styles.icon}><FontAwesomeIcon icon={faKey} /></span>
               <input
                 type="password"
                 placeholder="Nhập lại mật khẩu"

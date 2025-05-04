@@ -6,6 +6,8 @@ import {DaLogin} from '../../AuthSlice'
 import { useState} from 'react';
 import '@ant-design/v5-patch-for-react-19';
 import { message } from 'antd';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLock,  faEnvelope } from "@fortawesome/free-solid-svg-icons";
 export default function FormLogin(){
 
     const dispatch = useDispatch()
@@ -68,11 +70,11 @@ export default function FormLogin(){
             <p>{Err}</p>
             <form>
                 <div className={styles["input-group"]}>
-                    <span className={styles.icon}>📧</span>
+                    <span className={styles.icon}><FontAwesomeIcon icon={faEnvelope} /></span>
                     <input type="email" placeholder="Email" ref={em} required />
                 </div>
                 <div className={styles["input-group"]}>
-                    <span className={styles.icon}>🔒</span>
+                    <span className={styles.icon}><FontAwesomeIcon icon={faLock} /></span>
                     <input type="password" placeholder="Mật khẩu" ref={pw} required />
                 </div>
                 <button type="button" onClick={() => Login()} className={styles.btn}>Đăng Nhập</button>

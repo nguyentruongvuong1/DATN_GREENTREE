@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "../../styles/User/prCate.module.css";
-import { faHeart, faEye, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faHeart, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { themPr } from "../../CartSlice";
@@ -136,12 +136,7 @@ export default function PrCate() {
                   />
                 </i>
                 </div>
-                <div className={styles.pr_view}>
-                  <i>
-                    <FontAwesomeIcon icon={faEye} />
-                  </i>
-                  <p>{pr.view}</p>
-                </div>
+               
                 <div className={styles.product_btn}>
                   <div className={styles.pr_xemchitiet}>
                     <button onClick={() => View(pr.id)}>
