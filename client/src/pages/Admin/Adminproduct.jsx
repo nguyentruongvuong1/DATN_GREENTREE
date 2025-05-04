@@ -32,13 +32,30 @@ const AdminProduct = () => {
         const response = await products.json();
         setProducts(response.products || response);
         setTotalProducts(response.total || response.length);
-        setallPr(response.products || response); // gán allPr với dữ liệu sản phẩm
       } catch (error) {
         console.error("Lỗi khi tải sản phẩm:", error);
       }
     };
     fetchData();
   }, [currentPage, itemsPerPage, sortPr]);
+
+  useEffect(() => {
+    const fetchadllData = async () => {
+      try {
+        const products = await fetch(
+          `${
+            import.meta.env.VITE_API_URL
+          }/adminpr/products`
+        );
+        const response = await products.json();
+        setallPr(response.products || response); // gán allPr với dữ liệu sản phẩm
+      } catch (error) {
+        console.error("Lỗi khi tải sản phẩm:", error);
+      }
+    };
+    fetchadllData();
+  }, []);
+  
 
   useEffect(() => {
     if (search === "") {

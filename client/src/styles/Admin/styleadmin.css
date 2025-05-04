@@ -247,19 +247,21 @@ body {
     position: relative;
     width: 400px;
     margin: 0 10px;
+    margin-top: 20px;
+    margin-left: 70px;
 }
 
 .search label {
     position: relative;
-    width: 100%;
+    width: 80%;
     display: flex;
     align-items: center;
 }
 
 .search label input {
     width: 100%;
-    height: 40px;
-    border-radius: 40px;
+    height: 37px;
+    border-radius: 10px;
     padding: 5px 20px;
     padding-left: 40px;
     /* Chừa khoảng trống cho icon */
@@ -351,7 +353,7 @@ body {
     justify-content: space-between;
     align-items: flex-start;
     padding: 15px;
-    gap: 40px;
+    gap: 34px;
   }
   
   
@@ -359,7 +361,7 @@ body {
     background-color: #fff;          
     border-radius: 20px;            
     box-shadow: 0 7px 25px rgba(0, 0, 0, 0.1); 
-    padding: 30px;                   
+    padding: 25px;                   
     height: 100%;
     /* width: 83%;                    */
     display: flex;
@@ -376,8 +378,8 @@ body {
 .card-column {
     display: flex;
     flex-direction: column;
-    gap: 37px;
-
+    gap: 10px;
+    margin-top: 16px;
   }
   
   /* Card */
@@ -419,6 +421,111 @@ body {
     color: var(--black2);
   }
 
+  /* admin slow card */
+
+  .admin-slow-wrapper {
+    padding: 1rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .admin-slow-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .admin-slow-empty {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+  }
+  
+  .admin-slow-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .admin-slow-card {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 12px 16px;
+    transition: transform 0.2s ease;
+  }
+  
+  .admin-slow-card:hover {
+    transform: translateY(-2px);
+  }
+  
+  .admin-slow-image {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+    margin-right: 16px;
+  }
+  
+  .admin-slow-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+  }
+  
+  .admin-slow-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 2px;
+  }
+  
+  .admin-slow-info p {
+    font-size: 0.9rem;
+    color: #555;
+    margin: 0;
+    line-height: 1.4;
+  }
+    
+  .admin-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .admin-modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    max-height: 90vh;
+    overflow-y: auto;
+    width: 90%;
+    max-width: 800px;
+    position: relative;
+  }
+  
+  .admin-modal-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+  }
+  
   /* charts */
 
 

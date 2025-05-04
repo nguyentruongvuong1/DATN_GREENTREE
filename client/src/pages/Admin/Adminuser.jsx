@@ -21,11 +21,9 @@ const AdminUser = () => {
     const token = useSelector((state) => state.auth.token)
 
 
-    
-
     useEffect(() => {
         fetchUsers();
-    }, [currentPage, itemsPerPage]);
+    }, [currentPage, itemsPerPage, token]);
 
     const fetchUsers = async () => {
         try {
@@ -40,12 +38,32 @@ const AdminUser = () => {
             );
             setUsers(data.users || []);
             setTotalUsers(data.total || 0);
+
+        } catch (error) {
+            console.error("Lỗi khi lấy dữ liệu:", error);
+        }
+    };
+
+useEffect(() => {
+    const fetchallUsers = async () => {
+        try {
+            const otp = {
+                headers: {
+                    "Content-Type": 'application/json',
+                    'Authorization': 'Bearer ' + token
+                }
+            }
+            const { data } = await axios.get(
+                `${import.meta.env.VITE_API_URL}/admin/users`, otp
+            );
             setallUs(data.users || []); // gán allUs với dữ liệu users
 
         } catch (error) {
             console.error("Lỗi khi lấy dữ liệu:", error);
         }
     };
+    fetchallUsers();
+}, [token]); 
 
     const onchangeSearch = (e) => {
         setsearch(e.target.value)

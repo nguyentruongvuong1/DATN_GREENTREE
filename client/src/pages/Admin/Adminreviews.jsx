@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Menu, Search, Eye  } from "lucide-react";
+import { Menu, Search } from "lucide-react";
 import ReactPaginate from "react-paginate";
 import axios from "axios";
 import "../../styles/Admin/styleadmin.css";
@@ -20,30 +20,51 @@ const AdminReviews = () => {
     const [rvfilter, ganrvfilter] = useState([]) // Trạng thái tìm kiếm
     const token = useSelector((state) => state.auth.token)
 
-    
+
     useEffect(() => {
         fetchReviews();
-        
-    }, [currentPage]);
 
-    const fetchReviews  = async () => {
+    }, [currentPage, token ]);
+
+    const fetchReviews = async () => {
         try {
             const otp = {
                 headers: {
-                  "Content-Type": 'application/json',
-                  'Authorization': 'Bearer ' + token
+                    "Content-Type": 'application/json',
+                    'Authorization': 'Bearer ' + token
                 }
-              }
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin/reviews?page=${currentPage}&limit=${itemsPerPage}`,otp);
+            }
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin/reviews?page=${currentPage}&limit=${itemsPerPage}`, otp);
             setReviews(response.data.comments || response.data);
             setTotalReviews(response.data.total || response.data.length);
-            setallRv(response.data.comments || response.data); // gán allRv với dữ liệu reviews
             console.log(response.data);
 
         } catch (error) {
             console.error("Lỗi khi lấy dữ liệu bình luận:", error);
         }
     };
+
+    useEffect(() => {
+        const fetchallReviews = async () => {
+            try {
+                const otp = {
+                    headers: {
+                        "Content-Type": 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    }
+                }
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/admin/allreviews`, otp);
+                setallRv(response.data.comments || response.data); // gán allRv với dữ liệu reviews
+                console.log(response.data);
+    
+            } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu bình luận:", error);
+            }
+        };
+        fetchallReviews();
+    }, [token])       
+
+
 
     const onchangeSearch = (e) => {
         setsearch(e.target.value)
@@ -59,6 +80,7 @@ const AdminReviews = () => {
 
     }, [search, allRv, reviews])
 
+
     const handlePageChange = (selectedItem) => {
         setCurrentPage(selectedItem.selected + 1);
     };
@@ -71,7 +93,7 @@ const AdminReviews = () => {
                 </div>
                 <div className="search">
                     <label>
-                    <input
+                        <input
                             type="text"
                             value={search}
                             onChange={onchangeSearch} placeholder="Tìm kiếm..."
@@ -105,15 +127,15 @@ const AdminReviews = () => {
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>{review.user_name}</td>
-                                    <td>{review.product_name.length > 20 ? review.product_name.slice(0, 20)+'...' : review.product_name}</td>
+                                    <td>{review.product_name.length > 20 ? review.product_name.slice(0, 20) + '...' : review.product_name}</td>
                                     <td width={'200px'}>{review.content}</td>
                                     <td>{review.star}</td>
                                     <td>{moment(review.create_date).format(' DD-MM-YYYY')}</td>
                                     <td>
-                                    <button className="xemdanhgia" >
-                                        <Link to={`/chi_tiet_san_pham/${review.pr_id}`} >
-                                     Xem đánh giá
-                                        </Link>
+                                        <button className="xemdanhgia" >
+                                            <Link to={`/chi_tiet_san_pham/${review.pr_id}`} >
+                                                Xem đánh giá
+                                            </Link>
                                         </button>                                    </td>
                                 </tr>
                             ))}

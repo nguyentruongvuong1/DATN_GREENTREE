@@ -11,6 +11,7 @@ import ReactPaginate from "react-paginate";
 
 const Admincharacteristic = () => {
     const [characteristic, setcharacteristics] = useState([]);
+    const [allChar, setAllChar] = useState([]);
     const [editcharacteristic, setEditcharacteristic] = useState(null); // Lưu characteristic đang chỉnh sửa
     const [showAddForm, setShowAddForm] = useState(false); // Ẩn/hiện form
     const [categories, setCategories] = useState([]);
@@ -26,13 +27,14 @@ const Admincharacteristic = () => {
     const itemsPerPage = 8;
     const [totalItems, setTotalItems] = useState(0);
     const [currentPage, setCurrentPage] = useState(0);
-
+    const [search, setSearch] = useState(''); // State để lưu giá trị tìm kiếm
+    const [charfilter, ganCharfilter] = useState([])
 
 
     // Lấy danh sách characteristics khi component mount
     useEffect(() => {
         fetchcharacteristics();
-    }, []);
+    }, [currentPage, token]);
 
     // Hàm lấy danh sách characteristic từ API
     const fetchcharacteristics = async () => {
@@ -51,6 +53,37 @@ const Admincharacteristic = () => {
         }
     };
 
+    useEffect(() => {
+        const fetchallcharacteristics = async () => {
+            try {
+                const otp = {
+                    headers: {
+                        "Content-Type": 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    }
+                }
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/adminc/characteristic`, otp);
+                setAllChar(response.data.characteristics); // Lưu tất cả characteristics vào state
+            } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu:", error);
+            }
+        };
+        fetchallcharacteristics(); // Gọi lại hàm khi currentPage thay đổi
+    }, [token]);
+
+    useEffect(() => {
+        if (search === '') {
+            ganCharfilter(characteristic)
+        } else {
+            const FilterChar = allChar.filter(vc => vc.name.toLowerCase().includes(search.toLowerCase()))
+            ganCharfilter(FilterChar)
+        }
+
+    }, [search, allChar, characteristic])
+
+    const onchangeSearch = (e) => {
+        setSearch(e.target.value)
+    }
     // Hàm xóa characteristic
     const handleDelete = async (id) => {
         if (!window.confirm("Bạn có chắc muốn xóa characteristic này không?")) return;
@@ -205,7 +238,12 @@ const Admincharacteristic = () => {
                 </div>
                 <div className="search">
                     <label>
-                        <input type="text" placeholder="Tìm kiếm" />
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={onchangeSearch} placeholder="Tìm kiếm..."
+
+                        />
                         <Search size={24} />
                     </label>
                 </div>
@@ -231,7 +269,7 @@ const Admincharacteristic = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {characteristic.map((characteristic, index) => (
+                            {charfilter.map((characteristic, index) => (
                                 <tr key={index}>
                                     <td>{characteristic.id}</td>
                                     <td>{characteristic.name}</td>

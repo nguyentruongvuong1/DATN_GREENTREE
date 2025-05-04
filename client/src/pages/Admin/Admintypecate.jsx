@@ -30,7 +30,7 @@ const AdminTypecate = () => {
 
     useEffect(() => {
         fetchTypecate();
-    }, [currentPage]); // Không có setState trong cùng useEffect này
+    }, [currentPage,token]); // Không có setState trong cùng useEffect này
 
 
     const [characteristic, setCharacteristics] = useState([]);
@@ -56,7 +56,7 @@ const AdminTypecate = () => {
 
     useEffect(() => {
         fetchCharacteristics();
-    }, []);
+    }, [token]);
 
     const fetchTypecate = async () => {
         try {
@@ -69,11 +69,28 @@ const AdminTypecate = () => {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/adminc/typecate?page=${currentPage + 1}&limit=${itemsPerPage}`, otp);
             setTypecate(response.data.typecates);
             setTotalItems(response.data.total);
-            setallTl(response.data.typecates); // gán allTl với dữ liệu loại cây
         } catch (error) {
             console.error("Lỗi khi lấy dữ liệu:", error);
         }
     };
+
+    useEffect(() => {
+        const fetchallTypecate = async () => {
+            try {
+                const otp = {
+                    headers: {
+                        "Content-Type": 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    }
+                }
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/adminc/typecate`, otp);
+                setallTl(response.data.typecates); // gán allTl với dữ liệu loại cây
+            } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu:", error);
+            }
+        };
+        fetchallTypecate();
+    }, [token]); 
 
     const onchangeSearch = (e) => {
         setsearch(e.target.value)
