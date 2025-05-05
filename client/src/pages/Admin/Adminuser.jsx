@@ -19,6 +19,7 @@ const AdminUser = () => {
     const [showDetail, setShowDetail] = useState(false);
 
     const token = useSelector((state) => state.auth.token)
+    const user = useSelector((state) => state.auth.user)
 
 
     useEffect(() => {
@@ -113,7 +114,6 @@ useEffect(() => {
         <div className="main">
             <div className="topbar">
                 <div className="toggle">
-                    <ion-icon name="menu-outline"></ion-icon>
                 </div>
                 <div className="search">
                     <label>
@@ -122,11 +122,11 @@ useEffect(() => {
                             value={search}
                             onChange={onchangeSearch} placeholder="Tìm kiếm..."
 
-                        />                        <ion-icon name="search-outline"></ion-icon>
+                        />                        
                     </label>
                 </div>
                 <div className="user">
-                    <img src="/images/user.jpg" alt="User" />
+                <img src={user.avatar} alt="User" />
                 </div>
             </div>
             <div className="details">

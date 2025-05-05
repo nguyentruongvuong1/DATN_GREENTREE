@@ -19,6 +19,7 @@ const AdminVoucher = () => {
   const [search, setsearch] = useState(''); // Trạng thái tìm kiếm
   const [vcfilter, ganvcfilter] = useState([]) // Trạng thái tìm kiếm
   const token = useSelector((state) => state.auth.token)
+  const user = useSelector((state) => state.auth.user)
 
 
   useEffect(() => {
@@ -28,7 +29,7 @@ const AdminVoucher = () => {
           headers: {
             "Content-Type": 'application/json',
             'Authorization': 'Bearer ' + token
-        }
+          }
         }
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/admin/vouchers?page=${currentPage}&limit=${itemsPerPage}`, otp
@@ -50,7 +51,7 @@ const AdminVoucher = () => {
           headers: {
             "Content-Type": 'application/json',
             'Authorization': 'Bearer ' + token
-        }
+          }
         }
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/admin/allvouchers`, otp
@@ -83,10 +84,11 @@ const AdminVoucher = () => {
       headers: {
         "Content-Type": 'application/json',
         'Authorization': 'Bearer ' + token
-    }}
-    
+      }
+    }
+
     try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/admin/voucher/${id}`,otp);
+      await axios.delete(`${import.meta.env.VITE_API_URL}/admin/voucher/${id}`, otp);
       // fetchVouchers();
       window.location.reload();
 
@@ -111,9 +113,10 @@ const AdminVoucher = () => {
       start_date: formData.start_date?.trim()
         ? `${formData.start_date} 00:00:00`
         : moment().format("YYYY-MM-DD HH:mm:ss"),
-        end_date: formData.start_date?.trim()
+      end_date: formData.start_date?.trim()
         ? `${formData.end_date} 00:00:00`
-        : moment().format("YYYY-MM-DD HH:mm:ss"),    };
+        : moment().format("YYYY-MM-DD HH:mm:ss"),
+    };
 
 
 
@@ -123,11 +126,11 @@ const AdminVoucher = () => {
         headers: {
           "Content-Type": 'application/json',
           'Authorization': 'Bearer ' + token
+        }
       }
-    }
 
       if (isEdit) {
-        await axios.put(`${import.meta.env.VITE_API_URL}/admin/voucher/${formData.id}`, preparedData , otp);
+        await axios.put(`${import.meta.env.VITE_API_URL}/admin/voucher/${formData.id}`, preparedData, otp);
       } else {
         await axios.post(`${import.meta.env.VITE_API_URL}/admin/voucher`, preparedData, otp);
       }
@@ -165,7 +168,6 @@ const AdminVoucher = () => {
     <div className="main">
       <div className="topbar">
         <div className="toggle">
-          <Menu size={24} />
         </div>
         <div className="search">
           <label>
@@ -175,12 +177,13 @@ const AdminVoucher = () => {
               onChange={onchangeSearch} placeholder="Tìm kiếm..."
 
             />
-            <Search size={24} />
           </label>
         </div>
         <div className="user">
-          <img src="/images/user.jpg" alt="User" />
-        </div>
+          <div className="user">
+            <img src={user.avatar} alt="User" />
+          </div>        
+          </div>
       </div>
       <div className="details">
         <div className="recentOrders">

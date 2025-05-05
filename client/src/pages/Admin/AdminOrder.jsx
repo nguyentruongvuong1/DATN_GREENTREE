@@ -40,6 +40,8 @@ export default function AdminOrder() {
   const [search, setsearch] = useState(""); // Trạng thái tìm kiếm
   const [odrfilter, ganodrfilter] = useState([]); // Trạng thái tìm kiếm
   const token = useSelector((state) => state.auth.token);
+  const user = useSelector((state) => state.auth.user)
+
 
   const statusMap = {
     1: "Chờ xác nhận",
@@ -205,7 +207,6 @@ export default function AdminOrder() {
     <div className="main">
       <div className="topbar">
         <div className="toggle">
-          <Menu size={24} />
         </div>
         <div className="search">
           <label>
@@ -215,11 +216,10 @@ export default function AdminOrder() {
               onChange={onchangeSearch}
               placeholder="Tìm kiếm..."
             />{" "}
-            <Search size={24} />
           </label>
         </div>
         <div className="user">
-          <img src="/images/user.jpg" alt="User" />
+        <img src={user.avatar} alt="User" />
         </div>
       </div>
       <div className="details">

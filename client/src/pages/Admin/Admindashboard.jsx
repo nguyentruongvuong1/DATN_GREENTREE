@@ -29,6 +29,8 @@ const AdminDashboard = () => {
   const [showSlowMovingModal, setShowSlowMovingModal] = useState(false);
   const [bestSellingProducts, setBestSellingProducts] = useState([]);
   const [searchBestSelling, setSearchBestSelling] = useState("");
+  const user = useSelector((state) => state.auth.user)
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -159,9 +161,10 @@ const AdminDashboard = () => {
     <div className="main">
       <div className="topbar">
         <div className="toggle">
-          <Menu size={24} />
+          </div>
+        <div className="user">
+          <img src={user.avatar} alt="User" />
         </div>
-
       </div>
       <div className="cardBox">
         <div className="card">
@@ -229,7 +232,7 @@ const AdminDashboard = () => {
             <ion-icon name="people-outline"></ion-icon>
           </div>
         </div>
-        
+
       </div>
       <div className="graphBox">
         {/* Biểu đồ */}

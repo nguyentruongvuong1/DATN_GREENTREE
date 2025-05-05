@@ -21,6 +21,7 @@ const AdminReviews = () => {
     const [search, setsearch] = useState(''); // Trạng thái tìm kiếm
     const [rvfilter, ganrvfilter] = useState([]) // Trạng thái tìm kiếm
     const token = useSelector((state) => state.auth.token)
+    const user = useSelector((state) => state.auth.user)
 
 
     useEffect(() => {
@@ -116,7 +117,6 @@ const AdminReviews = () => {
         <div className="main">
             <div className="topbar">
                 <div className="toggle">
-                    <Menu size={24} />
                 </div>
                 <div className="search">
                     <label>
@@ -125,11 +125,11 @@ const AdminReviews = () => {
                             value={search}
                             onChange={onchangeSearch} placeholder="Tìm kiếm..."
 
-                        />                        <Search size={24} />
+                        />                        
                     </label>
                 </div>
                 <div className="user">
-                    <img src="/images/user.jpg" alt="User" />
+                <img src={user.avatar} alt="User" />
                 </div>
             </div>
             <div className="details">

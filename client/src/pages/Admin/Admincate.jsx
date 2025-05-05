@@ -25,7 +25,8 @@ const Admincate = () => {
   const [ctfilter, ganctfilter] = useState([]) // Trạng thái tìm kiếm
   const [viewCate, setViewCate] = useState(null);
 
-  
+  const user = useSelector((state) => state.auth.user)
+
 
   useEffect(() => {
     const otp = {
@@ -272,7 +273,6 @@ const Admincate = () => {
 
       <div className="topbar">
         <div className="toggle">
-          <Menu size={24} />
         </div>
         <div className="search">
           <label>
@@ -282,12 +282,11 @@ const Admincate = () => {
               onChange={onchangeSearch} placeholder="Tìm kiếm..."
 
             />
-            <Search size={24} />
           </label>
         </div>
 
         <div className="user">
-          <img src="/images/user.jpg" alt="User" />
+          <img src={user.avatar} alt="User" />
         </div>
       </div>
 

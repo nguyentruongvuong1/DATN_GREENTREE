@@ -6,47 +6,49 @@ import { message } from "antd";
 import Addlevel from "../../components/Admin/AdminLevel/Addlevel";
 import Updatelevel from "../../components/Admin/AdminLevel/Update";
 const AdminLevel = () => {
- const [level, setlevel] = useState([])
- const token = useSelector((state) => state.auth.token)
- const [modeladd, setmodeladd] = useState(false); 
- const [modeledit, setmodeledit] = useState(false); 
- const [UpdateId, setUpdateId] = useState(null); 
+  const [level, setlevel] = useState([])
+  const token = useSelector((state) => state.auth.token)
+  const [modeladd, setmodeladd] = useState(false);
+  const [modeledit, setmodeledit] = useState(false);
+  const [UpdateId, setUpdateId] = useState(null);
+  const user = useSelector((state) => state.auth.user)
 
- useEffect(() =>{
-    const fetchLevel = async () =>{
-        const otp = {
-            headers : {
-                "Content-Type": 'application/json',
-                'Authorization': 'Bearer ' + token
-            }
+
+  useEffect(() => {
+    const fetchLevel = async () => {
+      const otp = {
+        headers: {
+          "Content-Type": 'application/json',
+          'Authorization': 'Bearer ' + token
         }
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/level`, otp);
-        const result = await res.json();
-        setlevel(result)
-    } 
+      }
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/level`, otp);
+      const result = await res.json();
+      setlevel(result)
+    }
     fetchLevel()
- })
+  })
 
-const Deletelevel = async (id) => {
+  const Deletelevel = async (id) => {
     const hoi = confirm('Xác nhận xóa bậc này.');
-    if(hoi) {
-        const otp = {
-            method: 'DELETE',
-            headers : {
-                "Content-Type": 'application/json',
-                'Authorization': 'Bearer ' + token
-            }
+    if (hoi) {
+      const otp = {
+        method: 'DELETE',
+        headers: {
+          "Content-Type": 'application/json',
+          'Authorization': 'Bearer ' + token
         }
+      }
 
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/level/${id}`, otp)
-        if(res.ok){
-            message.success('Xóa bậc thành công')
-        }else{
-            return;
-        }
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/level/${id}`, otp)
+      if (res.ok) {
+        message.success('Xóa bậc thành công')
+      } else {
+        return;
+      }
 
     }
-}
+  }
 
   return (
     <div className="main">
@@ -63,7 +65,7 @@ const Deletelevel = async (id) => {
           </label>
         </div>
         <div className="user">
-          <img src="/images/user.jpg" alt="User" />
+          <img src={user.avatar} alt="User" />
         </div>
       </div>
 
@@ -90,54 +92,54 @@ const Deletelevel = async (id) => {
             </thead>
             <tbody >
 
-             {
-                level.map((l, index) =>(
-                    <tr key={index}>
+              {
+                level.map((l, index) => (
+                  <tr key={index}>
                     <td>{index + 1}</td>
                     <td>{l.rank}</td>
                     <td>{Number(l.total_buy).toLocaleString('vi')}</td>
                     <td>{l.discount_value} %</td>
                     <td>
-                      <button onClick={() =>{
-                       setUpdateId(l.id); // chỉ cần id
-                       setmodeledit(true);
-                    }}>Sửa</button>
-                    <button onClick={() => Deletelevel(l.id)}>Xóa</button>
+                      <button onClick={() => {
+                        setUpdateId(l.id); // chỉ cần id
+                        setmodeledit(true);
+                      }}>Sửa</button>
+                      <button onClick={() => Deletelevel(l.id)}>Xóa</button>
                     </td>
-                    </tr>
+                  </tr>
                 ))
-             }
-             </tbody>
+              }
+            </tbody>
 
-       
+
           </table>
 
         </div>
       </div>
 
       {modeladd && (
-                        <>
-                        <div className="modal-overlay" onClick={() => setmodeladd(false)} ></div>
-                        <div className="modal-container">
-                        <Addlevel />
-                        </div>
-                        </>
-                    )
-                     }
+        <>
+          <div className="modal-overlay" onClick={() => setmodeladd(false)} ></div>
+          <div className="modal-container">
+            <Addlevel />
+          </div>
+        </>
+      )
+      }
 
-                {modeledit && UpdateId && (
-                        <>
-                        <div className="modal-overlay" onClick={() => setmodeledit(false)} ></div>
-                        <div className="modal-container">
-                        <Updatelevel id={UpdateId} />
-                        </div>
-                        </>
-                    )
-                     }
-  
+      {modeledit && UpdateId && (
+        <>
+          <div className="modal-overlay" onClick={() => setmodeledit(false)} ></div>
+          <div className="modal-container">
+            <Updatelevel id={UpdateId} />
+          </div>
+        </>
+      )
+      }
+
     </div>
 
-    
+
   );
 };
 

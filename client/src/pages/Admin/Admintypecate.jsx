@@ -25,6 +25,7 @@ const AdminTypecate = () => {
     const [tlfilter, gantlfilter] = useState([]) // Trạng thái tìm kiếm
     const [allTl, setallTl] = useState([]); // Tất cả loại cây để tìm kiếm
     const token = useSelector((state) => state.auth.token)
+    const user = useSelector((state) => state.auth.user)
 
 
 
@@ -227,7 +228,6 @@ const AdminTypecate = () => {
         <div className="main">
             <div className="topbar">
                 <div className="toggle">
-                    <Menu size={24} />
                 </div>
                 <div className="search">
                     <label>
@@ -236,11 +236,11 @@ const AdminTypecate = () => {
                             value={search}
                             onChange={onchangeSearch} placeholder="Tìm kiếm..."
 
-                        />                        <Search size={24} />
+                        />                        
                     </label>
                 </div>
                 <div className="user">
-                    <img src="/images/user.jpg" alt="User" />
+                <img src={user.avatar} alt="User" />
                 </div>
             </div>
             <div className="details">

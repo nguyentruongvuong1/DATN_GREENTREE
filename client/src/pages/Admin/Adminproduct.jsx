@@ -6,6 +6,8 @@ import "../../styles/Admin/styleadmin.css";
 import moment from "moment";
 import FormThemSanPham from "../../components/Admin/AdminPr/AdminAddPr";
 import UpdatePr from "../../components/Admin/AdminPr/AdminUpdatePr";
+import { useSelector } from "react-redux";
+
 const AdminProduct = () => {
   const [products, setProducts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -20,6 +22,9 @@ const AdminProduct = () => {
   const [modeladd, setmodeladd] = useState(false);
   const [modelupdate, setmodelupdate] = useState(false);
   const [UpdateId, setUpdateId] = useState(null);
+  
+  const user = useSelector((state) => state.auth.user)
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,7 +100,6 @@ const AdminProduct = () => {
     <div className="main">
       <div className="topbar">
         <div className="toggle">
-          <Menu size={24} />
         </div>
         <div className="search">
           <label>
@@ -105,11 +109,10 @@ const AdminProduct = () => {
               onChange={onchangeSearch}
               placeholder="Tìm kiếm..."
             />{" "}
-            <Search size={24} />
           </label>
         </div>
         <div className="user">
-          <img src="/images/user.jpg" alt="User" />
+        <img src={user.avatar} alt="User" />
         </div>
       </div>
       <div className="details">

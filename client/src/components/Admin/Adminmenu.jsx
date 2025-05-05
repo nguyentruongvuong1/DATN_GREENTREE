@@ -2,8 +2,10 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { 
   MdDashboard, MdCategory, MdWork, MdLocalOffer, 
-  MdReceipt, MdPerson, MdStar, MdImage, MdArrowDropDown  
+  MdReceipt, MdPerson, MdStar, MdImage, MdArrowDropDown    
 } from "react-icons/md"; // Import icons từ react-icons
+import { FaCrown } from "react-icons/fa";
+
 import "../../styles/ADmin/styleadmin.css"; // Đảm bảo đường dẫn đúng
 
 const AdminMenu = () => {
@@ -14,7 +16,7 @@ const AdminMenu = () => {
       <ul>
         <li>
           <Link to="/">
-            <img src="./../images/logwhite.png" alt="" className="logo" width={250} height={40} />
+            <img src="./../images/logwhite.jpg" alt="" className="logo" width={265} height={75} />
           </Link>
         </li>
 
@@ -80,7 +82,7 @@ const AdminMenu = () => {
 
         <li className={location.pathname === "/admin/level" ? "hovered" : ""}>
           <Link to="/admin/level">
-            <span className="icon"><MdImage size={24}  /></span>
+            <span className="icon"><FaCrown  size={24}  /></span>
             <span className="title">Bậc</span>
           </Link>
         </li>
