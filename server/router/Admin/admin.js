@@ -614,6 +614,9 @@ router.get('/dashboard/revenue/all', adminAuth, async (req, res) => {
       SELECT SUM(total_amount) AS revenueWeek
       FROM \`order\`
       WHERE YEARWEEK(create_at, 1) = YEARWEEK(CURDATE(), 1)
+      AND MONTH(create_at) = MONTH(CURDATE())
+      AND YEAR(create_at) = YEAR(CURDATE())
+
     `);
 
     const [[{ revenueMonth }]] = await pool.query(`
@@ -769,6 +772,74 @@ router.get('/dashboard/revenue/day/details', adminAuth, async (req, res) => {
   }
 });
 
+// API thống kê sản phẩm bán chạy, sắp hết, tồn kho nhiều 
+router.get('/dashboard/product/statistics', adminAuth, async (req, res) => {
+  try {
+    // Sản phẩm sắp hết hàng (tồn kho dưới 10)
+    const [lowStock] = await pool.query(`
+      SELECT 
+        id, 
+        name, 
+        images, 
+        inventory_quantity 
+      FROM 
+        product 
+      WHERE 
+        inventory_quantity < 10
+    `);
+
+    // Sản phẩm tồn kho nhiều nhưng bán chậm
+    const [slowMovingProducts] = await pool.query(`
+      SELECT 
+        p.id, 
+        p.name, 
+        p.images,
+        p.inventory_quantity, 
+        p.create_date,
+        IFNULL(SUM(od.quantity), 0) AS total_sold
+    FROM 
+        product p
+    LEFT JOIN 
+        order_detail od ON p.id = od.pr_id
+    WHERE 
+        p.inventory_quantity > 50
+        AND p.create_date <= DATE_SUB(CURDATE(), INTERVAL 2 MONTH)
+    GROUP BY 
+        p.id, p.name, p.inventory_quantity, p.images, p.create_date
+    HAVING 
+        total_sold < 10
+    `);
+
+    // Sản phẩm bán chạy: tổng đã bán nhiều nhất
+    const [bestSellingProducts] = await pool.query(`
+      SELECT 
+        p.id, 
+        p.name, 
+        p.images,
+        IFNULL(SUM(od.quantity), 0) AS total_sold
+      FROM 
+        product p
+      LEFT JOIN 
+        order_detail od ON p.id = od.pr_id
+      GROUP BY 
+        p.id, p.name, p.images
+      ORDER BY 
+        total_sold DESC
+      
+    `);
+
+
+    res.json({
+      lowStock,
+      slowMovingProducts,
+      bestSellingProducts
+    });
+
+  } catch (error) {
+    console.error('Lỗi khi lấy thống kê sản phẩm:', error);
+    res.status(500).json({ message: 'Lỗi server', error: error.message });
+  }
+});
 
 // API Level
 router.get('/level', adminAuth, async (req, res) => {
@@ -832,69 +903,7 @@ router.delete('/level/:id', adminAuth, async (req, res) => {
   }
 })
 
-router.get('/dashboard/product/statistics', adminAuth, async (req, res) => {
-  try {
-    // Sản phẩm sắp hết hàng (tồn kho dưới 10)
-    const [lowStock] = await pool.query(`
-      SELECT 
-        id, 
-        name, 
-        images, 
-        inventory_quantity 
-      FROM 
-        product 
-      WHERE 
-        inventory_quantity < 10
-    `);
 
-
-    // Sản phẩm tồn kho nhiều nhưng bán chậm
-    const [slowMovingProducts] = await pool.query(`
-      SELECT 
-          p.id, 
-          p.name, 
-          p.images,
-          p.inventory_quantity, 
-          IFNULL(SUM(od.quantity), 0) AS total_sold
-      FROM 
-          product p
-      LEFT JOIN 
-          order_detail od ON p.id = od.pr_id
-      GROUP BY 
-          p.id, p.name, p.inventory_quantity, p.images
-      HAVING 
-          p.inventory_quantity > 50 AND total_sold < 10
-    `);
-    // Sản phẩm bán chạy: tổng đã bán nhiều nhất
-    const [bestSellingProducts] = await pool.query(`
-      SELECT 
-        p.id, 
-        p.name, 
-        p.images,
-        IFNULL(SUM(od.quantity), 0) AS total_sold
-      FROM 
-        product p
-      LEFT JOIN 
-        order_detail od ON p.id = od.pr_id
-      GROUP BY 
-        p.id, p.name, p.images
-      ORDER BY 
-        total_sold DESC
-      
-    `);
-
-
-    res.json({
-      lowStock,
-      slowMovingProducts,
-      bestSellingProducts
-    });
-
-  } catch (error) {
-    console.error('Lỗi khi lấy thống kê sản phẩm:', error);
-    res.status(500).json({ message: 'Lỗi server', error: error.message });
-  }
-});
 
 
 

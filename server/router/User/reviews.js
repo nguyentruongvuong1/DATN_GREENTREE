@@ -112,7 +112,6 @@ router.get('/product-reviews', async (req, res) => {
               user u ON o.user_id = u.id
           WHERE 
               od.pr_id = ?
-              AND r.status = 1  -- Chỉ lấy review đã được duyệt (nếu có)
           ORDER BY 
               r.create_date DESC
       `, [productId]);

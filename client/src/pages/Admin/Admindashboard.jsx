@@ -28,7 +28,7 @@ const AdminDashboard = () => {
   const [slowMovingProducts, setSlowMovingProducts] = useState([]);
   const [showSlowMovingModal, setShowSlowMovingModal] = useState(false);
   const [bestSellingProducts, setBestSellingProducts] = useState([]);
-
+  const [searchBestSelling, setSearchBestSelling] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,7 +78,7 @@ const AdminDashboard = () => {
     };
 
     fetchData();
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     const fetchDailyDetails = async () => {
@@ -101,7 +101,7 @@ const AdminDashboard = () => {
     };
 
     fetchDailyDetails();
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -144,6 +144,15 @@ const AdminDashboard = () => {
 
     fetchProductStats();
   }, [token]);
+
+  const filteredBestSelling = bestSellingProducts.filter(
+    (product) =>
+      product.total_sold > 0 && (
+        product.name.toLowerCase().includes(searchBestSelling.toLowerCase()) ||
+        product.id.toString().includes(searchBestSelling)
+      )
+
+  );
 
 
   return (
@@ -220,15 +229,7 @@ const AdminDashboard = () => {
             <ion-icon name="people-outline"></ion-icon>
           </div>
         </div>
-        <div className="card">
-          <div>
-            <div className="numbers">42</div>
-            <div className="cardName">Số Lượng Bài Viết</div>
-          </div>
-          <div className="iconBx">
-            <ion-icon name="cash-outline"></ion-icon>
-          </div>
-        </div>
+        
       </div>
       <div className="graphBox">
         {/* Biểu đồ */}
@@ -256,7 +257,7 @@ const AdminDashboard = () => {
             >
               <div>
                 <div className="numbers">{bestSellingProducts.length}</div>
-                <div className="cardName">Sản Phẩm Bán Chạy</div>
+                <div className="cardName">Sản Phẩm Đã Bán</div>
               </div>
             </div>
           </div>
@@ -277,7 +278,7 @@ const AdminDashboard = () => {
             <div className="admin-modal-overlay" onClick={() => setShowSlowMovingModal(false)}>
               <div className="admin-modal-content" onClick={(e) => e.stopPropagation()}>
                 <button className="admin-modal-close" onClick={() => setShowSlowMovingModal(false)}>✕</button>
-                <h4>Danh sách sản phẩm tồn kho nhiều nhưng bán chậm</h4>
+                <h4>Danh sách sản phẩm tồn kho nhiều </h4>
                 {slowMovingProducts.length === 0 ? (
                   <p>Không có sản phẩm nào phù hợp.</p>
                 ) : (
@@ -299,6 +300,7 @@ const AdminDashboard = () => {
                           <p>Mã: {product.id}</p>
                           <p>Tồn kho: {product.inventory_quantity}</p>
                           <p>Đã bán: {product.total_sold}</p>
+                          <p>Ngày tạo: {new Date(product.create_date).toLocaleDateString("vi-VN")}</p>
                         </div>
                       </div>
                     ))}
@@ -345,12 +347,21 @@ const AdminDashboard = () => {
             <div className="admin-modal-overlay" onClick={() => setShowBestSellingModal(false)}>
               <div className="admin-modal-content" onClick={(e) => e.stopPropagation()}>
                 <button className="admin-modal-close" onClick={() => setShowBestSellingModal(false)}>✕</button>
-                <h4>Danh sách sản phẩm bán chạy nhất</h4>
-                {bestSellingProducts.length === 0 ? (
-                  <p>Không có sản phẩm nào được bán.</p>
+                <h4>Danh sách sản phẩm đã bán</h4>
+
+                <input
+                  type="text"
+                  placeholder="Tìm theo tên và mã sản phẩm"
+                  value={searchBestSelling}
+                  onChange={(e) => setSearchBestSelling(e.target.value)}
+                  className="admin-search-input"
+                />
+
+                {filteredBestSelling.length === 0 ? (
+                  <p>Không tìm thấy sản phẩm phù hợp.</p>
                 ) : (
                   <div className="admin-slow-card-list">
-                    {bestSellingProducts.map(product => (
+                    {filteredBestSelling.map(product => (
                       <div className="admin-slow-card" key={product.id}>
                         <img
                           src={
@@ -373,6 +384,7 @@ const AdminDashboard = () => {
               </div>
             </div>
           )}
+
 
 
         </div>

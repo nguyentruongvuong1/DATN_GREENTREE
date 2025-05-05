@@ -446,6 +446,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    margin-top: 12px;
   }
   
   .admin-slow-card {
@@ -525,6 +526,16 @@ body {
     background: none;
     border: none;
   }
+
+  .admin-search-input {
+    padding: 8px;
+    width: 100%;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+  }
+  
   
   /* charts */
 
