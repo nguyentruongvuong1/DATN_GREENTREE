@@ -25,6 +25,13 @@ router.get("/vouchers", adminAuth, async (req, res) => {
   const offset = (pageNumber - 1) * limitNumber;
 
   try {
+    // Tự động cập nhật trạng thái nếu đã hết hạn hoặc hết số lượng
+    await pool.query(`
+      UPDATE voucher
+      SET status = 0
+      WHERE (end_date < CURDATE() OR quantity <= 0) AND status = 1
+    `);
+
     // Query lấy danh sách voucher có phân trang
     const [vouchers] = await pool.query(`
             SELECT * FROM voucher
@@ -72,7 +79,10 @@ router.put('/voucher/:id', adminAuth, async (req, res) => {
     start_date,
     status
   } = req.body;
-
+  if (new Date(start_date) > new Date(end_date)) {
+    return res.status(400).json({ message: "Ngày bắt đầu không được lớn hơn ngày kết thúc!" });
+  }
+  
   try {
     // Kiểm tra mã đã tồn tại 
     const [exists] = await pool.query("SELECT id FROM voucher WHERE code = ? AND id != ?", [code, id]);
@@ -126,7 +136,10 @@ router.delete('/voucher/:id', adminAuth, async (req, res) => {
 // API thêm voucher
 router.post('/voucher', adminAuth, async (req, res) => {
   const { code, discount_type, discount_value, quantity, start_date, end_date, status } = req.body;
-  console.log(code, discount_type, discount_value, quantity, start_date, end_date, status)
+  if (new Date(start_date) > new Date(end_date)) {
+    return res.status(400).json({ message: "Ngày bắt đầu không được lớn hơn ngày kết thúc!" });
+  }
+  
   // Kiểm tra dữ liệu đầu vào
   if (!code || !discount_type || discount_value == null || quantity == null || start_date == null || !end_date || status == null) {
     return res.status(400).json({ message: "Thiếu dữ liệu đầu vào!" });
@@ -608,8 +621,10 @@ router.get('/dashboard/users/new', adminAuth, async (req, res) => {
   try {
     const [[{ newUsers }]] = await pool.query(`
       SELECT COUNT(*) AS newUsers
-      FROM user
-      WHERE DATE(create_date) = CURDATE()
+FROM user
+WHERE MONTH(create_date) = MONTH(CURDATE())
+  AND YEAR(create_date) = YEAR(CURDATE());
+
     `);
     res.json({ newUsers });
   } catch (error) {

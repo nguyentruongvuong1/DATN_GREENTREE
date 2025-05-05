@@ -30,6 +30,8 @@ const Admincharacteristic = () => {
     const [search, setSearch] = useState(''); // State để lưu giá trị tìm kiếm
     const [charfilter, ganCharfilter] = useState([])
 
+    const user = useSelector((state) => state.auth.user)
+
 
     // Lấy danh sách characteristics khi component mount
     useEffect(() => {
@@ -234,7 +236,6 @@ const Admincharacteristic = () => {
         <div className="main">
             <div className="topbar">
                 <div className="toggle">
-                    <Menu size={24} />
                 </div>
                 <div className="search">
                     <label>
@@ -244,11 +245,10 @@ const Admincharacteristic = () => {
                             onChange={onchangeSearch} placeholder="Tìm kiếm..."
 
                         />
-                        <Search size={24} />
                     </label>
                 </div>
                 <div className="user">
-                    <img src="/images/user.jpg" alt="User" />
+                <img src={user.avatar} alt="User" />
                 </div>
             </div>
 
