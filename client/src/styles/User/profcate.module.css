@@ -6,6 +6,7 @@ h1{
 
 .container_full{
     width: 100%;
+    padding-bottom: 20px;
     }
 
 .container{
@@ -428,11 +429,16 @@ input[type="range"] {
 }
 
 .submenu {
-    list-style: none;
-    padding-left: 10px;
-    display: none; /* Ẩn mặc định */
     border-left: 1px solid #ddd;
     margin-top: 10px;
+}
+
+.submenu,
+.submenu ul,
+.submenu li {
+  list-style: none;
+  margin: 0;
+  padding-left: 10px;
 }
 
 
@@ -566,7 +572,7 @@ input[type="range"] {
   .pagination {
     display: flex;
     list-style: none;
-    padding: 20px 0;
+    padding-top: 20px;
     gap: 8px;
     align-items: center;
 

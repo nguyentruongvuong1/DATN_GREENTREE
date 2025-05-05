@@ -18,7 +18,7 @@ import Lienhe from "./pages/User/Lienhe";
 import Userprofile from "./pages/User/Userprofile";
 import Checkpayment from "./pages/User/checkpayment";
 import OrderUser from "./pages/User/OrderUser";
-import ChangePass from "./pages/User/ChangePass";
+import ChangePass from "./pages/User/ChangePassUser";
 import ChangePassnologin from "./components/User/ChangePassnologin";
 import Gioithieu from "./pages/User/Gioithieu";
 import Chinhsachbaomat from "./pages/User/Chinhsachbaomat";
@@ -34,11 +34,7 @@ import AdminReviews from "./pages/Admin/Adminreviews";
 import AdminBanner from "./pages/Admin/Adminbanner";
 import AdminUser from "./pages/Admin/Adminuser";
 import AdminOrder from "./pages/Admin/AdminOrder";
-import FormThemSanPham from "./components/Admin/AdminPr/AdminAddPr";
-import UpdatePr from "./components/Admin/AdminPr/AdminUpdatePr";
 import AdminLevel from "./pages/Admin/AdminLevel";
-import Addlevel from "./components/Admin/AdminLevel/Addlevel";
-import Updatelevel from "./components/Admin/AdminLevel/Update";
 
 import ProtectAdmin from "./ProtectAdmin";
 

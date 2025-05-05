@@ -58,70 +58,70 @@ router.get("/cate/:id", async (req, res) => {
     }
 });
 
-// Lấy type_cate dựa trrn id  cate
-
-router.get("/type_cate_by_cate/:cate_id", async (req, res) => {
-    const { cate_id } = req.params;
-
-    const sql = `
-        SELECT 
-            tc.id AS type_cate_id, 
-            tc.name AS type_cate_name,
-            tc.image,
-            tc.content
-        FROM type_cate tc
-        INNER JOIN characteristic ch ON tc.characteristic_id = ch.id
-        WHERE ch.cate_id = ?
-    `;
-
-    try {
-        const [data] = await pool.query(sql, [cate_id]);
-        res.json(data);
-    } catch (err) {
-        console.error("Lỗi lấy type_cate:", err);
-        res.status(500).json({ message: "Lỗi lấy type_cate", error: err });
-    }
-});
-
-
 
 // lấy loại cây của danh mục dụa trên id của type_cate
-router.get("/categories_with_type_cate", async (req, res) => {
+
+router.get("/categories_with_characteristics", async (req, res) => {
     const sql = `
         SELECT 
-            c.id AS cate_id, 
-            c.name AS cate_name, 
-            tc.id AS type_cate_id, 
+            c.id AS cate_id,
+            c.name AS cate_name,
+
+            ch.id AS characteristic_id,
+            ch.name AS characteristic_name,
+
+            tc.id AS type_cate_id,
             tc.name AS type_cate_name
+
         FROM cate c
-        LEFT JOIN characteristic ch ON c.id = ch.cate_id
-        LEFT JOIN type_cate tc ON ch.id = tc.characteristic_id
+        LEFT JOIN characteristic ch ON ch.cate_id = c.id
+        LEFT JOIN type_cate tc ON tc.characteristic_id = ch.id
+        ORDER BY c.id, ch.id, tc.id;
     `;
 
     try {
-        const [data] = await pool.query(sql);
-        // Nhóm theo danh mục cha (cate)
-        let categories = {};
-        data.forEach(row => {
+        const [rows] = await pool.query(sql);
+        const categories = {};
+
+        rows.forEach(row => {
             if (!categories[row.cate_id]) {
                 categories[row.cate_id] = {
                     id: row.cate_id,
                     name: row.cate_name,
-                    type_cate: []
+                    characteristics: {}
                 };
             }
-            if (row.type_cate_id) {
-                categories[row.cate_id].type_cate.push({
-                    id: row.type_cate_id,
-                    name: row.type_cate_name
-                });
+
+            const category = categories[row.cate_id];
+
+            if (row.characteristic_id) {
+                if (!category.characteristics[row.characteristic_id]) {
+                    category.characteristics[row.characteristic_id] = {
+                        id: row.characteristic_id,
+                        name: row.characteristic_name,
+                        type_cate: []
+                    };
+                }
+
+                if (row.type_cate_id) {
+                    category.characteristics[row.characteristic_id].type_cate.push({
+                        id: row.type_cate_id,
+                        name: row.type_cate_name
+                    });
+                }
             }
         });
 
-        res.json(Object.values(categories));
+        // Chuyển object về array:
+        const result = Object.values(categories).map(c => ({
+            ...c,
+            characteristics: Object.values(c.characteristics)
+        }));
+
+        res.json(result);
     } catch (err) {
-        console.error("Lỗi lấy danh mục:", err);
-        res.status(500).json({ message: "Lỗi lấy danh mục", error: err });
+        console.error("Lỗi truy vấn:", err);
+        res.status(500).json({ message: "Lỗi truy vấn", error: err });
     }
 });
 

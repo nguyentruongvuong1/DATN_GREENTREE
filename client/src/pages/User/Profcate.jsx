@@ -49,7 +49,7 @@ const ProductPage = () => {
 
   // Lấy tất cả type_cate của cate
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/c/categories_with_type_cate`)
+    fetch(`${import.meta.env.VITE_API_URL}/c/categories_with_characteristics`)
       .then((res) => res.json())
       .then((data) => {
         setcate(data);
@@ -78,7 +78,9 @@ const ProductPage = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const url = `${import.meta.env.VITE_API_URL}/pr/products-by-type/${cate_id}?sort=${sortPr}&page=${currentPage}&limit=${itemsPerPage}&minPrice=${selectedMin}&maxPrice=${selectedMax}`;
+        const url = `${
+          import.meta.env.VITE_API_URL
+        }/pr/products-by-type/${cate_id}?sort=${sortPr}&page=${currentPage}&limit=${itemsPerPage}&minPrice=${selectedMin}&maxPrice=${selectedMax}`;
 
         const products = await fetch(url);
         const response = await products.json();
@@ -147,11 +149,14 @@ const ProductPage = () => {
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/pr/toggle-favorite`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: user.id, pr_id }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/pr/toggle-favorite`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: user.id, pr_id }),
+        }
+      );
 
       const data = await response.json();
       if (data.success) {
@@ -234,14 +239,12 @@ const ProductPage = () => {
                     }
                     className={`${styles.range} ${styles.rangeMax}`}
                   />
-
-                  
                 </div>
 
                 <p className={styles.rangeWrapper_gia}>
-                    Giá: {Number(selectedMin).toLocaleString("vi")} -{" "}
-                    {Number(selectedMax).toLocaleString("vi")}
-                  </p>
+                  Giá: {Number(selectedMin).toLocaleString("vi")} -{" "}
+                  {Number(selectedMax).toLocaleString("vi")}
+                </p>
 
                 <h3 className={styles["filter-danhmuc"]}>DANH MỤC</h3>
                 {cate.map((c) => (
@@ -272,19 +275,32 @@ const ProductPage = () => {
 
                       {c.id === type_cate?.cate_id && openSubmenu === c.id && (
                         <ul className={`${styles.submenu} ${styles.open}`}>
-                          {c.type_cate?.length > 0 ? (
-                            c.type_cate.map((tc) => (
-                              <li key={tc.id}>
-                                <Link
-                                  to={`/pr_by_typecate/${tc.id}`}
-                                  className={styles.subcategoryLink}
-                                >
-                                  {tc.name}
-                                </Link>
+                          {c.characteristics?.length > 0 ? (
+                            c.characteristics.map((ch) => (
+                              <li key={ch.id}>
+                                <strong>{ch.name}</strong>
+                                {ch.type_cate?.length > 0 ? (
+                                  <ul className={styles.subSubmenu}>
+                                    {ch.type_cate.map((tc) => (
+                                      <li key={tc.id}>
+                                        <Link
+                                          to={`/pr_by_typecate/${tc.id}`}
+                                          className={styles.subcategoryLink}
+                                        >
+                                          {tc.name}
+                                        </Link>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                ) : (
+                                  <ul className={styles.subSubmenu}>
+                                    <li>Không có loại danh mục</li>
+                                  </ul>
+                                )}
                               </li>
                             ))
                           ) : (
-                            <li>Không có loại danh mục</li>
+                            <li>Không có đặc điểm nào</li>
                           )}
                         </ul>
                       )}
@@ -329,17 +345,17 @@ const ProductPage = () => {
                       }`}
                       onClick={() => toggleFavorite(pr.id)}
                     >
-                     <i>
-                  <FontAwesomeIcon
-                    icon={faHeart}
-                    style={{
-                      color: likePr[pr.id] ? "red" : "white",
-                      stroke: likePr[pr.id] ? "none" : "#F29320",
-                      strokeWidth: likePr[pr.id] ? "0" : "15px",
-                      padding: "2px",
-                    }}
-                  />
-                </i>
+                      <i>
+                        <FontAwesomeIcon
+                          icon={faHeart}
+                          style={{
+                            color: likePr[pr.id] ? "red" : "white",
+                            stroke: likePr[pr.id] ? "none" : "#F29320",
+                            strokeWidth: likePr[pr.id] ? "0" : "15px",
+                            padding: "2px",
+                          }}
+                        />
+                      </i>
                     </div>
                     <div className={styles.product_btn}>
                       <div className={styles.pr_xemchitiet}>
@@ -352,13 +368,16 @@ const ProductPage = () => {
                       <div className={styles.pr_themvaogio}>
                         <button
                           onClick={() => {
-                            if(pr.inventory_quantity === 0){
-                              message.error('Sản phẩm đã hết hàng. Nếu bạn muốn mua sản phẩm này hãy liên hệ với chúng tôi để được hỗ trợ')
-                            }else{
+                            if (pr.inventory_quantity === 0) {
+                              message.error(
+                                "Sản phẩm đã hết hàng. Nếu bạn muốn mua sản phẩm này hãy liên hệ với chúng tôi để được hỗ trợ"
+                              );
+                            } else {
                               dispatch(themPr(pr));
-                              message.success("Bạn đã thêm sản phẩm vào giỏ hàng");
+                              message.success(
+                                "Bạn đã thêm sản phẩm vào giỏ hàng"
+                              );
                             }
-                           
                           }}
                         >
                           Thêm vào giỏ

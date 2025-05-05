@@ -1,5 +1,6 @@
 import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
 import moment from 'moment';
+
 const initialState = {DaDangNhap: false, user: null,  token: null, expiresIn: 0, countPrlike: 0, isChecked: false,}
 
 export const fetchCountPrLike = createAsyncThunk(
@@ -74,6 +75,7 @@ export const AuthSlice = createSlice({
             state.token = null;
             state.user = null;
             state.expiresIn = null;
+            window.location.href = '/'
         },
 
         setFavoriteCount: (state, action) =>{

@@ -17,6 +17,7 @@ const AdminBanner = () => {
   const [bnfilter, ganbnfilter] = useState([]) // Trạng thái tìm kiếm
   const [allBn, setallBn] = useState([]); // Tất cả banner để tìm kiếm
   const [search, setsearch] = useState(''); // Trạng thái tìm kiếm
+  const user = useSelector((state) => state.auth.user)
   const token = useSelector((state) => state.auth.token)
 
   useEffect(() => {
@@ -145,7 +146,7 @@ const AdminBanner = () => {
           </label>
         </div>
         <div className="user">
-          <img src="/images/user.jpg" alt="User" />
+          <img src={user.avatar} alt="User" />
         </div>
       </div>
 

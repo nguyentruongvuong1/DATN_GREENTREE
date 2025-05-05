@@ -45,12 +45,7 @@ export default function MobileMenu() {
                     
                 </div>
                 ))}
-                <div className="menumini">
-                <Link to={''}>Hướng dẫn</Link><br/>
-                <Link to={''}>Login</Link><br/>
-                    
-                    <Link to={''}>0đ</Link>
-                </div>
+               
              
             </div>
 
