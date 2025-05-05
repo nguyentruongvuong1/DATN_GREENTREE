@@ -17,11 +17,49 @@ export default function VerifyOTP() {
   const phone = sessionStorage.getItem("phone");
   const password = sessionStorage.getItem("password");
 
+
+    // Kiểm tra trạng thái OTP
+    const checkOTPStatus = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/xacminhotp/check-status`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          }
+        );
+  
+        const data = await response.json();
+  
+        if (!response.ok) {
+          throw new Error(data.message || "Lỗi kiểm tra OTP");
+        }
+  
+        if (data.expired) {
+          setIsResendDisabled(false);
+          setthongbao(true);
+          return setTimer(0);;
+          
+        } else {
+          setTimer(Math.max(0, data.remainingTime));
+          setIsResendDisabled(true);
+        }
+      } catch (err) {
+        console.error("Lỗi khi kiểm tra OTP:", err);
+        message.error("Không thể kiểm tra trạng thái OTP");
+      }
+    };
+  
+
   useEffect(() => {
     if (!email || !username || !phone || !password) {
       navigate("/dangky");
       return;
-    }
+        }
+
+       // Kiểm tra trạng thái OTP khi component mount
+  checkOTPStatus();
 
     // Bộ đếm ngược
     const countdown = setInterval(() => {
@@ -40,41 +78,8 @@ export default function VerifyOTP() {
     return () => clearInterval(countdown);
   }, [navigate, email, username, phone, password]);
 
-  // Kiểm tra trạng thái OTP
-  const checkOTPStatus = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/xacminhotp/check-status`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        }
-      );
 
-      const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || "Lỗi kiểm tra OTP");
-      }
-
-      if (data.expired) {
-        setIsResendDisabled(false);
-        setthongbao(true);
-        return setTimer(0);;
-        
-      } else {
-        setTimer(Math.max(0, data.remainingTime));
-        setIsResendDisabled(true);
-      }
-    } catch (err) {
-      console.error("Lỗi khi kiểm tra OTP:", err);
-      message.error("Không thể kiểm tra trạng thái OTP");
-    }
-  };
-
-  // Kiểm tra trạng thái OTP khi component mount
-  checkOTPStatus();
 
   // Xác minh OTP
   const handleVerifyOTP = async () => {

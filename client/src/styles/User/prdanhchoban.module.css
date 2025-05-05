@@ -285,7 +285,10 @@ top: 4px;
     .product_price {
       font-size: 14px;
     }
-  
+    
+    .title{
+        padding: 0px 20px;
+    }
     .title_name {
       width: 100%;
       padding: 10px 0;
@@ -295,6 +298,8 @@ top: 4px;
       font-size: 16px;
       padding: 0 8px;
     }
+
+  
   
     .title_namegt img{
         height: 40px;

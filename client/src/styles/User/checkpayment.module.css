@@ -1,0 +1,38 @@
+.payment-status-container {
+    padding: 60px 20px;
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f9f9f9;
+    border-radius: 12px;
+    max-width: 500px;
+    margin: 60px auto;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+  
+  .payment-status-container p {
+    font-size: 20px;
+    font-weight: 500;
+    margin: 20px 0;
+  }
+  
+  .payment-status-processing {
+    color: #888;
+  }
+  
+  .payment-status-success {
+    color: #2ecc71;
+    font-size: 24px;
+    font-weight: 600;
+  }
+  
+  .payment-status-fail {
+    color: #e74c3c;
+    font-size: 24px;
+    font-weight: 600;
+  }
+  
+  .payment-status-error {
+    color: #e67e22;
+    font-size: 24px;
+    font-weight: 600;
+  }

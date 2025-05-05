@@ -158,14 +158,14 @@ router.post('/xacminhotp', cleanupExpiredOTP, async (req, res) => {
 
     const { otp_code, expires_at } = otpRecord[0];
 
+     // Kiểm tra OTP
+     if (otp !== otp_code) {
+      return res.status(400).json({ success: false, message: 'Mã OTP không đúng' });
+    }
+
     // Kiểm tra hết hạn
     if (new Date(expires_at) < new Date()) {
       return res.status(400).json({ success: false, message: 'Mã OTP đã hết hạn' });
-    }
-
-    // Kiểm tra OTP
-    if (otp !== otp_code) {
-      return res.status(400).json({ success: false, message: 'Mã OTP không đúng' });
     }
 
     // Hash password
