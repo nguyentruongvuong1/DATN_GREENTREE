@@ -6,6 +6,8 @@ import "../../styles/Admin/styleadmin.css";
 import { Link } from "react-router-dom";
 import moment from "moment";
 import { useSelector } from "react-redux";
+import "@ant-design/v5-patch-for-react-19";
+import { message } from "antd";
 
 
 
@@ -23,8 +25,7 @@ const AdminReviews = () => {
 
     useEffect(() => {
         fetchReviews();
-
-    }, [currentPage, token ]);
+    }, [currentPage, token]);
 
     const fetchReviews = async () => {
         try {
@@ -85,6 +86,32 @@ const AdminReviews = () => {
         setCurrentPage(selectedItem.selected + 1);
     };
 
+    const DeleteReviews = async (id) =>{
+        const hoi = confirm(`Bạn có chắc muốn xóa đánh giá này không`)
+        
+        if(hoi){
+            const otp = {
+                headers: {
+                    "Content-Type": 'application/json',
+                    'Authorization': 'Bearer ' + token
+                }
+            }
+            try{
+             await axios.delete(`${import.meta.env.VITE_API_URL}/admin/reviews/${id}`, otp)
+             message.success('Xóa đánh giá thành công.')
+             setTimeout(() =>{
+                window.location.reload();
+             },1000)   
+
+            }catch(err){
+                console.log('Lỗi xóa', err)
+            }
+        }else{
+            return;
+        }
+       
+    }
+
     return (
         <div className="main">
             <div className="topbar">
@@ -133,10 +160,12 @@ const AdminReviews = () => {
                                     <td>{moment(review.create_date).format(' DD-MM-YYYY')}</td>
                                     <td>
                                         <button className="xemdanhgia" >
-                                            <Link to={`/chi_tiet_san_pham/${review.pr_id}`} >
+                                            <Link to={`/chi_tiet_san_pham/${review.pr_id}#reviews`} >
                                                 Xem đánh giá
                                             </Link>
-                                        </button>                                    </td>
+                                        </button>       
+                                        <button onClick={() => DeleteReviews(review.id)}>Xóa</button>                            
+                                         </td>
                                 </tr>
                             ))}
                         </tbody>

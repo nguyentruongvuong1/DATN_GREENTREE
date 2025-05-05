@@ -163,14 +163,14 @@ router.get('/reviews', adminAuth, async function (req, res) {
 
     const [results] = await pool.query(`
             SELECT 
-            reviews.order_detail_id AS id,
+            reviews.id,
+            reviews.order_detail_id,
             user.username AS user_name,
             product.name AS product_name,
             order_detail.pr_id,
             reviews.content,
             reviews.star,
-            reviews.create_date,
-            reviews.status
+            reviews.create_date
         FROM reviews
         JOIN order_detail ON reviews.order_detail_id = order_detail.id
         JOIN product ON order_detail.pr_id = product.id
@@ -194,14 +194,15 @@ router.get('/allreviews/', adminAuth, async function (req, res) {
   try {
     const [results] = await pool.query(`
             SELECT 
-            reviews.order_detail_id AS id,
+            reviews.id,
+            reviews.order_detail_id,
             user.username AS user_name,
             product.name AS product_name,
             order_detail.pr_id,
             reviews.content,
             reviews.star,
-            reviews.create_date,
-            reviews.status
+            reviews.create_date
+    
         FROM reviews
         JOIN order_detail ON reviews.order_detail_id = order_detail.id
         JOIN product ON order_detail.pr_id = product.id
@@ -216,6 +217,23 @@ router.get('/allreviews/', adminAuth, async function (req, res) {
     res.status(500).json({ error: 'Không thể lấy dữ liệu' });
   }
 })
+
+router.delete('/reviews/:id', adminAuth, async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    const [result] = await pool.query(`DELETE FROM reviews WHERE id = ?`, [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Không tìm thấy đánh giá để xóa" });
+    }
+
+    res.json({ message: "Xóa đánh giá thành công" });
+  } catch (err) {
+    console.error("Lỗi Xóa đánh giá:", err);
+    return res.status(500).json({ message: "Lỗi server", error: err });
+  }
+});
 
 // API BANNER------------------------------------------------------------------------------------------------------------------------------------------
 // GET banners with pagination

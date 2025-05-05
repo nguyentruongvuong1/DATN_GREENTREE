@@ -444,7 +444,7 @@ export default function OrderUser() {
             <div className={styles.invoiceContainer}>
               <div className={styles.invoiceHeader}>
                 <div className={styles.logo}>
-                  <h1>GREEN TREE SHOP</h1>
+                  <img width={'100%'} height={'60px'} src={'/images/logogreentree.png'} alt="" />
                 </div>
                 <div className={styles.invoiceInfo}>
                   <h2>CHI TIẾT ĐƠN HÀNG</h2>

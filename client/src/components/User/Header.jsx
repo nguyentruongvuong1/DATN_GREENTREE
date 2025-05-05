@@ -156,7 +156,8 @@ const Header = () => {
                     <Link to={`/info`}>Thông tin tài khoản</Link>
                     <Link to={`/info_changepass`}>Đổi mật khẩu</Link>
                     <Link to={`/info_order`}>Đơn hàng</Link>
-                    <button className={styles.btn} onClick={() => { message.success('Bạn đã đăng xuất tài khoản thành công'); dispatch(thoat())}}>Đăng xuất</button>
+                    <button className={styles.btn} onClick={() => { message.success('Bạn đã đăng xuất tài khoản thành công'); setTimeout(() => {dispatch(thoat())},1000) }}>Đăng xuất</button>
+
                   </div>
                 </div>
               ) : DaDangNhap === true && user?.role === 0 && User ?(
@@ -168,7 +169,10 @@ const Header = () => {
             
                   <div className={styles.dropdownMenu}>
                     <Link to={`/admin`}>Trang admin</Link>
-                    <button className={styles.btn} onClick={() => { message.success('Bạn đã đăng xuất tài khoản thành công'); dispatch(thoat())}}>Đăng xuất</button>
+                    <Link to={`/info`}>Thông tin tài khoản</Link>
+                    <Link to={`/info_changepass`}>Đổi mật khẩu</Link>
+                    <Link to={`/info_order`}>Đơn hàng</Link>
+                    <button className={styles.btn} onClick={() => { message.success('Bạn đã đăng xuất tài khoản thành công'); setTimeout(() => {dispatch(thoat())},1000) }}>Đăng xuất</button>
                   </div>
                 </div>
               ) :(

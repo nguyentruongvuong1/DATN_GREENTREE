@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
-import styles from"../../styles/User/profcate.module.css";
+import styles from "../../styles/User/profcate.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSlidersH,
- 
-  faHeart,
-} from "@fortawesome/free-solid-svg-icons";
+import { faSlidersH, faHeart } from "@fortawesome/free-solid-svg-icons";
 import { useParams, Link } from "react-router-dom";
 import { checkLogin, updateCountPrlike } from "../../AuthSlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,55 +22,30 @@ const ProductC = () => {
   const [cate, setcate] = useState([]);
   const [infocate, setinfocate] = useState(null);
   const dispatch = useDispatch();
-  const [typeCatesByCate, setTypeCatesByCate] = useState({}); // Lưu trữ type_cate theo từng cate
 
-
-    const [minPrice, setMinPrice] = useState(0);
-    const [maxPrice, setMaxPrice] = useState(0);
-    const [selectedMin, setSelectedMin] = useState(0);
-    const [selectedMax, setSelectedMax] = useState(0);
-    const [isLoading, setIsLoading] = useState(false);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(0);
+  const [selectedMin, setSelectedMin] = useState(0);
+  const [selectedMax, setSelectedMax] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Kiểm tra user đăng nhập
   useEffect(() => {
     dispatch(checkLogin());
   }, [dispatch]);
 
- // Cập nhật lại giá trị khi thay đổi thanh trượt
- const handlePriceChange = (minValue, maxValue) => {
-  if (minValue < maxValue) {
-    setSelectedMin(minValue);
-    setSelectedMax(maxValue);
-    setCurrentPage(1); // Reset về trang đầu khi thay đổi giá
-  }
-};
-
-
-  // Hàm fetch type_cate theo cate_id
-  const fetchTypeCates = async (cateId) => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/c/type_cate_by_cate/${cateId}`
-      );
-      const data = await response.json();
-      setTypeCatesByCate((prev) => ({
-        ...prev,
-        [cateId]: data,
-      }));
-    } catch (error) {
-      console.error("Lỗi khi lấy type_cate:", error);
+  // Cập nhật lại giá trị khi thay đổi thanh trượt
+  const handlePriceChange = (minValue, maxValue) => {
+    if (minValue < maxValue) {
+      setSelectedMin(minValue);
+      setSelectedMax(maxValue);
+      setCurrentPage(1); // Reset về trang đầu khi thay đổi giá
     }
   };
 
   // Khi click vào danh mục
   const handleCateClick = (e, cate) => {
     e.preventDefault();
-
-    // Nếu chưa có type_cate của danh mục này thì fetch
-    if (!typeCatesByCate[cate.id]) {
-      fetchTypeCates(cate.id);
-    }
-
     // Mở submenu nếu đóng và ngược lại
     setOpenSubmenu(openSubmenu === cate.id ? null : cate.id);
   };
@@ -87,7 +58,7 @@ const ProductC = () => {
 
   // Lấy tất cả cate của type_cate
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/c/categories_with_type_cate`)
+    fetch(`${import.meta.env.VITE_API_URL}/c/categories_with_characteristics`)
       .then((res) => res.json())
       .then((data) => {
         setcate(data);
@@ -110,10 +81,12 @@ const ProductC = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true)
+      setIsLoading(true);
       try {
         const products = await fetch(
-          `${import.meta.env.VITE_API_URL}/pr/products-by-cate/${cate_id}?sort=${sortPr}&page=${currentPage}&limit=${itemsPerPage}&minPrice=${selectedMin}&maxPrice=${selectedMax}`
+          `${
+            import.meta.env.VITE_API_URL
+          }/pr/products-by-cate/${cate_id}?sort=${sortPr}&page=${currentPage}&limit=${itemsPerPage}&minPrice=${selectedMin}&maxPrice=${selectedMax}`
         );
         const response = await products.json();
         Setproduct(response.products || response);
@@ -142,26 +115,34 @@ const ProductC = () => {
       }
     };
     fetchData();
-  }, [user, cate_id, sortPr, currentPage, itemsPerPage, selectedMin, selectedMax]);
+  }, [
+    user,
+    cate_id,
+    sortPr,
+    currentPage,
+    itemsPerPage,
+    selectedMin,
+    selectedMax,
+  ]);
 
-    useEffect(() => {
-      const fetchPriceRange = async () => {
-        try {
-          const res = await fetch(
-            `${import.meta.env.VITE_API_URL}/pr/price-range-cate/${cate_id}`
-          );
-          const data = await res.json();
-          setMinPrice(data.min_price);
-          setMaxPrice(data.max_price);
-          setSelectedMin(data.min_price);
-          setSelectedMax(data.max_price);
-        } catch (error) {
-          console.error("Lỗi khi lấy khoảng giá:", error);
-        }
-      };
-  
-      fetchPriceRange();
-    }, [cate_id]);
+  useEffect(() => {
+    const fetchPriceRange = async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/pr/price-range-cate/${cate_id}`
+        );
+        const data = await res.json();
+        setMinPrice(data.min_price);
+        setMaxPrice(data.max_price);
+        setSelectedMin(data.min_price);
+        setSelectedMax(data.max_price);
+      } catch (error) {
+        console.error("Lỗi khi lấy khoảng giá:", error);
+      }
+    };
+
+    fetchPriceRange();
+  }, [cate_id]);
 
   // Thêm hàm xử lý thay đổi trang
   const handlePageChange = (page) => {
@@ -176,11 +157,14 @@ const ProductC = () => {
     }
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/pr/toggle-favorite`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: user.id, pr_id }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/pr/toggle-favorite`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: user.id, pr_id }),
+        }
+      );
 
       const data = await response.json();
       if (data.success) {
@@ -238,89 +222,102 @@ const ProductC = () => {
               >
                 <Search />
                 <div className={styles.title_loctheogia}>
-                                  <h3>LỌC THEO GIÁ</h3>
-                                </div>
-                                <div className={styles.rangeWrapper}>
-                                  <input
-                                    type="range"
-                                    min={minPrice}
-                                    max={maxPrice}
-                                    step="1000"
-                                    value={selectedMin}
-                                    onChange={(e) =>
-                                      handlePriceChange(Number(e.target.value), selectedMax)
-                                    }
-                                    className={`${styles.range} ${styles.rangeMin}`}
-                                  />
-                                  <input
-                                    type="range"
-                                    min={minPrice}
-                                    max={maxPrice}
-                                    step="1000"
-                                    value={selectedMax}
-                                    onChange={(e) =>
-                                      handlePriceChange(selectedMin, Number(e.target.value))
-                                    }
-                                    className={`${styles.range} ${styles.rangeMax}`}
-                                  />
-                                </div>
-                
-                                <p className={styles.title_loctheogia_gia}>
-                                  Giá: {Number(selectedMin).toLocaleString("vi")} -{" "}
-                                  {Number(selectedMax).toLocaleString("vi")}
-                                </p>
+                  <h3>LỌC THEO GIÁ</h3>
+                </div>
+                <div className={styles.rangeWrapper}>
+                  <input
+                    type="range"
+                    min={minPrice}
+                    max={maxPrice}
+                    step="1000"
+                    value={selectedMin}
+                    onChange={(e) =>
+                      handlePriceChange(Number(e.target.value), selectedMax)
+                    }
+                    className={`${styles.range} ${styles.rangeMin}`}
+                  />
+                  <input
+                    type="range"
+                    min={minPrice}
+                    max={maxPrice}
+                    step="1000"
+                    value={selectedMax}
+                    onChange={(e) =>
+                      handlePriceChange(selectedMin, Number(e.target.value))
+                    }
+                    className={`${styles.range} ${styles.rangeMax}`}
+                  />
+                </div>
+
+                <p className={styles.title_loctheogia_gia}>
+                  Giá: {Number(selectedMin).toLocaleString("vi")} -{" "}
+                  {Number(selectedMax).toLocaleString("vi")}
+                </p>
 
                 <h3 className={styles["filter-danhmuc"]}>DANH MỤC</h3>
                 {cate.map((c) => (
-  <ul className={styles["category-list"]} key={c.id}>
-    <li
-      className={`${styles["has-submenu"]} ${
-        openSubmenu === c.id ? styles.open : ""
-      }`}
-    >
-      {/* Nếu là danh mục hiện tại thì cho mở submenu */}
-      {c.id == cate_id ? (
-        <div
-          role="button"
-          onClick={(e) => handleCateClick(e, c)}
-          className={`${styles.categoryButton} ${
-            openSubmenu === c.id ? styles.rotated : ""
-          }`}
-        >
-          {c.name}
-        </div>
-      ) : (
-        /* Nếu không phải thì dùng Link chuyển trang */
-        <Link 
-          to={`/pr_by_cate/${c.id}`} 
-          className={styles.categoryLink}
-        >
-          {c.name}
-        </Link>
-      )}
+                  <ul className={styles["category-list"]} key={c.id}>
+                    <li
+                      className={`${styles["has-submenu"]} ${
+                        openSubmenu === c.id ? styles.open : ""
+                      }`}
+                    >
+                      {/* Nếu là danh mục hiện tại thì cho mở submenu */}
+                      {c.id == cate_id ? (
+                        <div
+                          role="button"
+                          onClick={(e) => handleCateClick(e, c)}
+                          className={`${styles.categoryButton} ${
+                            openSubmenu === c.id ? styles.rotated : ""
+                          }`}
+                        >
+                          {c.name}
+                        </div>
+                      ) : (
+                        /* Nếu không phải thì dùng Link chuyển trang */
+                        <Link
+                          to={`/pr_by_cate/${c.id}`}
+                          className={styles.categoryLink}
+                        >
+                          {c.name}
+                        </Link>
+                      )}
 
-      {/* Chỉ hiển thị submenu nếu là danh mục hiện tại */}
-      {c.id == cate_id && openSubmenu === c.id && (
-        <ul className={`${styles.submenu} ${styles.open}`}>
-          {typeCatesByCate[c.id]?.length > 0 ? (
-            typeCatesByCate[c.id].map((tc) => (
-              <li key={tc.type_cate_id}>
-                <Link
-                  to={`/pr_by_typecate/${tc.type_cate_id}`}
-                  className={styles.subcategoryLink}
-                >
-                  {tc.type_cate_name}
-                </Link>
-              </li>
-            ))
-          ) : (
-            <li>Đang tải...</li>
-          )}
-        </ul>
-      )}
-    </li>
-  </ul>
-))}
+                      {/* Chỉ hiển thị submenu nếu là danh mục hiện tại */}
+                      {c.id == cate_id && openSubmenu === c.id && (
+                        <ul className={`${styles.submenu} ${styles.open}`}>
+                          {c.characteristics?.length > 0 ? (
+                            c.characteristics.map((ch) => (
+                              <li key={ch.id}>
+                                <strong>{ch.name}</strong>
+                                {ch.type_cate?.length > 0 ? (
+                                  <ul className={styles.subSubmenu}>
+                                    {ch.type_cate.map((tc) => (
+                                      <li key={tc.id}>
+                                        <Link
+                                          to={`/pr_by_typecate/${tc.id}`}
+                                          className={styles.subcategoryLink}
+                                        >
+                                          {tc.name}
+                                        </Link>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                ) : (
+                                  <ul className={styles.subSubmenu}>
+                                    <li>Không có loại danh mục</li>
+                                  </ul>
+                                )}
+                              </li>
+                            ))
+                          ) : (
+                            <li>Không có đặc điểm nào</li>
+                          )}
+                        </ul>
+                      )}
+                    </li>
+                  </ul>
+                ))}
               </aside>
             </div>
 
@@ -346,7 +343,9 @@ const ProductC = () => {
                     <div className={styles.product_img}>
                       <img
                         src={
-                          pr.images ? pr.images.split(",")[0] : "/default-image.jpg"
+                          pr.images
+                            ? pr.images.split(",")[0]
+                            : "/default-image.jpg"
                         }
                         alt={pr.name}
                       />
@@ -358,16 +357,16 @@ const ProductC = () => {
                       onClick={() => toggleFavorite(pr.id)}
                     >
                       <i>
-                  <FontAwesomeIcon
-                    icon={faHeart}
-                    style={{
-                      color: likePr[pr.id] ? "red" : "white",
-                      stroke: likePr[pr.id] ? "none" : "#F29320",
-                      strokeWidth: likePr[pr.id] ? "0" : "15px",
-                      padding: "2px",
-                    }}
-                  />
-                </i>
+                        <FontAwesomeIcon
+                          icon={faHeart}
+                          style={{
+                            color: likePr[pr.id] ? "red" : "white",
+                            stroke: likePr[pr.id] ? "none" : "#F29320",
+                            strokeWidth: likePr[pr.id] ? "0" : "15px",
+                            padding: "2px",
+                          }}
+                        />
+                      </i>
                     </div>
                     <div className={styles.product_btn}>
                       <div className={styles.pr_xemchitiet}>
@@ -380,13 +379,16 @@ const ProductC = () => {
                       <div className={styles.pr_themvaogio}>
                         <button
                           onClick={() => {
-                            if(pr.inventory_quantity === 0){
-                              message.error('Sản phẩm đã hết hàng. Nếu bạn muốn mua sản phẩm này hãy liên hệ với chúng tôi để được hỗ trợ')
-                            }else{
+                            if (pr.inventory_quantity === 0) {
+                              message.error(
+                                "Sản phẩm đã hết hàng. Nếu bạn muốn mua sản phẩm này hãy liên hệ với chúng tôi để được hỗ trợ"
+                              );
+                            } else {
                               dispatch(themPr(pr));
-                              message.success("Bạn đã thêm sản phẩm vào giỏ hàng");
+                              message.success(
+                                "Bạn đã thêm sản phẩm vào giỏ hàng"
+                              );
                             }
-                           
                           }}
                         >
                           Thêm vào giỏ
