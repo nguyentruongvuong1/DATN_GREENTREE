@@ -563,7 +563,7 @@ export default function OrderUser() {
                         <td colSpan="4" className={styles.textRight}>
                           Giảm : 
                         </td>
-                        <td>{orderInfo?.discount_value === 'fixed' ? orderInfo?.discount_value : orderInfo?.discount_value + "%"}</td>
+                        <td>{orderInfo?.discount_type === 'fixed' ? Number(orderInfo?.discount_value).toLocaleString('vi') + ' VNĐ' : Number(orderInfo?.discount_value).toLocaleString('vi') + '%'}</td>
                       </tr>
                     )}
 
@@ -581,7 +581,7 @@ export default function OrderUser() {
                 <div className={styles.thankYou}>
                   <p>
                     Cảm ơn quý khách đã mua hàng tại{" "}
-                    <strong>GREEN TREE SHOP</strong>!
+                    <strong>GREENTREE SHOP</strong>!
                   </p>
                   <p>
                     Mọi thắc mắc xin liên hệ hotline:{" "}

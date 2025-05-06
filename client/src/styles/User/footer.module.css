@@ -91,6 +91,7 @@
 .footer_bando h2{
  color: white;
  text-align: center;
+ margin-bottom: 10px;
 }
 @media screen and (max-width: 480px) {
     .footer {

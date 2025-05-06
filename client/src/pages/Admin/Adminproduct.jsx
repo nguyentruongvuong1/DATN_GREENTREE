@@ -233,7 +233,7 @@ const AdminProduct = () => {
             className="modal-overlay"
             onClick={() => setmodeladd(false)}
           ></div>
-          <div className="modal-container">
+          <div className="modal-containerpr">
             <FormThemSanPham />
           </div>
         </>
@@ -245,7 +245,7 @@ const AdminProduct = () => {
             className="modal-overlay"
             onClick={() => setmodelupdate(false)}
           ></div>
-          <div className="modal-container">
+          <div className="modal-containerpr">
             <UpdatePr id={UpdateId} />
           </div>
         </>

@@ -314,7 +314,6 @@ body {
     border-radius: 20px;
     display: flex;
     justify-content: space-between;
-    cursor: pointer;
     box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
 }
 
@@ -391,6 +390,7 @@ body {
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
   }
   
   .graphBox .card:hover {
@@ -610,11 +610,6 @@ body {
     text-align: center;
 }
 
-.details .recentOrders table tr td:last-child {
-    text-align: end;
-}
-
-
 
 .details .recentOrders table tr td:nth-child(3) {
     text-align: center;
@@ -714,9 +709,7 @@ body {
     margin-top: 0%;
 }
 
-.details table td{
-    text-align: center !important;
-}
+
 
 .details table td button {
     padding: 8px 12px;
@@ -794,6 +787,23 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    /* Giới hạn chiều cao để tránh tràn màn hình */
+    overflow-y: auto;
+    /* Bật cuộn khi nội dung dài */
+}
+
+.modal-containerpr{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -1080,18 +1090,40 @@ body {
 
 
 /* CSS cho bảng chi tiết đơn hàng */
+/* 
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+background: white;
+padding: 20px;
+border-radius: 10px;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+z-index: 100;
+width: 100%;
+max-width: 600px;
+max-height: 90vh;
+overflow-y: auto; */
 
 .modal-container-order {
     position: fixed;
-    margin-left: 300px;
-    padding: 20px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin-left: 150px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 100;
     width: 100%;
-    max-width: 100%;
+    max-width: 1000px;
     max-height: 100%;
+    /* Giới hạn chiều cao để tránh tràn màn hình */
     overflow-y: auto;
+    /* Bật cuộn khi nội dung dài */
   }
 
+/* Chi tiết dơn hàng */
 .invoiceContainer {
     max-width: 1000px;
     margin: 0 auto;
@@ -1207,6 +1239,7 @@ body {
 
 .textRight {
     text-align: right !important;
+    
 }
 
 .totalRow {
@@ -1394,7 +1427,6 @@ body {
         margin-left: 0;
     }
     .invoiceContainer {
-      
         width: 100%; /* Bạn có thể điều chỉnh % theo ý muốn */
         background: white;
         padding: 20px;

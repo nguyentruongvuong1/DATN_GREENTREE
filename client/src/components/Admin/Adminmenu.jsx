@@ -13,12 +13,13 @@ const AdminMenu = () => {
 
   return (
     <div className="navigation">
-      <ul>
+      <ul style={{marginTop:'20px'}}>
+       <Link to={'/'}>
         <li>
-          <Link to="/">
             <img src="./../images/logwhite.jpg" alt="" className="logo" width={265} height={75} />
-          </Link>
         </li>
+        </Link>
+
 
         <li className={location.pathname === "/admin/dashboard" ? "hovered" : ""}>
           <Link to="/admin/dashboard">

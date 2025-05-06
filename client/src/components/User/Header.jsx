@@ -310,7 +310,7 @@ const Header = () => {
                   </div>
                 ))
               : searchpr &&
-                isInputFocused && <div>Sản phẩm này không tồn tại </div>}
+                isInputFocused && <div className={styles.ktt}>Sản phẩm này không tồn tại </div>}
           </div>
           </div>
          

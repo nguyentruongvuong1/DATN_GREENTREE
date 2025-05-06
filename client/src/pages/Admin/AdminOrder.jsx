@@ -386,8 +386,9 @@ export default function AdminOrder() {
         </div>
 
         {model && (
-          <div className="modal-overlay" onClick={() => setmodel(false)}>
-            <div className="modal-container-order">
+          <>
+          <div className="modal-overlay" onClick={() => setmodel(false)}> </div>
+            <div className="modal-container-order" >
               <div className="invoiceContainer">
                 <div className="invoiceHeader">
                   <div className="logo">
@@ -513,11 +514,7 @@ export default function AdminOrder() {
                           <td colSpan="4" className="textRight">
                             Giảm :
                           </td>
-                          <td>
-                            {orderInfo?.discount_value === "fixed"
-                              ? orderInfo?.discount_value
-                              : orderInfo?.discount_value + "%"}
-                          </td>
+                          <td>{orderInfo?.discount_type === 'fixed' ? Number(orderInfo?.discount_value).toLocaleString('vi') + ' VNĐ' : Number(orderInfo?.discount_value).toLocaleString('vi') + '%'}</td>
                         </tr>
                       )}
 
@@ -553,7 +550,7 @@ export default function AdminOrder() {
                 </div>
               </div>
             </div>
-          </div>
+            </>
         )}
       </div>
     </div>
