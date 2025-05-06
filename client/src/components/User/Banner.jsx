@@ -58,7 +58,7 @@ export default function Banner() {
           )}
         </div>
       <div className={styles.banner}>
-        <div className={styles.banner_content}>
+        {/* <div className={styles.banner_content}>
           <h1>Tận hưởng không gian sống xanh</h1>
           <p>
             Bổ sung thêm cây xanh là một cách đơn giản nhất để tạo ra sự thoải
@@ -73,7 +73,7 @@ export default function Banner() {
               <Link to={'/#khampha'}>Khám phá ngay</Link>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

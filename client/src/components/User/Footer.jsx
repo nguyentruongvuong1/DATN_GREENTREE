@@ -30,7 +30,7 @@ export default function Footer() {
           <div className={styles.footer_vct}>
             <p>LIÊN HỆ</p>
             <Link to={"/"}>Hotline 1: 0364185395</Link>
-            <Link to={"/"}>Hotline 2: 0364185395</Link>
+            <Link to={"/"}>Hotline 2: 0337450067</Link>
             <Link to={"/"}>Email: greentreeshop@gmail.com</Link>
             <Link to={"/"}>Địa chỉ: Công Viên Phần Mền Quang Trung</Link>
           </div>
