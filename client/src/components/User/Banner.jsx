@@ -1,9 +1,24 @@
 import styles from "../../styles/User/banner.module.css";
 import { useState, useEffect } from "react";
-import {Link} from "react-router-dom"
+import {Link, useLocation} from "react-router-dom"
 export default function Banner() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [images, setimages] = useState([]);
+  const location = useLocation();
+   useEffect(() => {
+      
+      const timeout = setTimeout(() => {
+        const hash = location.hash;
+        if (hash) {
+          const element = document.querySelector(hash);
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth" });
+          }
+        }
+      }, 500); 
+  
+      return () => clearTimeout(timeout);
+    }, [location]);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -55,7 +70,7 @@ export default function Banner() {
               <Link to={'/lienhe'}>Liên hệ</Link>
             </div>
             <div className={styles.btn_khampha}>
-              <Link href="">Khám phá ngay</Link>
+              <Link to={'/#khampha'}>Khám phá ngay</Link>
             </div>
           </div>
         </div>

@@ -7,7 +7,7 @@ const { route } = require('.');
 router.get('/pr', async (req, res) =>{
     try{
         
-        const [result] = await pool.query(`SELECT * FROM product`);
+        const [result] = await pool.query(`SELECT * FROM product WHERE status = 1`);
             res.json(result);
 
     }catch(error){
@@ -20,7 +20,7 @@ router.get('/pr', async (req, res) =>{
 // Laays sanr phaamr hot
 router.get("/prhot", async (req, res) => {
     try {
-      const [products] = await pool.query("SELECT * FROM product ORDER BY view DESC LIMIT 8");
+      const [products] = await pool.query("SELECT * FROM product WHERE status = 1 ORDER BY view DESC LIMIT 8");
       res.json(products);
     } catch (error) {
       console.error("Lỗi truy vấn:", error);
@@ -63,7 +63,7 @@ router.get("/prhot", async (req, res) => {
 // Lấy sản phẩm mới 
 router.get("/prnew", async (req, res) => {
     try {
-      const [products] = await pool.query("SELECT * FROM product ORDER BY create_date DESC LIMIT 8");
+      const [products] = await pool.query("SELECT * FROM product WHERE status = 1 ORDER BY create_date DESC LIMIT 8");
       res.json(products);
     } catch (error) {
       console.error("Lỗi truy vấn:", error);
@@ -73,7 +73,7 @@ router.get("/prnew", async (req, res) => {
 
   router.get("/prsale", async (req, res) => {
     try {
-      const [products] = await pool.query("SELECT * FROM product ORDER BY sale DESC LIMIT 8");
+      const [products] = await pool.query("SELECT * FROM product WHERE status = 1 ORDER BY sale DESC LIMIT 8");
       res.json(products);
     } catch (error) {
       console.error("Lỗi truy vấn:", error);

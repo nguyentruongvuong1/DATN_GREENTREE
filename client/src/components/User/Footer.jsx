@@ -37,12 +37,9 @@ export default function Footer() {
   
           <div className={styles.footer_vct}>
             <p>PHƯƠNG THỨC THANH TOÁN</p>
-            <Link to={"/"}>Giới thiệu</Link>
-            <Link to={"/"}>Liên hệ</Link>
-            <Link to={"/"}>Chính sách bảo mật</Link>
-            <Link to={"/"}>Chính sách bảo hành</Link>
-            <Link to={"/"}>Phương thức thanh toán</Link>
-            <Link to={"/"}>Phương thức vận chuyển</Link>
+            <img width={'130px'} height={'120px'} style={{marginRight: '20px'}} src={'/images/ttkhi nhận hàng.png'} alt="" />
+
+            <img width={'130px'} height={'120px'} src={'/images/logoVNPay.jpg'} alt="" />
           </div>
         </div>
   

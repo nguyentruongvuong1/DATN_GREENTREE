@@ -50,7 +50,7 @@ const AdminProduct = () => {
         const products = await fetch(
           `${
             import.meta.env.VITE_API_URL
-          }/adminpr/products`
+          }/adminpr/allproducts`
         );
         const response = await products.json();
         setallPr(response.products || response); // gán allPr với dữ liệu sản phẩm

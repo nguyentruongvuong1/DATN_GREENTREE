@@ -199,9 +199,15 @@
 }
 
 
-.table_order{
-    width: 100%;
-    border-collapse: collapse;
+.table_wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table_order {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px; /* hoặc tùy theo số lượng cột */
 }
 
 .table_order th, .table_order td {

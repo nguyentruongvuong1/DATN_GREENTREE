@@ -289,12 +289,13 @@ export default function OrderUser() {
 
           <div>
             <div className={styles.history}>
+            <div className={styles.table_wrapper}>
               <table className={styles.table_order}>
                 <thead>
                   <tr>
                     <th>STT</th>
                     <th>Mã đơn hàng</th>
-                    <th>Trạng thái đơn hàng</th>
+                    <th>TT đơn hàng</th>
                     <th>Tổng tiền</th>
                     <th>Ngày</th>
                     <th>Thao tác</th>
@@ -343,7 +344,7 @@ export default function OrderUser() {
                   ))}
                 </tbody>
               </table>
-
+             </div>     
               {totalOrder > itemsPerPage && (
                 <div className={styles.paginationContainer}>
                   <ReactPaginate

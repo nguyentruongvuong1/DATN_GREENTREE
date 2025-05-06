@@ -8,7 +8,8 @@ import moment from "moment";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPrint } from "@fortawesome/free-solid-svg-icons";
-
+import '@ant-design/v5-patch-for-react-19'
+import {message} from'antd'
 export default function AdminOrder() {
   const getStatusName = (status) => {
     switch (status) {
@@ -34,14 +35,12 @@ export default function AdminOrder() {
 
   const [orderInfo, setOrderInfo] = useState(null);
   const [orderItems, setOrderItems] = useState([]);
-  const [totalPrice, setTotalPrice] = useState(0);
 
   const [allOdr, setallOdr] = useState([]); // Tất cả đơn hàng để tìm kiếm
   const [search, setsearch] = useState(""); // Trạng thái tìm kiếm
   const [odrfilter, ganodrfilter] = useState([]); // Trạng thái tìm kiếm
   const token = useSelector((state) => state.auth.token);
-  const user = useSelector((state) => state.auth.user)
-
+  const user = useSelector((state) => state.auth.user);
 
   const statusMap = {
     1: "Chờ xác nhận",
@@ -61,9 +60,6 @@ export default function AdminOrder() {
       const data = await res.json();
       setOrderInfo(data.order);
       setOrderItems(data.items);
-
-      const total = data.items.reduce((sum, item) => sum + item.total, 0);
-      setTotalPrice(total);
 
       setmodel(true);
     } catch (error) {
@@ -85,15 +81,15 @@ export default function AdminOrder() {
           },
         };
 
-        let url = `${import.meta.env.VITE_API_URL}/admin/order?page=${currentPage}&limit=${itemsPerPage}`;
+        let url = `${
+          import.meta.env.VITE_API_URL
+        }/admin/order?page=${currentPage}&limit=${itemsPerPage}`;
         if (orderStatus) {
           url += `&order_status=${orderStatus}`;
         }
-      const response = await axios.get(url, otp);
-      setOrder(response.data.order || response.data);
-      setTotalOrder(response.data.total || response.data.length);
-
-
+        const response = await axios.get(url, otp);
+        setOrder(response.data.order || response.data);
+        setTotalOrder(response.data.total || response.data.length);
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu đơn hàng:", error);
       }
@@ -101,26 +97,27 @@ export default function AdminOrder() {
     fetchOrder();
   }, [currentPage, itemsPerPage, token, orderStatus]);
 
-  useEffect(() =>{
-    const fetchallOrder = async () =>{
-      try{
-        
-          const otp = {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + token,
-            },
-          };
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/admin/allorder`, otp);
+  useEffect(() => {
+    const fetchallOrder = async () => {
+      try {
+        const otp = {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+        };
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/admin/allorder`,
+          otp
+        );
         const data = await res.json();
         setallOdr(data.order || data);
-
-      }catch (error) {
+      } catch (error) {
         console.error("Lỗi khi lấy dữ liệu đơn hàng:", error);
       }
-    }
-    fetchallOrder()
-  },[token])
+    };
+    fetchallOrder();
+  }, [token]);
 
   useEffect(() => {
     if (search === "") {
@@ -203,11 +200,52 @@ export default function AdminOrder() {
     setCurrentPage(selectedItem.selected + 1);
   };
 
+  let shippingFee = orderInfo?.shippingFee;
+
+  const total = orderItems.reduce((acc, item) => {
+    const price = item.total;
+    return acc + price;
+  }, 0);
+
+  let discountvalue = 0;
+  const subtotal = total + shippingFee;
+
+  if (orderInfo?.discount_type === "fixed") {
+    discountvalue = orderInfo.discount_value || 0;
+  } else if (orderInfo?.discount_type === "percent") {
+    discountvalue = subtotal * ((orderInfo?.discount_value || 0) / 100);
+  }
+
+  const grandTotal = Math.max(subtotal - discountvalue, 0);
+
+  const Canccel_order = async (orderId, userId) => {
+    try {
+      const hoi = confirm("Bạn có chắc chắn muốn hủy đơn hàng không?");
+      if (hoi) {
+        const res = await axios.post(
+          `${import.meta.env.VITE_API_URL}/payment/cancel_order`,
+          { order_id: orderId, user_id: userId }
+        );
+        if (res.data.success) {
+          message.success("Hủy đơn hàng thành công!");
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } else {
+          message.error("Hủy đơn hàng thất bại!");
+        }
+      } else {
+        return;
+      }
+    } catch (error) {
+      console.error("Lỗi khi tải thông tin đơn hàng:", error);
+    }
+  };
+
   return (
     <div className="main">
       <div className="topbar">
-        <div className="toggle">
-        </div>
+        <div className="toggle"></div>
         <div className="search">
           <label>
             <input
@@ -219,7 +257,7 @@ export default function AdminOrder() {
           </label>
         </div>
         <div className="user">
-        <img src={user.avatar} alt="User" />
+          <img src={user.avatar} alt="User" />
         </div>
       </div>
       <div className="details">
@@ -228,16 +266,16 @@ export default function AdminOrder() {
             <h2>Quản Lý Đơn Hàng</h2>
           </div>
           <div className="sxpr">
-          <select 
-            value={orderStatus}
-            onChange={(e) => setOrderStatus(e.target.value)}
-          >
-            <option value="">Tất cả trạng thái</option>
-            <option value="1">Chờ xác nhận</option>
-            <option value="2">Đã xác nhận</option>
-            <option value="3">Đang giao</option>
-            <option value="4">Giao hàng thành công</option>
-          </select>
+            <select
+              value={orderStatus}
+              onChange={(e) => setOrderStatus(e.target.value)}
+            >
+              <option value="">Tất cả trạng thái</option>
+              <option value="1">Chờ xác nhận</option>
+              <option value="2">Đã xác nhận</option>
+              <option value="3">Đang giao</option>
+              <option value="4">Giao hàng thành công</option>
+            </select>
           </div>
           <table className="comment-table">
             <thead>
@@ -313,6 +351,7 @@ export default function AdminOrder() {
                   </td>
                   <td>
                     <button onClick={() => fetchOrderDetail(or.id)}>Xem</button>
+                    <button onClick={() => Canccel_order(or.id, or.user_id)}>Hủy</button>
                   </td>
                 </tr>
               ))}
@@ -352,7 +391,12 @@ export default function AdminOrder() {
               <div className="invoiceContainer">
                 <div className="invoiceHeader">
                   <div className="logo">
-                    <h1>GREEN TREE SHOP</h1>
+                    <img
+                      width={"100%"}
+                      height={"60px"}
+                      src={"/images/logogreentree.png"}
+                      alt=""
+                    />
                   </div>
                   <div className="invoiceInfo">
                     <h2>CHI TIẾT ĐƠN HÀNG</h2>
@@ -442,29 +486,46 @@ export default function AdminOrder() {
                       ))}
                     </tbody>
                     <tfoot>
-                      {/* <tr>
-                                     <td colSpan="4" className=textRight}>
-                                       Tạm tính:
-                                     </td>
-                                     <td></td>
-                                   </tr>
-                                   <tr>
-                                     <td colSpan="4" className=textRight}>
-                                       Phí vận chuyển:
-                                     </td>
-                                     <td></td>
-                                   </tr>
-                                   <tr>
-                                     <td colSpan="4" className=textRight}>
-                                       Giảm giá:
-                                     </td>
-                                     <td>-</td>
-                                   </tr> */}
+                      <tr>
+                        <td colSpan="4" className="textRight">
+                          Tạm tính:
+                        </td>
+                        <td>{Number(total).toLocaleString("vi")} VNĐ</td>
+                      </tr>
+
+                      <tr>
+                        <td colSpan="4" className="textRight">
+                          Phí vận chuyển:{" "}
+                        </td>
+                        <td>{Number(shippingFee).toLocaleString("vi")} VNĐ</td>
+                      </tr>
+                      {orderInfo?.code && (
+                        <tr>
+                          <td colSpan="4" className="textRight">
+                            Mã giảm giá:
+                          </td>
+                          <td>{orderInfo?.code}</td>
+                        </tr>
+                      )}
+
+                      {orderInfo?.discount_value && (
+                        <tr>
+                          <td colSpan="4" className="textRight">
+                            Giảm :
+                          </td>
+                          <td>
+                            {orderInfo?.discount_value === "fixed"
+                              ? orderInfo?.discount_value
+                              : orderInfo?.discount_value + "%"}
+                          </td>
+                        </tr>
+                      )}
+
                       <tr className="totalRow">
                         <td colSpan="4" className="textRight">
                           Tổng cộng:
                         </td>
-                        <td>{Number(totalPrice).toLocaleString("vi")} VNĐ</td>
+                        <td>{Number(grandTotal).toLocaleString("vi")} VNĐ</td>
                       </tr>
                     </tfoot>
                   </table>

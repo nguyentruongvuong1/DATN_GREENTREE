@@ -155,7 +155,7 @@ useEffect(() => {
                                     <td>{user.id}</td>
                                     <td>{user.username}</td>
                                     <td>{user.phone}</td>
-                                    <td>{user.total_buy}</td>
+                                    <td>{Number(user.total_buy).toLocaleString('vi')}</td>
                                     {/* <td>{level[user.level]}</td> */}
                                     <td>{user.role === 1 ? "Người dùng" : "Admin"}</td>
                                     <td>

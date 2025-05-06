@@ -10,7 +10,9 @@ export default function Home() {
        <main>
         <Banner />
         {/* <Cate /> */}
+        <div id="khampha">
         <Prdanhchoban />
+        </div>
         <PrSale />
         <section className={styles.bgmain}>
         <div className={styles.container}>

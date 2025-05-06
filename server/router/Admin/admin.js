@@ -70,7 +70,7 @@ router.get("/allvouchers", adminAuth, async (req, res) => {
 // API cập nhật voucher
 router.put('/voucher/:id', adminAuth, async (req, res) => {
   const { id } = req.params;
-  const {
+  let {
     code,
     discount_type,
     discount_value,
@@ -79,12 +79,25 @@ router.put('/voucher/:id', adminAuth, async (req, res) => {
     start_date,
     status
   } = req.body;
+
+  // Kiểm tra logic ngày
   if (new Date(start_date) > new Date(end_date)) {
     return res.status(400).json({ message: "Ngày bắt đầu không được lớn hơn ngày kết thúc!" });
   }
-  
+
+  // Tính lại trạng thái hoạt động dựa trên ngày và số lượng
+  const now = new Date();
+  const start = new Date(start_date);
+  const end = new Date(end_date);
+
+  if (quantity <= 0 || now < start || now > end) {
+    status = 0; // Không hợp lệ: hết hàng, chưa tới ngày, hoặc đã hết hạn
+  } else {
+    status = 1; // Hợp lệ: đang trong khoảng thời gian và còn số lượng
+  }
+
   try {
-    // Kiểm tra mã đã tồn tại 
+    // Kiểm tra mã đã tồn tại
     const [exists] = await pool.query("SELECT id FROM voucher WHERE code = ? AND id != ?", [code, id]);
     if (exists.length > 0) {
       return res.status(400).json({ message: "Mã voucher đã tồn tại" });
