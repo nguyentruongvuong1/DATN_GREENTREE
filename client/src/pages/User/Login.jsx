@@ -8,6 +8,7 @@ import '@ant-design/v5-patch-for-react-19';
 import { message } from 'antd';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock,  faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { thoat } from '../../AuthSlice'
 export default function FormLogin(){
 
     const dispatch = useDispatch()
@@ -41,10 +42,16 @@ export default function FormLogin(){
                 data =>{
                     if(data.token){
                         dispatch(DaLogin(data));
-                        if(data.userInfo.role === 1){
+                        if(data.userInfo.role === 1 && data.userInfo.status === 1){
                             message.success('Bạn đã đăng nhập thành công')
                             navigate('/')
-                        }else{
+                        }else if(data.userInfo.role === 1 && data.userInfo.status === 2){
+                            message.error('Tài khoản của bạn đã bị khóa vui lòng liên hệ Shop để biết thêm thông tin chi tiết');
+                            setTimeout(() =>{
+                                dispatch(thoat())
+                            }, 3000)
+                        }
+                        else{
                             message.success('Bạn đã đăng nhập thành công')
                             navigate('/admin')
                         }

@@ -59,7 +59,26 @@
     line-height: 24px;
 }
 
-
+.scrollToTop {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1000;
+    transition: opacity 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  }
+  
+  .scrollToTop:hover {
+    background-color: #388E3C;
+  }
 
 @media screen and (max-width: 480px) {
     .lydochon{
