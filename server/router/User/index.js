@@ -63,14 +63,32 @@ router.post('/dangky', cleanupExpiredOTP, async (req, res) => {
   
       // Gửi email
       await transporter.sendMail({
-        from: `"Hệ thống xác minh" <${process.env.EMAIL_USER}>`,
+        from: '"GREEN TREE SHOP" <your_email@gmail.com>',
         to: email,
-        subject: 'Mã OTP đăng ký tài khoản',
+        subject: 'Mã xác thực OTP - GREENTREE SHOP',
         html: `
-          <p>Xin chào ${username},</p>
-          <p>Mã OTP của bạn là: <strong>${otp}</strong></p>
-          <p>Mã có hiệu lực trong 3 phút.</p>
-        `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+            <h1 style="color: #4CAF50; text-align: center;">GREEN TREE SHOP</h1>
+            <h2 style="color: #4CAF50; text-align: center;">Xác thực tài khoản</h2>
+      
+            <p style="font-size: 16px;">Xin chào <strong>${username}</strong>,</p>
+            <p style="font-size: 16px;">Chúng tôi đã nhận được yêu cầu xác thực từ bạn.</p>
+            
+            <p style="font-size: 16px;">Mã OTP của bạn là:</p>
+            <div style="text-align: center; margin: 20px 0;">
+              <span style="font-size: 24px; font-weight: bold; color: #ffffff; background-color: #4CAF50; padding: 12px 24px; border-radius: 8px; letter-spacing: 2px;">${otp}</span>
+            </div>
+      
+            <p style="font-size: 16px;">⚠️ Mã OTP có hiệu lực trong <strong>3 phút</strong>. Vui lòng không chia sẻ mã này với bất kỳ ai.</p>
+      
+            <hr style="margin: 30px 0;">
+      
+            <p style="font-size: 14px;">Nếu bạn không yêu cầu mã OTP, vui lòng bỏ qua email này.</p>
+            <p style="font-size: 14px;">Trân trọng,</p>
+            <p style="font-size: 14px;"><strong>GREEN TREE SHOP</strong></p>
+            <p style="font-size: 14px;">Hotline: <strong>0364185395</strong></p>
+            <p style="font-size: 14px;">Email: <strong>greentreshop@gmail.com</strong></p>
+          </div>`
       });
   
       res.json({ 
@@ -182,11 +200,11 @@ router.post('/xacminhotp', cleanupExpiredOTP, async (req, res) => {
 
     // Gửi email thông báo đăng ký thành công
     const mailOptions = {
-      from: "nguyentruongvuong11@gmail.com",
+      from: '"GREEN TREE SHOP" <your_email@gmail.com>',
       to: email,
       subject: 'Đăng ký tài khoản thành công',
       html: `
-        <h1>Chúc mừng bạn đã đăng ký tài khoản thành công tài khoản của GREEN TREE SHOP!</h1>
+        <h1>Chúc mừng bạn đã đăng ký tài khoản thành công tài khoản của GREENTREE SHOP!</h1>
         <p>Dưới đây là thông tin tài khoản của bạn:</p>
         <ul>
           <li><strong>Tên đăng nhập:</strong> ${username}</li>

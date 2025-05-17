@@ -783,10 +783,11 @@ router.get('/dashboard/revenue/day/details', adminAuth, async (req, res) => {
         u.username AS username,
         o.total_amount,
         o.payment_method,
-        o.order_status
+        o.order_status,
+        o.create_at
       FROM \`order\` o
       JOIN \`user\` u ON o.user_id = u.id 
-      WHERE DATE(o.create_at) = CURDATE() 
+      WHERE DATE(o.create_at) = CURDATE() ORDER BY o.create_at DESC   
     `);
 
     // Optional: mapping để dễ hiểu hơn phía frontend

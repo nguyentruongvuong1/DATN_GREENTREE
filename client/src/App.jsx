@@ -24,6 +24,7 @@ import Gioithieu from "./pages/User/Gioithieu";
 import Chinhsachbaomat from "./pages/User/Chinhsachbaomat";
 import Chinhsachbaohanh from "./pages/User/Chinhsachbaohanh";
 import Phuongthucvanchuyen from "./pages/User/Phuongthucvanchuyen";
+import ScrollToTop from "./ScrollToTop";
 
 import AdminVoucher from "./pages/Admin/Adminvoucher";
 import AdminCate from "./pages/Admin/Admincate";
@@ -41,6 +42,7 @@ import ProtectAdmin from "./ProtectAdmin";
 function App() {
   return (
     <BrowserRouter>
+    <ScrollToTop />
 <UserInfo />
       <Routes>
         {/* Route dành cho User */}

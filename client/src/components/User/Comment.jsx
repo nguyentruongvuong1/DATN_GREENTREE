@@ -72,6 +72,7 @@ export default function ProductReview() {
         contentRef.current.value = "";
         setRating(5);
         setHasReviewed(true); // Cập nhật trạng thái đã đánh giá
+        window.location.reload(); // Tải lại trang để cập nhật danh sách đánh giá
       }
     } catch (error) {
       message.error(error.message);

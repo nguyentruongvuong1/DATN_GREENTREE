@@ -414,7 +414,7 @@ export default function OrderUser() {
                       <button
                         className={styles["btn-rebuy"]}
                         onClick={() => {
-                          if (product.quantity === 0) {
+                          if (product.inventory_quantity === 0) {
                             message.error(
                               "Sản phẩm đã hết hàng. Nếu bạn muốn mua sản phẩm này hãy liên hệ với chúng tôi để được hỗ trợ."
                             );

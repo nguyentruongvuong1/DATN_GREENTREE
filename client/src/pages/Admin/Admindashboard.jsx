@@ -6,7 +6,7 @@ import { Menu } from "lucide-react";
 import "../../styles/Admin/styleadmin.css"; // Đảm bảo đường dẫn đúng
 import Bieudo from "../../components/Admin/Bieudo.jsx"; // Đảm bảo đường dẫn đúng
 import { useSelector } from "react-redux";
-
+import UpdatePr from "../../components/Admin/AdminPr/AdminUpdatePr.jsx";
 
 
 const AdminDashboard = () => {
@@ -30,6 +30,10 @@ const AdminDashboard = () => {
   const [bestSellingProducts, setBestSellingProducts] = useState([]);
   const [searchBestSelling, setSearchBestSelling] = useState("");
   const user = useSelector((state) => state.auth.user)
+
+  const [showupdatepr, setshowupadtepr] = useState(false);
+    const [UpdateId, setUpdateId] = useState(null);
+  
 
 
   useEffect(() => {
@@ -287,7 +291,7 @@ const AdminDashboard = () => {
                 ) : (
                   <div className="admin-slow-card-list">
                     {slowMovingProducts.map(product => (
-                      <div className="admin-slow-card" key={product.id}>
+                      <div className="admin-slow-card" key={product.id} onClick={() => {setShowSlowMovingModal(false); setUpdateId(product.id); setshowupadtepr(true) }}>
                         <img
                           src={
                             product.images && product.images.trim() !== ""
@@ -323,7 +327,7 @@ const AdminDashboard = () => {
                 ) : (
                   <div className="admin-slow-card-list">
                     {lowStockProducts.map(product => (
-                      <div className="admin-slow-card" key={product.id}>
+                      <div className="admin-slow-card" key={product.id} onClick={() => { setShowLowStockModal(false); setUpdateId(product.id); setshowupadtepr(true) }}>
                         <img
                           src={
                             product.images && product.images.trim() !== ""
@@ -431,6 +435,21 @@ const AdminDashboard = () => {
         </div>
 
       </div>
+
+
+              
+                    {showupdatepr &&  (
+                      <>
+                        <div
+                          className="modal-overlay"
+                          onClick={() => setshowupadtepr(false)}
+                        ></div>
+                        <div className="modal-containerpr">
+                          <UpdatePr id={UpdateId} />
+                        </div>
+                      </>
+                    )}
+
     </div >
 
   );
